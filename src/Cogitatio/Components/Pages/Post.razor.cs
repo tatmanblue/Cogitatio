@@ -11,8 +11,14 @@ partial class Post
 
     protected override async Task OnInitializedAsync()
     {
-        var httpClient = HttpClientFactory.CreateClient("BlogApi");
-        PostContent = await httpClient.GetFromJsonAsync<BlogPost>($"api/posts/{PostId}");
+        // var httpClient = HttpClientFactory.CreateClient("BlogApi");
+        // PostContent = await httpClient.GetFromJsonAsync<BlogPost>($"api/posts/{PostId}");
+        PostContent = new BlogPost()
+        {
+            Title = "test",
+            Content = "non html test content",
+            PublishedDate = DateTime.Now,
+        };
     }
 
     private class BlogPost
