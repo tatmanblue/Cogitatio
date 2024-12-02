@@ -1,10 +1,20 @@
 using Cogitatio.Components;
+using Cogitatio.Interfaces;
+using Cogitatio.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+builder.Services.AddScoped<IDatabase>(_ =>
+{
+    var configuration = _.GetRequiredService<IConfiguration>();
+    var connectionString = configuration.GetConnectionString("GoDaddy");
+    return new SqlServer(connectionString);
+});
+
 
 var app = builder.Build();
 
