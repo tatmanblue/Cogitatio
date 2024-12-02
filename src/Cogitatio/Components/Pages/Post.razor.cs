@@ -8,39 +8,36 @@ namespace Cogitatio.Components.Pages;
 partial class Post 
 {
     [Inject]
+    private ILogger<Post> logger { get; set; }
+    
+    [Inject]
     private IDatabase db { get; set; } = default!;
     
-    [Parameter] public int PostId { get; set; }
+    [Parameter] public int? PostId { get; set; }
     [Parameter] public string Slug { get; set; }
 
     private BlogPost? PostContent { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        if (0 <= PostId && string.IsNullOrWhiteSpace(Slug))
+        logger.LogInformation($"OnInitializedAsync.  PostId.HasValue: {PostId.HasValue}");
+        
+        if (PostId.HasValue)
         {
+            logger.LogInformation($"Getting by PostId: {PostId}");
+            PostContent = db.GetById(PostId.Value);
+        }
+        else if (!string.IsNullOrEmpty(Slug))
+        {
+            logger.LogInformation($"Getting by slug: {Slug}");
+            PostContent = db.GetBySlug(Slug);
+        }
+        else
+        {
+            logger.LogInformation($"Getting Most recent post");
             PostContent = db.GetMostRecent();
-            return;
         }
 
-        if (false == string.IsNullOrWhiteSpace(Slug))
-        {
-            PostContent = new BlogPost()
-            {
-                Title = "test",
-                Content = $"we get post by slug {Slug}",
-                PublishedDate = DateTime.Now,
-            };
-            return;
-        }
-        
-        PostContent = new BlogPost()
-        {
-            Title = "test",
-            Content = $"Get post by Id #{PostId} '{db.ConnectionString}' for db connection string",
-            PublishedDate = DateTime.Now,
-        };
-
-        
+        PostContent.Tags = db.GetPostTags(PostContent.Id);        
     }
 }

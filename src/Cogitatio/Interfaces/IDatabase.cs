@@ -6,4 +6,7 @@ public interface IDatabase
 {
     string ConnectionString { get; }
     BlogPost GetMostRecent();
+    BlogPost GetBySlug(string slug);
+    BlogPost GetById(int id);
+    List<string> GetPostTags(int postId);
 }
