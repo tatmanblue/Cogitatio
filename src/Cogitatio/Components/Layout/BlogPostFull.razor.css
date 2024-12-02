@@ -1,0 +1,37 @@
+﻿.blog-post {
+    margin: 2rem 0;
+    padding: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.blog-post header h1 {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.blog-post .meta {
+    color: gray;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+}
+
+.content {
+    font-size: 1.1rem;
+    line-height: 1.6;
+}
+
+.comments h2 {
+    margin-top: 2rem;
+}
+
+.comments ul {
+    list-style: none;
+    padding: 0;
+}
+
+.comments ul li {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #eee;
+}

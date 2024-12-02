@@ -1,0 +1,50 @@
+﻿@using Cogitatio.Interfaces
+@inject NavigationManager NavigationManager
+@inject IDatabase Database
+
+<PageTitle>@PostContent?.Title</PageTitle>
+
+@if (PostContent == null)
+{
+    <div class="alert alert-warning">Loading post...</div>
+}
+else
+{
+    <article class="blog-post">
+        <header>
+            <h1>@PostContent.Title</h1>
+            <p class="meta">
+                By <strong>@PostContent.Author</strong> on @PostContent.PublishedDate.ToString("MMMM dd, yyyy")
+            </p>
+        </header>
+
+        <section class="content">
+            @((MarkupString)PostContent.Content) <!-- Render HTML safely -->
+        </section>
+
+        <footer>
+            <p>Tags: @string.Join(", ", PostContent.Tags)</p>
+        </footer>
+    </article>
+
+    <section class="comments">
+        <h2>Comments</h2>
+        @if (PostContent.Comments?.Any() == true)
+        {
+            <ul>
+                @foreach (var comment in PostContent.Comments)
+                {
+                    <li>
+                        <p><strong>@comment.Author</strong> says:</p>
+                        <blockquote>@comment.Text</blockquote>
+                        <p class="meta">@comment.PostedDate.ToString("MMMM dd, yyyy HH:mm")</p>
+                    </li>
+                }
+            </ul>
+        }
+        else
+        {
+            <p>No comments yet. Be the first to comment!</p>
+        }
+    </section>
+}
