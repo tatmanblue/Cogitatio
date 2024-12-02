@@ -47,4 +47,12 @@ else
             <p>No comments yet. Be the first to comment!</p>
         }
     </section>
+    <section>
+        <NavLink class="nav-link" href=@("post/" + PostContent.Slug)>
+            <span class="bi bi-house-door-fill" aria-hidden="true"></span> Previous
+        </NavLink>
+        <NavLink class="nav-link" href=@("post/" + PostContent.Slug)>
+            <span class="bi bi-house-door-fill" aria-hidden="true"></span> Next
+        </NavLink>
+    </section>
 }
