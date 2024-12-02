@@ -10,6 +10,9 @@ public class BlogPost
     public string Slug { get; set; } = string.Empty;     
     public List<string> Tags { get; set; } = new();
     public List<Comment> Comments { get; set; } = new();
+    public BlogPostStatuses Status { get; set; } = BlogPostStatuses.NA;
+    public BlogPost PreviousPost { get; set; } = null;
+    public BlogPost NextPost { get; set; } = null;
 }
 
 public class Comment

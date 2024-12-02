@@ -1,0 +1,27 @@
+﻿@using Cogitatio.Interfaces
+@inject NavigationManager NavigationManager
+@inject IDatabase Database
+
+<div class="d-flex justify-content-between align-items-center mt-4 border-top pt-3">
+    @if (!string.IsNullOrEmpty(PreviousPostTitle))
+    {
+        <a href="/post/@PreviousPostSlug" class="btn btn-outline-primary">
+            &larr; @PreviousPostTitle
+        </a>
+    }
+    else
+    {
+        <div></div> <!-- Empty div for alignment -->
+    }
+
+    @if (!string.IsNullOrEmpty(NextPostTitle))
+    {
+        <a href="/post/@NextPostSlug" class="btn btn-outline-primary">
+            @NextPostTitle &rarr;
+        </a>
+    }
+    else
+    {
+        <div></div> <!-- Empty div for alignment -->
+    }
+</div>

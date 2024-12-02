@@ -48,11 +48,11 @@ else
         }
     </section>
     <section>
-        <NavLink class="nav-link" href=@("post/" + PostContent.Slug)>
-            <span class="bi bi-house-door-fill" aria-hidden="true"></span> Previous
-        </NavLink>
-        <NavLink class="nav-link" href=@("post/" + PostContent.Slug)>
-            <span class="bi bi-house-door-fill" aria-hidden="true"></span> Next
-        </NavLink>
+        <BlogPostNavigation
+            NextPostSlug=@PostContent.NextPost.Slug
+            NextPostTitle=@PostContent.NextPost.Title
+            PreviousPostSlug=@PostContent.PreviousPost.Slug
+            PreviousPostTitle=@PostContent.PreviousPost.Title
+            />
     </section>
 }

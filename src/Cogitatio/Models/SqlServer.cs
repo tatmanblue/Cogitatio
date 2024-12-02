@@ -47,22 +47,26 @@ public class SqlServer : IDatabase, IDisposable
         cmd.CommandType = CommandType.Text;
         cmd.Connection = connection;
         cmd.Parameters.Clear();
-        cmd.CommandText = "SELECT TOP 1 * FROM Blog_Posts ORDER BY PublishedDate DESC;";
+        cmd.CommandText = @"SELECT
+                t1.*,
+                t2.PostId as PreviousId,
+                t2.Slug as PreviousSlug,
+                t2.Title as PreviousTitle,
+                t3.PostId as NextId,
+                t3.Slug as NextSlug,
+                t3.Title as NextTitle
+            FROM
+                Blog_Posts t1
+            LEFT JOIN
+                Blog_Posts t2 ON t2.PostId = t1.PostId - 1
+            LEFT JOIN
+                Blog_Posts t3 ON t3.PostId = t1.PostId + 1
+            WHERE
+                t1.PostId = (SELECT TOP 1 PostId FROM Blog_Posts WHERE Status = 1 ORDER BY PublishedDate DESC);";
 
         using SqlDataReader rdr = cmd.ExecuteReader();
-        while (rdr.Read())
-        {
-            result = new();
-
-            result.Id = rdr.AsInt("PostId");
-            result.Author = rdr.AsString("Author");
-            result.Content = rdr.AsString("Content");
-            result.Title = rdr.AsString("Title");
-            result.Slug = rdr.AsString("Slug");
-            result.PublishedDate = rdr.AsDateTime("PublishedDate");
-            
-        }
-        rdr.Close();
+        rdr.Read();
+        result = ReadPost(rdr);
 
         return result;
     }
@@ -77,20 +81,28 @@ public class SqlServer : IDatabase, IDisposable
         cmd.CommandType = CommandType.Text;
         cmd.Connection = connection;
         cmd.Parameters.Clear();
-        cmd.CommandText = "SELECT * FROM Blog_Posts WHERE Slug = @Slug";
+        cmd.CommandText = @"SELECT
+                t1.*,
+                t2.PostId as PreviousId,
+                t2.Slug as PreviousSlug,
+                t2.Title as PreviousTitle,
+                t3.PostId as NextId,
+                t3.Slug as NextSlug,
+                t3.Title as NextTitle
+            FROM
+                Blog_Posts t1
+            LEFT JOIN
+                Blog_Posts t2 ON t2.PostId = t1.PostId - 1
+            LEFT JOIN
+                Blog_Posts t3 ON t3.PostId = t1.PostId + 1
+            WHERE
+                t1.Slug = @slug;";
         cmd.Parameters.AddWithValue("@Slug", slug);
         using SqlDataReader rdr = cmd.ExecuteReader();
         
         // TODO: error check!
         rdr.Read();
-        result = new();
-
-        result.Id = rdr.AsInt("PostId");
-        result.Author = rdr.AsString("Author");
-        result.Content = rdr.AsString("Content");
-        result.Title = rdr.AsString("Title");
-        result.Slug = rdr.AsString("Slug");
-        result.PublishedDate = rdr.AsDateTime("PublishedDate");
+        result = ReadPost(rdr);
         
         return result;
     }
@@ -105,20 +117,28 @@ public class SqlServer : IDatabase, IDisposable
         cmd.CommandType = CommandType.Text;
         cmd.Connection = connection;
         cmd.Parameters.Clear();
-        cmd.CommandText = "SELECT * FROM Blog_Posts WHERE PostId = @PostId";
+        cmd.CommandText = @"SELECT
+                t1.*,
+                t2.PostId as PreviousId,
+                t2.Slug as PreviousSlug,
+                t2.Title as PreviousTitle,
+                t3.PostId as NextId,
+                t3.Slug as NextSlug,
+                t3.Title as NextTitle
+            FROM
+                Blog_Posts t1
+            LEFT JOIN
+                Blog_Posts t2 ON t2.PostId = t1.PostId - 1
+            LEFT JOIN
+                Blog_Posts t3 ON t3.PostId = t1.PostId + 1
+            WHERE
+                t1.PostId = @PostId;";
         cmd.Parameters.AddWithValue("@PostId", id);
         using SqlDataReader rdr = cmd.ExecuteReader();
         
         // TODO: error check!
         rdr.Read();
-        result = new();
-
-        result.Id = rdr.AsInt("PostId");
-        result.Author = rdr.AsString("Author");
-        result.Content = rdr.AsString("Content");
-        result.Title = rdr.AsString("Title");
-        result.Slug = rdr.AsString("Slug");
-        result.PublishedDate = rdr.AsDateTime("PublishedDate");
+        result = ReadPost(rdr);
         
         return result;
     }
@@ -142,6 +162,36 @@ public class SqlServer : IDatabase, IDisposable
             result.AddRange(tags.Split(","));
         }
 
+        return result;
+    }
+
+    /// <summary>
+    /// Gets all the common repeated functionality into a single method
+    /// </summary>
+    /// <param name="rdr"></param>
+    /// <param name="closeReader"></param>
+    /// <returns></returns>
+    private BlogPost ReadPost(SqlDataReader rdr, bool closeReader = true)
+    {
+        BlogPost result = new();
+
+        result.Id = rdr.AsInt("PostId");
+        result.Author = rdr.AsString("Author");
+        result.Content = rdr.AsString("Content");
+        result.Title = rdr.AsString("Title");
+        result.Slug = rdr.AsString("Slug");
+        result.PublishedDate = rdr.AsDateTime("PublishedDate");
+        result.PreviousPost = new ();
+        result.PreviousPost.Id = rdr.AsInt("PreviousId");
+        result.PreviousPost.Title = rdr.AsString("PreviousTitle");
+        result.PreviousPost.Slug = rdr.AsString("PreviousSlug");
+        result.NextPost = new ();
+        result.NextPost.Id = rdr.AsInt("NextId");
+        result.NextPost.Title = rdr.AsString("NextTitle");
+        result.NextPost.Slug = rdr.AsString("NextSlug");
+        
+        if (closeReader) rdr.Close();
+        
         return result;
     }
 }
