@@ -1,8 +1,11 @@
+using System.Collections;
 using Cogitatio.Components;
 using Cogitatio.Interfaces;
 using Cogitatio.Models;
 
 var builder = WebApplication.CreateBuilder(args);
+
+DotNetEnv.Env.Load();
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
@@ -20,11 +23,6 @@ builder.Services.AddScoped<IDatabase>(_ =>
 
 
 var app = builder.Build();
-
-var logger = app.Services.GetRequiredService<ILoggerFactory>()
-    .CreateLogger<Program>();
-
-logger.LogDebug("App is running");
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

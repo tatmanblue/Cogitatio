@@ -1,4 +1,5 @@
 ﻿using Cogitatio.Interfaces;
+using Cogitatio.Models;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -16,30 +17,30 @@ partial class Post
 
     protected override async Task OnInitializedAsync()
     {
+        if (0 <= PostId && string.IsNullOrWhiteSpace(Slug))
+        {
+            PostContent = db.GetMostRecent();
+            return;
+        }
+
+        if (false == string.IsNullOrWhiteSpace(Slug))
+        {
+            PostContent = new BlogPost()
+            {
+                Title = "test",
+                Content = $"we get post by slug {Slug}",
+                PublishedDate = DateTime.Now,
+            };
+            return;
+        }
+        
         PostContent = new BlogPost()
         {
             Title = "test",
-            Content = $"non html test content. '{db.ConnectionString}' for db connection string",
+            Content = $"Get post by Id #{PostId} '{db.ConnectionString}' for db connection string",
             PublishedDate = DateTime.Now,
         };
-    }
 
-    private class BlogPost
-    {
-        public string Title { get; set; } = string.Empty;
-        public string Author { get; set; } = string.Empty;
-        public DateTime PublishedDate { get; set; }
-        public string Content { get; set; } = string.Empty; 
-        public string Slug { get; set; } = string.Empty;     
-        public List<string> Tags { get; set; } = new();
-        public List<Comment> Comments { get; set; } = new();
+        
     }
-
-    private class Comment
-    {
-        public string Author { get; set; } = string.Empty;
-        public string Text { get; set; } = string.Empty;
-        public DateTime PostedDate { get; set; }
-    }
-
 }
