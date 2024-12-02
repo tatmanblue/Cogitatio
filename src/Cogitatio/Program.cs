@@ -11,12 +11,20 @@ builder.Services.AddRazorComponents()
 builder.Services.AddScoped<IDatabase>(_ =>
 {
     var configuration = _.GetRequiredService<IConfiguration>();
-    var connectionString = configuration.GetConnectionString("GoDaddy");
-    return new SqlServer(connectionString);
+    var connectionString = configuration["GoDaddyDB"];
+    
+    var logger = _.GetRequiredService<ILoggerFactory>()
+        .CreateLogger<IDatabase>();
+    return new SqlServer(logger, connectionString);
 });
 
 
 var app = builder.Build();
+
+var logger = app.Services.GetRequiredService<ILoggerFactory>()
+    .CreateLogger<Program>();
+
+logger.LogDebug("App is running");
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

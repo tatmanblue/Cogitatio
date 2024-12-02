@@ -13,18 +13,26 @@ public class SqlServer : IDatabase, IDisposable
         connection.Close();
     }
     #endregion
+
+    public string ConnectionString
+    {
+        get { return connectionStr; }
+    }
     
+    private ILogger<IDatabase> logger;
     private string connectionStr = string.Empty;
     private SqlConnection connection = null;
 
-    public SqlServer(string str)
+    public SqlServer(ILogger<IDatabase> logger, string str)
     {
+        this.logger = logger;
         connectionStr = str;
     }
     
     public void Connect()
     {
         if (null != connection) return;
+        logger.LogInformation($"Connecting to database...{connectionStr}");
         connection = new SqlConnection(connectionStr);
         connection.Open();
     }

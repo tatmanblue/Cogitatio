@@ -1,11 +1,16 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using Cogitatio.Interfaces;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Cogitatio.Components.Pages;
 
 partial class Post 
 {
+    [Inject]
+    private IDatabase db { get; set; } = default!;
+    
     [Parameter] public int PostId { get; set; }
+    [Parameter] public string Slug { get; set; }
 
     private BlogPost? PostContent { get; set; }
 
@@ -14,7 +19,7 @@ partial class Post
         PostContent = new BlogPost()
         {
             Title = "test",
-            Content = "non html test content",
+            Content = $"non html test content. '{db.ConnectionString}' for db connection string",
             PublishedDate = DateTime.Now,
         };
     }

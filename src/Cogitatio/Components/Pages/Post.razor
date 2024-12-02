@@ -1,7 +1,9 @@
 ﻿@page "/Post/{PostId:int}"
 @page "/Post/"
 @page "/post/{Slug}"
+@using Cogitatio.Interfaces
 @inject NavigationManager NavigationManager
+@inject IDatabase Database
 
 <PageTitle>@PostContent?.Title</PageTitle>
 
