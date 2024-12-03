@@ -1,4 +1,5 @@
-﻿using Cogitatio.Models;
+﻿using Cogitatio.Components.Pages;
+using Cogitatio.Models;
 
 namespace Cogitatio.Interfaces;
 
@@ -9,4 +10,5 @@ public interface IDatabase
     BlogPost GetBySlug(string slug);
     BlogPost GetById(int id);
     List<string> GetPostTags(int postId);
+    void CreatePost(BlogPost post);
 }

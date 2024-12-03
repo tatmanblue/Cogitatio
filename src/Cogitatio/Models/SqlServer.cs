@@ -97,7 +97,7 @@ public class SqlServer : IDatabase, IDisposable
                 Blog_Posts t3 ON t3.PostId = t1.PostId + 1
             WHERE
                 t1.Slug = @slug;";
-        cmd.Parameters.AddWithValue("@Slug", slug);
+        cmd.Parameters.AddWithValue("@slug", slug);
         using SqlDataReader rdr = cmd.ExecuteReader();
         
         // TODO: error check!
@@ -163,6 +163,42 @@ public class SqlServer : IDatabase, IDisposable
         }
 
         return result;
+    }
+
+    public void CreatePost(BlogPost post)
+    {
+        Connect();
+        BlogPost result = null;
+        using SqlCommand cmd = new SqlCommand();  
+        cmd.CommandType = CommandType.Text;
+        cmd.Connection = connection;
+        cmd.Parameters.Clear();
+        cmd.CommandText = @"INSERT INTO Blog_Posts (Slug, Title, Author, Content, Status)
+            OUTPUT INSERTED.PostId 
+            VALUES
+            (
+                @slug,
+                @title,
+                @author,
+                @content,
+                1
+            )";
+        cmd.Parameters.AddWithValue("@slug", post.Slug);
+        cmd.Parameters.AddWithValue("@title", post.Title);
+        cmd.Parameters.AddWithValue("@author", post.Author);
+        cmd.Parameters.AddWithValue("@content", post.Content);
+        
+        post.Id = (int) cmd.ExecuteScalar();
+        logger.LogInformation($"Blog Post Created Successfully, id {post.Id}");
+
+        foreach (string tag in post.Tags)
+        {
+            cmd.Parameters.Clear();
+            cmd.CommandText = @"INSERT INTO Blog_Tags (PostId, Tag) VALUES (@postId, @tag)";
+            cmd.Parameters.AddWithValue("@postId", post.Id);
+            cmd.Parameters.AddWithValue("@tag", tag);
+            cmd.ExecuteNonQuery();
+        }
     }
 
     /// <summary>

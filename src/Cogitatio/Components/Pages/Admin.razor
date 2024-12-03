@@ -1,23 +1,27 @@
 ﻿@rendermode InteractiveServer
 @page "/Admin"
-<h3>Admin</h3>
-@if (!isAuthenticated)
+<h3>Admin Panel</h3>
+@if (!IsAuthenticated)
 {
     <div class="login">
         <h4>Credentials are required:</h4>
-        <input @bind="credential" type="password" placeholder="Enter credentials" class="form-control" />
+        <input @bind="Credential" type="password" placeholder="Enter credentials" class="form-control" />
         <button class="btn btn-primary mt-2" @onclick=@Login>Login</button>
-        @if (errorMessage != null)
+        @if (ErrorMessage != null)
         {
-            <p class="text-danger">@errorMessage</p>
+            <p class="text-danger">@ErrorMessage</p>
         }
     </div>
 }
 
-@if (isAuthenticated)
+@if (IsAuthenticated)
 {
-    <h1>Admin Panel</h1>
-    <p>You can now create or edit blog posts!</p>
-    <!-- Blog post creation/edit form goes here -->
+    <p>New Blog Entry</p>
+    <input @bind="Title" placeholder="Title"/>
+    <input @bind="Tags" placeholder="Tags (comma delimited)"/> 
+    <TinyMCE.Blazor.Editor 
+        ApiKey="xabfxca9ddbq4r1833sdp13ycvfxwt7iz66rw55oqvt6bav5"
+        @bind-Value="Content"/>
+    <button class="btn btn-primary mt-2" @onclick=@Publish>Publish</button>
 }
 
