@@ -8,6 +8,12 @@ main {
     flex: 1;
 }
 
+footer {
+    color: rgb(120, 154, 161);
+    font-family: "Courier New", Courier, monospace;
+    text-align: center;
+}
+
 .sidebar {
     background-image: linear-gradient(180deg, rgba(14,25,27,1) 0%, rgba(56,76,80,1) 13%, rgba(18,154,181,1) 100%);
 }

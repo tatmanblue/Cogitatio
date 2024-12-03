@@ -43,7 +43,7 @@ public class BlogPost
         
         slugBase = slugBase.Length > 25 ? slugBase.Substring(0, 25) : slugBase;
 
-        return $"{slugBase}{uniqueness}";
+        return $"{slugBase}-{uniqueness}";
     }
 }
 

@@ -6,6 +6,7 @@ namespace Cogitatio.Components.Layout;
 
 public partial class BlogPostShort : ComponentBase
 {
+    [Inject] private ILogger<BlogPostShort> logger { get; set; }
     [Parameter] public int? PostId { get; set; }
     [Parameter] public string Slug { get; set; }
 
@@ -15,9 +16,11 @@ public partial class BlogPostShort : ComponentBase
     {
         if (PostContent == null) return string.Empty;
         if (string.IsNullOrEmpty(PostContent.Content)) return string.Empty;
-        if (100 > PostContent.Content.Length)
+        if (250 > PostContent.Content.Length)
             return PostContent.Content;
         
-        return PostContent.Content.Substring(0, 100);
+        
+        logger.LogInformation($"Content Length: {PostContent.Content.Length} so truncated to {PostContent.Content.Substring(0, 100)}");
+        return PostContent.Content.Substring(0, 250);
     }
 }
