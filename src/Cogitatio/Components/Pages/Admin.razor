@@ -1,0 +1,22 @@
+﻿@page "/Admin"
+<h3>Admin</h3>
+@if (!isAuthenticated)
+{
+    <div class="login">
+        <h4>Credentials are required:</h4>
+        <input @bind="credential" type="password" placeholder="Enter credentials" class="form-control" />
+        <button class="btn btn-primary mt-2" @onclick="Login">Login</button>
+        @if (errorMessage != null)
+        {
+            <p class="text-danger">@errorMessage</p>
+        }
+    </div>
+}
+
+@if (isAuthenticated)
+{
+    <h1>Admin Panel</h1>
+    <p>You can now create or edit blog posts!</p>
+    <!-- Blog post creation/edit form goes here -->
+}
+

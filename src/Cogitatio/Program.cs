@@ -14,7 +14,7 @@ builder.Services.AddRazorComponents()
 builder.Services.AddScoped<IDatabase>(_ =>
 {
     var configuration = _.GetRequiredService<IConfiguration>();
-    var connectionString = configuration["GoDaddyDB"];
+    var connectionString = configuration["CogitatioSiteDB"];
     
     var logger = _.GetRequiredService<ILoggerFactory>()
         .CreateLogger<IDatabase>();
