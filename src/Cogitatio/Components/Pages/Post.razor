@@ -1,9 +1,7 @@
-﻿@page "/Post/{PostId:int}"
-@page "/Post/"
+﻿@page "/post/{PostId:int}"
+@page "/post/"
 @page "/post/{Slug}"
-@using Cogitatio.Interfaces
 @using Cogitatio.Components.Layout
-@inject NavigationManager NavigationManager
-@inject IDatabase Database
+
 
 <BlogPostFull PostContent="@PostContent" />

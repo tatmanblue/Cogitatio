@@ -1,0 +1,8 @@
+﻿@page "/BlogTags"
+
+<p>Tags:
+@foreach (var tag in Tags)
+{
+    <a href="/search/@tag">@tag</a>@:&nbsp;
+}
+</p>

@@ -11,4 +11,6 @@ public interface IDatabase
     BlogPost GetById(int id);
     List<string> GetPostTags(int postId);
     void CreatePost(BlogPost post);
+    List<string> GetAllTags();
+    List<BlogPost> GetAllPostsByTag(string tag);
 }

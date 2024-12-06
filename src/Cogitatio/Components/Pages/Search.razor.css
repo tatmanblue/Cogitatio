@@ -1,0 +1,10 @@
+﻿.search-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem; /* Adjust the gap as needed */
+}
+
+.search-container > div {
+    display: flex;
+    align-items: center;
+}

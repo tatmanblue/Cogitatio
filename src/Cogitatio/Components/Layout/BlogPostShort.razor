@@ -27,7 +27,7 @@ else
 
         <footer>
             <p>Comments: @PostContent.Comments.Count</p>
-            <p>Tags: @string.Join(", ", PostContent.Tags)</p>
+            <BlogTags Tags="@PostContent.Tags" />
         </footer>
     </article>
 }

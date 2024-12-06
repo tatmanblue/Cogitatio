@@ -1,0 +1,53 @@
+﻿@rendermode InteractiveServer
+@page "/search"
+@page "/search/{tag}"
+@page "/search/{startDate:datetime}/{endDate:datetime}"
+@using System.Globalization
+<div class="container mt-4">
+    <h3>Search</h3>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Search tags" @bind="selectedTag" />
+                    <button class="btn btn-primary me-2" @onclick=@SearchByTag>Search</button>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="input-group">
+                    <input type="date" class="form-control" @bind="selectedStartDate" />
+                    <input type="date" class="form-control" @bind="selectedEndDate" />
+                    <button class="btn btn-primary me-2" @onclick=@SearchByDateRange>Search</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col">
+            <button class="btn btn-secondary" @onclick=@ClearSearch>Clear</button>
+        </div>
+    </div>
+
+    <div>
+        @if (results.Any())
+        {
+            <div>
+                <h4>Results:</h4>
+                <ul class="list-group">
+                    @foreach (var blog in results)
+                    {
+                        <li class="list-group-item">
+                            <strong>@blog.Title</strong> - @blog.PublishedDate.ToString("d", CultureInfo.InvariantCulture)
+                        </li>
+                    }
+                </ul>
+            </div>
+        }
+        else
+        {
+            <p>No results to display.</p>
+        }
+    </div>
+</div>

@@ -193,12 +193,65 @@ public class SqlServer : IDatabase, IDisposable
 
         foreach (string tag in post.Tags)
         {
+            string cleanTag = tag.Replace(" ", "");
             cmd.Parameters.Clear();
             cmd.CommandText = @"INSERT INTO Blog_Tags (PostId, Tag) VALUES (@postId, @tag)";
             cmd.Parameters.AddWithValue("@postId", post.Id);
-            cmd.Parameters.AddWithValue("@tag", tag);
+            cmd.Parameters.AddWithValue("@tag", cleanTag);
             cmd.ExecuteNonQuery();
         }
+    }
+
+    public List<string> GetAllTags()
+    {
+        List<string> result = new();
+        Connect();
+        using SqlCommand cmd = new SqlCommand();
+        cmd.CommandType = CommandType.Text;
+        cmd.Connection = connection;
+        cmd.Parameters.Clear();
+        cmd.CommandText = "SELECT DISTINCT Tag FROM Blog_Tags";
+        using SqlDataReader rdr = cmd.ExecuteReader();
+        while (rdr.Read())
+        {
+            result.Add(rdr.AsString("Tag"));
+        }
+        
+        return result;
+    }
+
+    public List<BlogPost> GetAllPostsByTag(string tag)
+    {
+        List<BlogPost> result = new();
+        Connect();
+        using SqlCommand cmd = new SqlCommand();
+        cmd.CommandType = CommandType.Text;
+        cmd.Connection = connection;
+        cmd.CommandText = @"SELECT
+                t1.*,
+                t2.PostId as PreviousId,
+                t2.Slug as PreviousSlug,
+                t2.Title as PreviousTitle,
+                t3.PostId as NextId,
+                t3.Slug as NextSlug,
+                t3.Title as NextTitle
+            FROM
+                Blog_Posts t1
+            LEFT JOIN
+                Blog_Posts t2 ON t2.PostId = t1.PostId - 1
+            LEFT JOIN
+                Blog_Posts t3 ON t3.PostId = t1.PostId + 1
+            WHERE
+                t1.PostId IN (SELECT PostId FROM Blog_Tags WHERE Tag = @tag);";
+        cmd.Parameters.AddWithValue("@tag", tag);
+        using SqlDataReader rdr = cmd.ExecuteReader();
+        while (rdr.Read())
+        {
+            result.Add(ReadPost(rdr, false));
+        }
+
+        rdr.Close();
+        return result;
     }
 
     /// <summary>
