@@ -1,1 +1,18 @@
-﻿
+﻿span {
+    color: rgb(120, 154, 161);
+    font-family: "Courier New", Courier, monospace;
+}
+
+.highlight {
+    color: rgb(120, 154, 161);
+    font-weight: bold;
+}
+
+h3 {
+    padding-top: 1em;
+}
+
+h4 {
+    padding-top: 1em;
+    color: rgb(120, 154, 161);
+}

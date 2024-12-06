@@ -12,6 +12,7 @@ footer {
     color: rgb(120, 154, 161);
     font-family: "Courier New", Courier, monospace;
     text-align: center;
+    padding-top: 2em;
 }
 
 .sidebar {
