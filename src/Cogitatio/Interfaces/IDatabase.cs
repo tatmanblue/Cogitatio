@@ -13,4 +13,7 @@ public interface IDatabase
     void CreatePost(BlogPost post);
     List<string> GetAllTags();
     List<BlogPost> GetAllPostsByTag(string tag);
+    List<BlogPost> GetAllPostsByDates(DateTime from, DateTime to);
+    List<BlogPost> GetPostsForRSS();
+
 }
