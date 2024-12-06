@@ -162,6 +162,7 @@ public class SqlServer : IDatabase, IDisposable
             result.AddRange(tags.Split(","));
         }
 
+        rdr.Close();
         return result;
     }
 
@@ -216,7 +217,7 @@ public class SqlServer : IDatabase, IDisposable
         {
             result.Add(rdr.AsString("Tag"));
         }
-        
+        rdr.Close();
         return result;
     }
 
@@ -242,7 +243,8 @@ public class SqlServer : IDatabase, IDisposable
             LEFT JOIN
                 Blog_Posts t3 ON t3.PostId = t1.PostId + 1
             WHERE
-                t1.PostId IN (SELECT PostId FROM Blog_Tags WHERE Tag = @tag);";
+                t1.PostId IN (SELECT PostId FROM Blog_Tags WHERE Tag = @tag)
+            ORDER BY PublishedDate DESC;";
         cmd.Parameters.AddWithValue("@tag", tag);
         using SqlDataReader rdr = cmd.ExecuteReader();
         while (rdr.Read())

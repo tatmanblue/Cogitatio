@@ -8,3 +8,8 @@
     display: flex;
     align-items: center;
 }
+
+.clear-small-button {
+    font-size: 0.85em;
+    padding: 0.25em 0.5em;
+}

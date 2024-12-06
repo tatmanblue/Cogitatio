@@ -22,32 +22,33 @@
                 </div>
             </div>
         </div>
+        <div class="row" style="padding-top: 1em">
+            <div class="col">
+                <button class="btn btn-secondary clear-small-button" @onclick=@ClearSearch>Clear</button>
+            </div>
+        </div>        
     </div>
-
-    <div class="row">
-        <div class="col">
-            <button class="btn btn-secondary" @onclick=@ClearSearch>Clear</button>
-        </div>
-    </div>
-
+    
     <div>
         @if (results.Any())
         {
-            <div>
-                <h4>Results:</h4>
+            <div style="padding-top: 2em">
+                <h4>Results</h4>
                 <ul class="list-group">
                     @foreach (var blog in results)
                     {
-                        <li class="list-group-item">
-                            <strong>@blog.Title</strong> - @blog.PublishedDate.ToString("d", CultureInfo.InvariantCulture)
-                        </li>
+                        <NavLink class="nav-link" href=@("post/" + blog.Slug)>
+                            <li class="list-group-item">
+                                <strong>@blog.Title</strong> - @blog.PublishedDate.ToString("d", CultureInfo.InvariantCulture)
+                            </li>
+                        </NavLink>
                     }
                 </ul>
             </div>
         }
         else
         {
-            <p>No results to display.</p>
+            <p style="padding-top: 2em">No results to display.</p>
         }
     </div>
 </div>
