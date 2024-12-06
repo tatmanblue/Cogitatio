@@ -2,6 +2,7 @@ using System.Collections;
 using Cogitatio.Components;
 using Cogitatio.Interfaces;
 using Cogitatio.Models;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,10 +12,19 @@ DotNetEnv.Env.Load();
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 builder.Services.AddHttpContextAccessor();
+
+/*
+builder.Services.Configure<KestrelServerOptions>(options =>
+    {
+        options.AllowSynchronousIO = true;
+    });
+
+ 
 builder.Services.Configure<IISServerOptions>(options =>
-{
-    options.AllowSynchronousIO = true;
-});
+    {
+        options.AllowSynchronousIO = true;
+    });
+*/
 
 builder.Services.AddScoped<IDatabase>(_ =>
 {
