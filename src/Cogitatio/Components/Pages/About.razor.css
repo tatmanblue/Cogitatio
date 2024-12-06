@@ -1,0 +1,29 @@
+﻿.inline-link {
+    display: inline; /* Makes the NavLink behave like inline text */
+    padding: 0; /* Removes any extra padding */
+    color: #007bff; /* Matches the default Bootstrap link color */
+    text-decoration: underline; /* Adds an underline like a typical link */
+}
+
+.inline-link:hover {
+    text-decoration: #000000; /* Optional: Removes underline on hover */
+}
+
+.block-span {
+    display: block; /* Makes the span behave like a block-level element */
+    margin-bottom: 1em; /* Adds spacing between the "paragraphs" */
+}
+
+span {
+    color: rgb(120, 154, 161);
+    font-family: "Courier New", Courier, monospace;
+}
+
+h3 {
+    padding-top: 1em;
+}
+
+h4 {
+    padding-top: 1em;
+    color: rgb(120, 154, 161);
+}

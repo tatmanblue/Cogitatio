@@ -12,19 +12,7 @@ DotNetEnv.Env.Load();
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 builder.Services.AddHttpContextAccessor();
-
-/*
-builder.Services.Configure<KestrelServerOptions>(options =>
-    {
-        options.AllowSynchronousIO = true;
-    });
-
- 
-builder.Services.Configure<IISServerOptions>(options =>
-    {
-        options.AllowSynchronousIO = true;
-    });
-*/
+builder.Services.AddControllers();
 
 builder.Services.AddScoped<IDatabase>(_ =>
 {
@@ -58,9 +46,13 @@ else
 }
 
 app.UseHttpsRedirection();
-
 app.UseStaticFiles();
+app.UseRouting();
 app.UseAntiforgery();
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllers();
+});
 
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();

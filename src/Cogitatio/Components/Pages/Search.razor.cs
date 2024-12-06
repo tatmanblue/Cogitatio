@@ -41,20 +41,19 @@ public partial class Search : ComponentBase
     private void SearchByTag()
     {
         // Fetch or filter results based on the Tag
-        logger.LogInformation($"Searching by tag: {selectedTag}");
+        logger.LogDebug($"Searching by tag: {selectedTag}");
         results = database.GetAllPostsByTag(selectedTag!);
     }
 
     private void SearchByDateRange()
     {
         // Fetch or filter results based on the Date Range
-        logger.LogInformation($"Searching by date: {selectedStartDate}-{selectedEndDate}");
-        // results = database.GetAllPostsByDateRange(SelectedStartDate!.Value, SelectedEndDate!.Value);
+        logger.LogDebug($"Searching by date: {selectedStartDate}-{selectedEndDate}");
+        results = database.GetAllPostsByDates(selectedStartDate!.Value.Date, selectedEndDate!.Value.Date);
     }
 
     private void ClearSearch()
     {
-        logger.LogInformation($"Clearing search");
         selectedTag = null;
         selectedStartDate = null;
         selectedEndDate = null;

@@ -1,1 +1,8 @@
-﻿
+﻿a {
+    font-family: 'Courier New', Courier, monospace;
+    text-decoration: none;
+    color: rgb(255, 255, 255);
+    background-color: rgb(120, 154, 161, 0.45); 
+    border-radius: 20px; 
+    padding: 5px 10px;
+}

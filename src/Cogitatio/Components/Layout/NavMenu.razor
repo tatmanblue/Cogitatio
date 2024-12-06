@@ -7,7 +7,7 @@
 <input type="checkbox" title="Navigation menu" class="navbar-toggler"/>
 
 <div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
-    <nav class="flex-column">
+    <nav class="d-flex flex-column h-100">
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
                 <i class="bi bi-house-door"></i> Home
@@ -15,20 +15,24 @@
         </div>
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="contact">
-                <i class="bi bi-person-circle"></i>
-                Reaching out
+                <i class="bi bi-person-circle"></i> Reaching out
             </NavLink>
         </div>
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="search">
-                <i class="bi bi-search"></i>
-                Search
+                <i class="bi bi-search"></i> Search
             </NavLink>
-        </div>        
+        </div>
         <div class="nav-item px-3">
+            <NavLink class="nav-link" href="/rss.xml" target="_blank">
+                <i class="bi bi-rss"></i> RSS
+            </NavLink>
+        </div>
+
+        <!-- Admin link moved to the bottom -->
+        <div class="nav-item px-3 mt-auto">
             <NavLink class="nav-link" href="admin">
-                <i class="bi bi-database-lock"></i>
-                Admin
+                <i class="bi bi-safe"></i> Admin
             </NavLink>
         </div>
     </nav>
