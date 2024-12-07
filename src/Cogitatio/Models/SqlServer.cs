@@ -346,6 +346,12 @@ public class SqlServer : IDatabase, IDisposable
         return result;
     }
 
+    public List<BlogPost> GetRecentPosts()
+    {
+        // for now, being lazy and just use the RSS feed
+        return GetPostsForRSS().Take(10).ToList();
+    }
+
     /// <summary>
     /// Gets all the common repeated functionality into a single method
     /// </summary>

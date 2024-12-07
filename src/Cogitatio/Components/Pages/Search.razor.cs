@@ -18,8 +18,9 @@ public partial class Search : ComponentBase
     [Parameter]
     public DateTime? EndDate { get; set; }
 
-    private List<BlogPost> results { get; set; } = new List<BlogPost>();
+    private List<BlogPost> results { get; set; } = new ();
     private string? selectedTag;
+    private string? resultMessage = "No results found";
     private DateTime? selectedStartDate;
     private DateTime? selectedEndDate;
 
@@ -36,6 +37,10 @@ public partial class Search : ComponentBase
             selectedEndDate = EndDate;
             SearchByDateRange();
         }
+        else
+        {
+            ShowLastPosts();
+        }
     }
 
     private void SearchByTag()
@@ -43,13 +48,22 @@ public partial class Search : ComponentBase
         // Fetch or filter results based on the Tag
         logger.LogDebug($"Searching by tag: {selectedTag}");
         results = database.GetAllPostsByTag(selectedTag!);
+        resultMessage = $"Found {results.Count} post(s) by tag: {selectedTag}";
     }
 
     private void SearchByDateRange()
     {
-        // Fetch or filter results based on the Date Range
-        logger.LogDebug($"Searching by date: {selectedStartDate}-{selectedEndDate}");
-        results = database.GetAllPostsByDates(selectedStartDate!.Value.Date, selectedEndDate!.Value.Date);
+        DateTime startDate = selectedStartDate!.Value.Date;
+        DateTime endDate = selectedEndDate!.Value.Date.AddDays(1);
+        logger.LogDebug($"Searching by date: {startDate}-{endDate}");
+        results = database.GetAllPostsByDates(startDate, endDate);
+        resultMessage = $"Found {results.Count} post(s)";
+    }
+
+    private void ShowLastPosts()
+    {
+        results = database.GetRecentPosts();
+        resultMessage = $"Most recent posts:";
     }
 
     private void ClearSearch()
@@ -58,5 +72,6 @@ public partial class Search : ComponentBase
         selectedStartDate = null;
         selectedEndDate = null;
         results.Clear();
+        ShowLastPosts();
     }    
 }

@@ -16,5 +16,6 @@ public interface IDatabase
     List<BlogPost> GetAllPostsByTag(string tag);
     List<BlogPost> GetAllPostsByDates(DateTime from, DateTime to);
     List<BlogPost> GetPostsForRSS();
+    List<BlogPost> GetRecentPosts();
 
 }
