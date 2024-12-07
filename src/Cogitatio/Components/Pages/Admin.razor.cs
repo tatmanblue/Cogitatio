@@ -15,20 +15,30 @@ public partial class Admin : ComponentBase
     [Inject] private NavigationManager navigationManager { get; set; }
     [Inject] private IDatabase database { get; set; }
     [Parameter] public EventCallback<bool> IsAuthenticatedValueChanged { get; set; }
+
+    private string credential;
+    private bool isAuthenticated = false;
+    private string errorMessage;
+    private string title;
+    private string tags;
+    private string content = "<b>New blog Post</b>";
+    private string passwordInputType = "password";
+    private string passwordToggleIcon = "bi bi-eye-slash"; 
     
-    public string Credential { get; set; }
-    public bool IsAuthenticated { get; set; }
-    public string ErrorMessage { get; set; }
-    public string Title { get; set; }
-    public string Tags { get; set; }
-    public string Content { get; set; } = "<b>New blog Post</b>";
+    
+    private Dictionary<string, object> editorConfig = new Dictionary<string, object>{
+        { "menubar", true },
+        { "plugins", "link image code" },
+        { "toolbar", "undo redo | styleselect | forecolor | bold italic | alignleft aligncenter alignright alignjustify | outdent indent | link image | code" }
+    };
+    
     
 
     private async Task Publish()
     {
         logger.LogInformation("Publishing blog post");
-        BlogPost post = BlogPost.Create(Title, Content);
-        post.Tags.AddRange(Tags.Split(','));
+        BlogPost post = BlogPost.Create(title, content);
+        post.Tags.AddRange(tags.Split(','));
         database.CreatePost(post);
         navigationManager.NavigateTo("/", forceLoad: true);
     }
@@ -36,18 +46,32 @@ public partial class Admin : ComponentBase
     private async Task Login()
     {
         string adminPassword = configuration["CogitatioAdminPassword"];
-        if (Credential == adminPassword)
+        if (credential == adminPassword)
         {
-            IsAuthenticated = true;
-            ErrorMessage = null;
+            isAuthenticated = true;
+            errorMessage = null;
         }
         else
         {
-            IsAuthenticated = false;
-            ErrorMessage = "Unable to verify credentials";
+            isAuthenticated = false;
+            errorMessage = "Unable to verify credentials";
         }
         
-        await IsAuthenticatedValueChanged.InvokeAsync(IsAuthenticated);
-        logger.LogInformation($"Login ended > {IsAuthenticated}");
+        await IsAuthenticatedValueChanged.InvokeAsync(isAuthenticated);
+        logger.LogInformation($"Login ended > {isAuthenticated}");
     }   
+    
+    private void TogglePasswordVisibility()
+    {
+        if (passwordInputType == "password")
+        {
+            passwordInputType = "text";
+            passwordToggleIcon = "bi bi-eye"; // Eye icon for visible password
+        }
+        else
+        {
+            passwordInputType = "password";
+            passwordToggleIcon = "bi bi-eye-slash"; // Eye-slash icon for hidden password
+        }
+    }    
 }

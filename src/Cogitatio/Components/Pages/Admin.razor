@@ -1,27 +1,47 @@
 ﻿@rendermode InteractiveServer
 @page "/Admin"
 <h3>Admin Panel</h3>
-@if (!IsAuthenticated)
+@if (!isAuthenticated)
 {
     <div class="login">
         <h4>Credentials are required:</h4>
-        <input @bind="Credential" type="password" placeholder="Enter credentials" class="form-control" />
+        <div class="mb-3">
+            <label for="credential" class="form-label">Credentials</label>
+            <div class="input-group">
+                <input id="credential" @bind="credential"
+                       type="@passwordInputType"
+                       placeholder="Enter credentials"
+                       class="form-control" />
+                <button type="button" class="btn btn-outline-secondary" @onclick="TogglePasswordVisibility">
+                    <i class="@passwordToggleIcon"></i>
+                </button>
+            </div>
+        </div>        
         <button class="btn btn-primary mt-2" @onclick=@Login>Login</button>
-        @if (ErrorMessage != null)
+        @if (errorMessage != null)
         {
-            <p class="text-danger">@ErrorMessage</p>
+            <p class="text-danger">@errorMessage</p>
         }
     </div>
 }
 
-@if (IsAuthenticated)
+@if (isAuthenticated)
 {
-    <p>New Blog Entry</p>
-    <input @bind="Title" placeholder="Title"/>
-    <input @bind="Tags" placeholder="Tags (comma delimited)"/> 
-    <TinyMCE.Blazor.Editor 
+    <h4>New Blog Entry</h4>
+    <div class="mb-3">
+        <label for="title" class="form-label">Title</label>
+        <input id="title" @bind="title" class="form-control" placeholder="Title" />
+    </div>
+
+    <div class="mb-3">
+        <label for="tags" class="form-label">Tags</label>
+        <input id="tags" @bind="tags" class="form-control" placeholder="Tags (comma delimited)" />
+        <small class="form-text text-muted">Separate tags with commas.</small>
+    </div>    
+    <TinyMCE.Blazor.Editor
+        Conf="@editorConfig"
         ApiKey="xabfxca9ddbq4r1833sdp13ycvfxwt7iz66rw55oqvt6bav5"
-        @bind-Value="Content"/>
+        @bind-Value="content"/>
     <button class="btn btn-primary mt-2" @onclick=@Publish>Publish</button>
 }
 
