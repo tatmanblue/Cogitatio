@@ -195,6 +195,9 @@ public class SqlServer : IDatabase, IDisposable
         foreach (string tag in post.Tags)
         {
             string cleanTag = tag.Replace(" ", "");
+            if (string.IsNullOrWhiteSpace(cleanTag))
+                continue;
+            
             cmd.Parameters.Clear();
             cmd.CommandText = @"INSERT INTO Blog_Tags (PostId, Tag) VALUES (@postId, @tag)";
             cmd.Parameters.AddWithValue("@postId", post.Id);
