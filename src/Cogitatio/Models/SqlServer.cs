@@ -40,14 +40,8 @@ public class SqlServer : IDatabase, IDisposable
 
     public BlogPost GetMostRecent()
     {
-        Connect();
-         
         BlogPost result = null;
-        using SqlCommand cmd = new SqlCommand();  
-        cmd.CommandType = CommandType.Text;
-        cmd.Connection = connection;
-        cmd.Parameters.Clear();
-        cmd.CommandText = @"SELECT
+        string sql = @"SELECT
                 t1.*,
                 t2.PostId as PreviousId,
                 t2.Slug as PreviousSlug,
@@ -63,25 +57,19 @@ public class SqlServer : IDatabase, IDisposable
                 Blog_Posts t3 ON t3.PostId = t1.PostId + 1
             WHERE
                 t1.PostId = (SELECT TOP 1 PostId FROM Blog_Posts WHERE Status = 1 ORDER BY PublishedDate DESC);";
-
-        using SqlDataReader rdr = cmd.ExecuteReader();
-        rdr.Read();
-        result = ReadPost(rdr);
-
+        ExecuteReader(sql, rdr =>
+        {
+            result = ReadPost(rdr);
+            return false;
+        });
+        
         return result;
     }
 
     public BlogPost GetBySlug(string slug)
     {
-        Connect();
-        
         BlogPost result = null;
-
-        using SqlCommand cmd = new SqlCommand();  
-        cmd.CommandType = CommandType.Text;
-        cmd.Connection = connection;
-        cmd.Parameters.Clear();
-        cmd.CommandText = @"SELECT
+        string sql = @"SELECT
                 t1.*,
                 t2.PostId as PreviousId,
                 t2.Slug as PreviousSlug,
@@ -97,27 +85,23 @@ public class SqlServer : IDatabase, IDisposable
                 Blog_Posts t3 ON t3.PostId = t1.PostId + 1
             WHERE
                 t1.Slug = @slug;";
-        cmd.Parameters.AddWithValue("@slug", slug);
-        using SqlDataReader rdr = cmd.ExecuteReader();
-        
-        // TODO: error check!
-        rdr.Read();
-        result = ReadPost(rdr);
+
+        ExecuteReader(sql, rdr =>
+        {
+            result = ReadPost(rdr);
+            return false;
+        }, cmd =>
+        {
+            cmd.Parameters.AddWithValue("@slug", slug);
+        });
         
         return result;
     }
 
     public BlogPost GetById(int id)
     {
-        Connect();
-        
         BlogPost result = null;
-
-        using SqlCommand cmd = new SqlCommand();  
-        cmd.CommandType = CommandType.Text;
-        cmd.Connection = connection;
-        cmd.Parameters.Clear();
-        cmd.CommandText = @"SELECT
+        string sql = @"SELECT
                 t1.*,
                 t2.PostId as PreviousId,
                 t2.Slug as PreviousSlug,
@@ -133,12 +117,16 @@ public class SqlServer : IDatabase, IDisposable
                 Blog_Posts t3 ON t3.PostId = t1.PostId + 1
             WHERE
                 t1.PostId = @PostId;";
-        cmd.Parameters.AddWithValue("@PostId", id);
-        using SqlDataReader rdr = cmd.ExecuteReader();
+
+        ExecuteReader(sql, rdr =>
+        {
+            result = ReadPost(rdr);
+            return false;
+        }, cmd =>
+        {
+            cmd.Parameters.AddWithValue("@PostId", id);
+        });
         
-        // TODO: error check!
-        rdr.Read();
-        result = ReadPost(rdr);
         
         return result;
     }
@@ -146,23 +134,18 @@ public class SqlServer : IDatabase, IDisposable
     public List<string> GetPostTags(int postId)
     {
         List<string> result = new();
-        Connect();
-
-        using SqlCommand cmd = new SqlCommand();  
-        cmd.CommandType = CommandType.Text;
-        cmd.Connection = connection;
-        cmd.Parameters.Clear();
-        cmd.CommandText = "SELECT STUFF((SELECT ',' + Tag FROM Blog_Tags WHERE PostId = @postId FOR XML PATH(''), TYPE).value('.', 'NVARCHAR(MAX)'),1,1,'') AS Tags";
-        cmd.Parameters.AddWithValue("@postId", postId);
-
-        using SqlDataReader rdr = cmd.ExecuteReader();
-        while (rdr.Read())
+        string sql = "SELECT STUFF((SELECT ',' + Tag FROM Blog_Tags WHERE PostId = @postId FOR XML PATH(''), TYPE).value('.', 'NVARCHAR(MAX)'),1,1,'') AS Tags";
+        
+        ExecuteReader(sql, rdr =>
         {
             string tags = rdr.AsString("Tags");
             result.AddRange(tags.Split(","));
-        }
-
-        rdr.Close();
+            return true;
+        }, cmd =>
+        {
+            cmd.Parameters.AddWithValue("@postId", postId);
+        });
+        
         return result;
     }
 
@@ -209,48 +192,44 @@ public class SqlServer : IDatabase, IDisposable
     public List<string> GetAllTags()
     {
         List<string> result = new();
-        Connect();
-        using SqlCommand cmd = new SqlCommand();
-        cmd.CommandType = CommandType.Text;
-        cmd.Connection = connection;
-        cmd.Parameters.Clear();
-        cmd.CommandText = "SELECT DISTINCT Tag FROM Blog_Tags";
-        using SqlDataReader rdr = cmd.ExecuteReader();
-        while (rdr.Read())
+        ExecuteReader("SELECT DISTINCT Tag FROM Blog_Tags", rdr =>
         {
             result.Add(rdr.AsString("Tag"));
-        }
-        rdr.Close();
+            return true;
+        });
         return result;
     }
 
+    public List<string> GetTopTags()
+    {
+        List<string> result = new();
+        ExecuteReader("SELECT TOP 10 Tag, Count(Tag) AS Count FROM Blog_Tags GROUP BY Tag;", 
+            (reader =>
+        {
+            result.Add(reader.AsString("Tag"));
+            return true;
+        }));
+        
+        return result;
+    }
+    
     public List<string> GetAllPostSlugs()
     {
         List<string> result = new();
-        Connect();
-        using SqlCommand cmd = new SqlCommand();
-        cmd.CommandType = CommandType.Text;
-        cmd.Connection = connection;
-        cmd.Parameters.Clear();
-        cmd.CommandText = "SELECT DISTINCT Slug FROM Blog_Posts";
-        using SqlDataReader rdr = cmd.ExecuteReader();
-        while (rdr.Read())
-        {
-            result.Add(rdr.AsString("Slug"));
-        }
-        rdr.Close();
+        ExecuteReader("SELECT DISTINCT Slug FROM Blog_Posts;", 
+            (reader =>
+            {
+                result.Add(reader.AsString("Slug"));
+                return true;
+            }));
+        
         return result;        
     }
 
     public List<BlogPost> GetAllPostsByTag(string tag)
     {
         List<BlogPost> result = new();
-        Connect();
-        using SqlCommand cmd = new SqlCommand();
-        cmd.CommandType = CommandType.Text;
-        cmd.Connection = connection;
-        cmd.Parameters.Clear();
-        cmd.CommandText = @"SELECT
+        string sql = @"SELECT
                 t1.*,
                 t2.PostId as PreviousId,
                 t2.Slug as PreviousSlug,
@@ -267,26 +246,23 @@ public class SqlServer : IDatabase, IDisposable
             WHERE
                 t1.PostId IN (SELECT PostId FROM Blog_Tags WHERE Tag = @tag)
             ORDER BY PublishedDate DESC;";
-        cmd.Parameters.AddWithValue("@tag", tag);
-        using SqlDataReader rdr = cmd.ExecuteReader();
-        while (rdr.Read())
+        
+        ExecuteReader(sql, rdr =>
         {
-            result.Add(ReadPost(rdr, false));
-        }
-
-        rdr.Close();
+            result.Add(ReadPost(rdr));
+            return true;
+        }, cmd =>
+        {
+            cmd.Parameters.AddWithValue("@tag", tag);
+        });
+        
         return result;
     }
 
     public List<BlogPost> GetAllPostsByDates(DateTime from, DateTime to)
     {
         List<BlogPost> result = new();
-        Connect();
-        using SqlCommand cmd = new SqlCommand();
-        cmd.CommandType = CommandType.Text;
-        cmd.Connection = connection;
-        cmd.Parameters.Clear();
-        cmd.CommandText = @"SELECT
+        string sql = @"SELECT
                 t1.*,
                 t2.PostId as PreviousId,
                 t2.Slug as PreviousSlug,
@@ -303,27 +279,23 @@ public class SqlServer : IDatabase, IDisposable
             WHERE
                 t1.PostId IN (SELECT PostId FROM Blog_Tags WHERE t1.PublishedDate BETWEEN @from AND @to)
             ORDER BY PublishedDate DESC;";
-        cmd.Parameters.AddWithValue("@from", from);
-        cmd.Parameters.AddWithValue("@to", to);
-        using SqlDataReader rdr = cmd.ExecuteReader();
-        while (rdr.Read())
+        ExecuteReader(sql, rdr =>
         {
-            result.Add(ReadPost(rdr, false));
-        }
+            result.Add(ReadPost(rdr));
+            return true;
+        }, cmd =>
+        {
+            cmd.Parameters.AddWithValue("@from", from);
+            cmd.Parameters.AddWithValue("@to", to);
+        });
 
-        rdr.Close();
         return result;
     }
 
     public List<BlogPost> GetPostsForRSS()
     {
         List<BlogPost> result = new();
-        Connect();
-        using SqlCommand cmd = new SqlCommand();
-        cmd.CommandType = CommandType.Text;
-        cmd.Connection = connection;
-        cmd.Parameters.Clear();
-        cmd.CommandText = @"SELECT TOP 25 
+        string sql = @"SELECT TOP 25 
                 t1.*,
                 t2.PostId as PreviousId,
                 t2.Slug as PreviousSlug,
@@ -338,14 +310,12 @@ public class SqlServer : IDatabase, IDisposable
             LEFT JOIN
                 Blog_Posts t3 ON t3.PostId = t1.PostId + 1
             ORDER BY PublishedDate DESC;";
-        
-        using SqlDataReader rdr = cmd.ExecuteReader();
-        while (rdr.Read())
+        ExecuteReader(sql, rdr =>
         {
-            result.Add(ReadPost(rdr, false));
-        }
-
-        rdr.Close();
+            result.Add(ReadPost(rdr));
+            return true;
+        });
+        
         return result;
     }
 
@@ -361,7 +331,7 @@ public class SqlServer : IDatabase, IDisposable
     /// <param name="rdr"></param>
     /// <param name="closeReader"></param>
     /// <returns></returns>
-    private BlogPost ReadPost(SqlDataReader rdr, bool closeReader = true)
+    private BlogPost ReadPost(SqlDataReader rdr)
     {
         BlogPost result = new();
 
@@ -380,8 +350,31 @@ public class SqlServer : IDatabase, IDisposable
         result.NextPost.Title = rdr.AsString("NextTitle");
         result.NextPost.Slug = rdr.AsString("NextSlug");
         
-        if (closeReader) rdr.Close();
-        
         return result;
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="sql"></param>
+    /// <param name="readRow">if readRow impl returns false, the reading loop stops and reader is closed</param>
+    /// <param name="cmdSetup"></param>
+    private void ExecuteReader(string sql, Func<SqlDataReader, bool> readRow, Action<SqlCommand>? cmdSetup = null)
+    {
+        Connect();
+        using SqlCommand cmd = new SqlCommand();
+        cmd.CommandType = CommandType.Text;
+        cmd.Connection = connection;
+        cmd.Parameters.Clear();
+        cmd.CommandText = sql;
+        if (cmdSetup != null) cmdSetup(cmd);
+        
+        using SqlDataReader rdr = cmd.ExecuteReader();
+        while (rdr.Read())
+        {
+            if (false == readRow(rdr))
+                break;
+        }
+        rdr.Close();
     }
 }

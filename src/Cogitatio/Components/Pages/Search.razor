@@ -30,25 +30,44 @@
     </div>
     
     <div>
-        @if (results.Any())
+        <div style="padding-top: 2em">
+        @if (blogResults.Any())
+        {
+            <h4>@resultMessage</h4>
+            <ul class="list-group">
+                @foreach (var blog in blogResults)
+                {
+                    <NavLink class="nav-link" href=@("post/" + blog.Slug)>
+                        <li class="list-group-item">
+                            <strong>@blog.Title</strong> - @blog.PublishedDate.ToString("d", CultureInfo.InvariantCulture)
+                        </li>
+                    </NavLink>
+                }
+            </ul>
+        }
+        else
+        {
+            <h4>Search Result</h4>
+            <p style="padding-top: 2em">No matching blog posts found.</p>
+        }
+        </div>
+    </div>
+    <div>
+        @if (topTags.Any())
         {
             <div style="padding-top: 2em">
-                <h4>@resultMessage</h4>
+                <h4>Top Tags</h4>
                 <ul class="list-group">
-                    @foreach (var blog in results)
+                    @foreach (var tag in topTags)
                     {
-                        <NavLink class="nav-link" href=@("post/" + blog.Slug)>
-                            <li class="list-group-item">
-                                <strong>@blog.Title</strong> - @blog.PublishedDate.ToString("d", CultureInfo.InvariantCulture)
+                        <NavLink class="nav-link" href=@("search/" + tag)>
+                            <li>
+                                <strong>tag</strong>
                             </li>
                         </NavLink>
                     }
                 </ul>
             </div>
-        }
-        else
-        {
-            <p style="padding-top: 2em">No results to display.</p>
         }
     </div>
 </div>

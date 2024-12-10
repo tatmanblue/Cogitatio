@@ -18,7 +18,8 @@ public partial class Search : ComponentBase
     [Parameter]
     public DateTime? EndDate { get; set; }
 
-    private List<BlogPost> results { get; set; } = new ();
+    private List<BlogPost> blogResults { get; set; } = new ();
+    private List<string> topTags { get; set; } = new ();
     private string? selectedTag;
     private string? resultMessage = "No results found";
     private DateTime? selectedStartDate;
@@ -47,8 +48,8 @@ public partial class Search : ComponentBase
     {
         // Fetch or filter results based on the Tag
         logger.LogDebug($"Searching by tag: {selectedTag}");
-        results = database.GetAllPostsByTag(selectedTag!);
-        resultMessage = $"Found {results.Count} post(s) by tag: {selectedTag}";
+        blogResults = database.GetAllPostsByTag(selectedTag!);
+        resultMessage = $"Found {blogResults.Count} post(s) by tag: {selectedTag}";
     }
 
     private void SearchByDateRange()
@@ -56,13 +57,13 @@ public partial class Search : ComponentBase
         DateTime startDate = selectedStartDate!.Value.Date;
         DateTime endDate = selectedEndDate!.Value.Date.AddDays(1);
         logger.LogDebug($"Searching by date: {startDate}-{endDate}");
-        results = database.GetAllPostsByDates(startDate, endDate);
-        resultMessage = $"Found {results.Count} post(s)";
+        blogResults = database.GetAllPostsByDates(startDate, endDate);
+        resultMessage = $"Found {blogResults.Count} post(s)";
     }
 
     private void ShowLastPosts()
     {
-        results = database.GetRecentPosts();
+        blogResults = database.GetRecentPosts();
         resultMessage = $"Most recent posts:";
     }
 
@@ -71,7 +72,7 @@ public partial class Search : ComponentBase
         selectedTag = null;
         selectedStartDate = null;
         selectedEndDate = null;
-        results.Clear();
+        blogResults.Clear();
         ShowLastPosts();
     }    
 }
