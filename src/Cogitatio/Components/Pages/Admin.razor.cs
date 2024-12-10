@@ -49,7 +49,7 @@ public partial class Admin : ComponentBase
         if (credential == adminPassword)
         {
             isAuthenticated = true;
-            errorMessage = null;
+            errorMessage = string.Empty;
         }
         else
         {

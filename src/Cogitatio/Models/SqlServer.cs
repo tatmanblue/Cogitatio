@@ -203,7 +203,7 @@ public class SqlServer : IDatabase, IDisposable
     public List<string> GetTopTags()
     {
         List<string> result = new();
-        ExecuteReader("SELECT TOP 10 Tag, Count(Tag) AS Count FROM Blog_Tags GROUP BY Tag;", 
+        ExecuteReader("SELECT TOP 10 Tag, Count(Tag) AS Count FROM Blog_Tags GROUP BY Tag ORDER BY Count DESC;", 
             (reader =>
         {
             result.Add(reader.AsString("Tag"));

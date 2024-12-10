@@ -14,14 +14,16 @@ public partial class BlogPostShort : ComponentBase
 
     private string GetShortenedContent()
     {
+        const int maxLength = 250;
+        
         if (PostContent == null) return string.Empty;
         if (string.IsNullOrEmpty(PostContent.Content)) return string.Empty;
-        if (250 > PostContent.Content.Length)
+        if (maxLength > PostContent.Content.Length)
             return PostContent.Content;
         
-        
-        logger.LogInformation($"Content Length: {PostContent.Content.Length} so truncated to {PostContent.Content.Substring(0, 100)}");
-        string shortenedContent = PostContent.Content.Substring(0, 250);
+        string shortenedContent = PostContent.Content.Substring(0, maxLength);
+        logger.LogDebug($"Content Length: {PostContent.Content.Length} so truncated to [{shortenedContent}]");
+
         return $"{shortenedContent}...";
     }
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using Cogitatio.Interfaces;
+using Microsoft.AspNetCore.Components;
 
 namespace Cogitatio.Components.Pages;
 
@@ -8,6 +9,7 @@ namespace Cogitatio.Components.Pages;
 public partial class Diag : ComponentBase
 {
     [Inject] IConfiguration configuration { get; set; }
+    [Inject] ILogger<Diag> logger { get; set; }
     private string CogitatioAdminPassword { get; set; }
     private string CogitatioSiteDB { get; set; }
     
