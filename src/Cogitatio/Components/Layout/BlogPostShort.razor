@@ -2,32 +2,22 @@
 @inject NavigationManager NavigationManager
 @inject IDatabase Database
 
-@if (PostContent == null)
-{
-    <div class="alert alert-warning">Loading post...</div>
-}
-else
-{
-    <article class="blog-post">
-        <header>
-            <h1>@PostContent.Title</h1>
-            <p class="meta">
-                By <strong>@PostContent.Author</strong> on @PostContent.PublishedDate.ToString("MMMM dd, yyyy")
-            </p>
-        </header>
+<article class="blog-post">
+    <header>
+        <h1>@PostContent.Title</h1>
+        <p class="meta">
+            By <strong>@PostContent.Author</strong> on @PostContent.PublishedDate.ToString("MMMM dd, yyyy")
+        </p>
+    </header>
 
-        <section class="content">
-            @((MarkupString)GetShortenedContent())...
-            <div class="d-flex justify-content-between align-items-center mt-4 border-top pt-3">
-                <NavLink class="nav-link" href=@("post/" + PostContent.Slug)>
-                Read more...
-                </NavLink>
-            </div>
-        </section>
+    <section class="content">
+        @((MarkupString)GetShortenedContent())
+    </section>
 
-        <footer>
-            <p>Comments: @PostContent.Comments.Count</p>
-            <BlogTags Tags="@PostContent.Tags" />
-        </footer>
-    </article>
-}
+    <footer>
+        <NavLink class="nav-link" href=@("post/" + PostContent.Slug)>
+            Read more...
+        </NavLink>
+        <BlogTags Tags="@PostContent.Tags"/>
+    </footer>
+</article>

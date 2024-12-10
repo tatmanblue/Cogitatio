@@ -5,5 +5,12 @@ namespace Cogitatio.Components.Layout;
 public partial class BlogTags : ComponentBase
 {
     [Parameter] public List<string> Tags { get; set; } = new();
-    [Parameter] public string Title { get; set; } = "Tags";
+    [Parameter] public string Subline { get; set; }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        if (string.IsNullOrEmpty(Subline))
+            Subline = "Tags";
+    }
 }

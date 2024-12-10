@@ -6,6 +6,8 @@
 @using System.Globalization
 @using Cogitatio.Components.Layout
 
+<PageTitle>Blog Search</PageTitle>
+
 <div class="container mt-4">
     <h3>Search</h3>
 
@@ -34,33 +36,33 @@
     
     <div>
         <div style="padding-top: 2em">
-        @if (blogResults.Any())
-        {
-            <h4>@resultMessage</h4>
-            <ul class="list-group">
-                @foreach (var blog in blogResults)
-                {
-                    <NavLink class="nav-link" href=@("post/" + blog.Slug)>
-                        <li class="list-group-item">
-                            <strong>@blog.Title</strong> - @blog.PublishedDate.ToString("d", CultureInfo.InvariantCulture)
-                        </li>
-                    </NavLink>
-                }
-            </ul>
-        }
-        else
-        {
-            <h4>Search Result</h4>
-            <p style="padding-top: 2em">No matching blog posts found.</p>
-        }
+            @if (blogResults.Any())
+            {
+                <h4>@resultMessage</h4>
+                <ul class="list-group">
+                    @foreach (var blog in blogResults)
+                    {
+                        <NavLink class="nav-link" href=@("post/" + blog.Slug)>
+                            <li class="list-group-item">
+                                <strong>@blog.Title</strong> - @blog.PublishedDate.ToString("d", CultureInfo.InvariantCulture)
+                            </li>
+                        </NavLink>
+                    }
+                </ul>
+            }
+            else
+            {
+                <h4>Search Result</h4>
+                <p style="padding-top: 2em">No matching blog posts found.</p>
+            }
         </div>
     </div>
     <div>
         @if (topTags.Any())
         {
-            <div style="padding-top: 2em">
-                <BlogTags Tags="@topTags" Title="Top Tags"/>
-            </div>
+            <span style="margin-top: 5em">
+                <BlogTags Tags="@topTags" Subline="Top Tags"/>
+            </span>
         }
     </div>
 </div>

@@ -21,6 +21,7 @@ public partial class BlogPostShort : ComponentBase
         
         
         logger.LogInformation($"Content Length: {PostContent.Content.Length} so truncated to {PostContent.Content.Substring(0, 100)}");
-        return PostContent.Content.Substring(0, 250);
+        string shortenedContent = PostContent.Content.Substring(0, 250);
+        return $"{shortenedContent}...";
     }
 }
