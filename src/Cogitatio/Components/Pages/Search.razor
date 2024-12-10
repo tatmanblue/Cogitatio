@@ -2,7 +2,10 @@
 @page "/search"
 @page "/search/{tag}"
 @page "/search/{startDate:datetime}/{endDate:datetime}"
+
 @using System.Globalization
+@using Cogitatio.Components.Layout
+
 <div class="container mt-4">
     <h3>Search</h3>
 
@@ -56,17 +59,7 @@
         @if (topTags.Any())
         {
             <div style="padding-top: 2em">
-                <h4>Top Tags</h4>
-                <ul class="list-group">
-                    @foreach (var tag in topTags)
-                    {
-                        <NavLink class="nav-link" href=@("search/" + tag)>
-                            <li>
-                                <strong>tag</strong>
-                            </li>
-                        </NavLink>
-                    }
-                </ul>
+                <BlogTags Tags="@topTags" Title="Top Tags"/>
             </div>
         }
     </div>

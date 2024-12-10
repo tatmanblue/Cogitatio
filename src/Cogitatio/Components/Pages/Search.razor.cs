@@ -42,6 +42,9 @@ public partial class Search : ComponentBase
         {
             ShowLastPosts();
         }
+        
+        if (0 == topTags.Count)
+            topTags = database.GetTopTags();
     }
 
     private void SearchByTag()
