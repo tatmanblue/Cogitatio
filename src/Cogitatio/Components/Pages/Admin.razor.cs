@@ -58,7 +58,6 @@ public partial class Admin : ComponentBase
         }
         
         await IsAuthenticatedValueChanged.InvokeAsync(isAuthenticated);
-        logger.LogInformation($"Login ended > {isAuthenticated}");
     }   
     
     private void TogglePasswordVisibility()
