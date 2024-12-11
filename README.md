@@ -9,6 +9,9 @@ Cogitatio is a very lightweight content management system.   It is a very simple
 3. [Tiny MCE](https://www.tiny.cloud/) cloud license
 4. Set up a couple environment variables and off you go!
 
+## license
+Released with [Apache 2.0 license](https://github.com/tatmanblue/Cogitatio/blob/main/LICENSE)  
+
 # Installation/Configuration
 
 At this time, the installation/Configuration documentation is very short an brief.  Please reach out to me if you have any concerns.  Below information should help but it is still expected you have some background or ability to manually build and deploy a dotnet application on a website.
