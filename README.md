@@ -1,7 +1,9 @@
 # Cogitatio CMS
 A a very lightweight content management system (CMS) written in C#/Blazor. You can see it working on [my blog site](http://blog.tatmanblue.com/).   
 
-Why Cogitatio CMS verses using a well established CMS?  Good question.  You can [read about it](http://blog.tatmanblue.com/post/thank-you-chatgpt-1823) a bit in my blog post.  The short answer is time.  In the time it took for me to learn and configure an established CMS system, I wrote Cogitatio and had it deployed.   Granted, Cogitatio is very lightweight but I have what I needed to run my own blog.
+Why Cogitatio CMS verses using a well established CMS?  Good question.    
+
+You can [read about it](http://blog.tatmanblue.com/post/thank-you-chatgpt-1823) a bit in my blog post.  The short answer is time.  In the time it took for me to learn and configure an established CMS system, I wrote Cogitatio and had it deployed.   Granted, Cogitatio is very lightweight but I have what I needed to run my own blog.
 
 ## Basics
 
