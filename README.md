@@ -11,7 +11,7 @@ It is a very simple to install on your own domain and get running.  Requirements
 3. [Tiny MCE](https://www.tiny.cloud/) cloud license
 4. Set up a couple environment variables and off you go!
 
-## license
+## License
 Released with [Apache 2.0 license](https://github.com/tatmanblue/Cogitatio/blob/main/LICENSE)  
 
 # Installation/Configuration
@@ -33,6 +33,8 @@ Configuration is pretty simple.  Two environment variables are needed for db con
 ## Additional work
 
 You will probably want to setup a robots.txt file to help with search engine discovery.
+
+# Additional
 
 ## Legal
 If you have any questions about the content of the repository, please email [matt.raffel@gmail.com](mailto:matt.raffel@gmail.com). I can assure you all content is either open source or has been purchased and licensed to me. Proof will be made available on request. Repeated DCMA counterfit and harassment claims will result in counter suits per Section 512(f) of the DMCA penalties for _misrepresentation can include actual damages and attorney’s fees_.
