@@ -25,7 +25,7 @@ At this time, the installation/Configuration documentation is very short an brie
 
 ## MS SQL
 
-Cogitatio only needs a couple of database tables.  Because I have limited number of MS SQL instances, I have combined Cogitatio tables with other tables for other projects and have no issues.   The can be used in its own or shared instance.  Cogitatio is not multi-tennant so if you intended to host multiple Cogitatio sites, you will need to create separate databases for each site.
+Cogitatio only needs a couple of database tables.  Because I have limited number of MS SQL instances, I have combined Cogitatio tables with other tables for other projects and have no issues.   The database can be configured on its own or shared instance.  Cogitatio is not multi-tennant so if you intended to host multiple Cogitatio sites, you will need to create separate databases for each site.
 
 ## Tiny MCE
 
