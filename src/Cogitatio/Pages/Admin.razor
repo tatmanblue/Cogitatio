@@ -1,6 +1,5 @@
 ﻿@page "/Admin"
 <h3>Admin Panel</h3>
-<p>UserState InstanceId: @userState.InstanceId</p>
 
 @if (!isAuthenticated)
 {
@@ -27,24 +26,8 @@
 
 @if (isAuthenticated)
 {
-    <NavLink href="Diag">Diag</NavLink>
-    <NavLink href="AdminAddPost">Add New Post</NavLink>
-    
-    <h4>New Blog Entry</h4>
-    <div class="mb-3">
-        <label for="title" class="form-label">Title</label>
-        <input id="title" @bind="title" class="form-control" placeholder="Title" />
-    </div>
-
-    <div class="mb-3">
-        <label for="tags" class="form-label">Tags</label>
-        <input id="tags" @bind="tags" class="form-control" placeholder="Tags (comma delimited)" />
-        <small class="form-text text-muted">Separate tags with commas.</small>
-    </div>    
-    <TinyMCE.Blazor.Editor
-        Conf="@editorConfig"
-        ApiKey="xabfxca9ddbq4r1833sdp13ycvfxwt7iz66rw55oqvt6bav5"
-        @bind-Value="content"/>
-    <button class="btn btn-primary mt-2" @onclick=@Publish>Publish</button>
+    <NavLink href="Diag" class="btn btn-outline-primary">Diag</NavLink>
+    <NavLink href="AdminAddPost" class="btn btn-outline-primary">Add New Post</NavLink>
 }
 
+<p style="margin-top: 2em; font-size: x-small">@userState.InstanceId</p>

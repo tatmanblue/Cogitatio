@@ -14,15 +14,17 @@ public partial class AdminDiag : ComponentBase
     [Inject] ILogger<AdminDiag> logger { get; set; }
     [Inject] NavigationManager navigationManager { get; set; }
     [Inject] UserState userState { get; set; }
-    private string CogitatioAdminPassword { get; set; }
-    private string CogitatioSiteDB { get; set; }
+    private string cogitatioAdminPassword { get; set; }
+    private string cogitatioSiteDB { get; set; }
+    private string workingDir { get; set; }
     
-    protected override async Task OnInitializedAsync()
+    protected override void OnParametersSet()
     {
-        logger.LogInformation($"Diag UserState Id: {userState.InstanceId} and {userState.IsAdmin}");       
-        /*
-        CogitatioAdminPassword = configuration["CogitatioAdminPassword"];
-        CogitatioSiteDB = configuration["CogitatioSiteDB"];
-        */
+        if (!userState.IsAdmin)
+            navigationManager.NavigateTo("/Admin");
+        
+        cogitatioAdminPassword = configuration["CogitatioAdminPassword"];
+        cogitatioSiteDB = configuration["CogitatioSiteDB"];
+        workingDir = Directory.GetCurrentDirectory();
     }
 }

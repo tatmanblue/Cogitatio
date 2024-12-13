@@ -10,6 +10,8 @@ public partial class AdminAddPost : ComponentBase
     [Inject] private IConfiguration configuration { get; set; }
     [Inject] private NavigationManager navigationManager { get; set; }
     [Inject] private IDatabase database { get; set; }
+    [Inject] private UserState userState { get; set; }
+    
     [Parameter] public EventCallback<bool> IsAuthenticatedValueChanged { get; set; }
 
     private string credential;
@@ -27,9 +29,14 @@ public partial class AdminAddPost : ComponentBase
         { "plugins", "link image code" },
         { "toolbar", "undo redo | styleselect | forecolor | bold italic | alignleft aligncenter alignright alignjustify | outdent indent | link image | code" }
     };
-    
-    
 
+    protected override void OnParametersSet()
+    {
+        isAuthenticated = userState.IsAdmin;
+        if (!isAuthenticated)
+            navigationManager.NavigateTo("/Admin");
+    }
+    
     private async Task Publish()
     {
         logger.LogInformation("Publishing blog post");

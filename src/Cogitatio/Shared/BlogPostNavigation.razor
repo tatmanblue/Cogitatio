@@ -5,9 +5,9 @@
 <div class="d-flex justify-content-between align-items-center mt-4 border-top pt-3">
     @if (!string.IsNullOrEmpty(PreviousPostTitle))
     {
-        <a href="/post/@PreviousPostSlug" class="btn btn-outline-primary">
+        <NavLink href=@("/post/" + @PreviousPostSlug) class="btn btn-outline-primary">
             &larr; @PreviousPostTitle
-        </a>
+        </NavLink>
     }
     else
     {
@@ -16,9 +16,9 @@
 
     @if (!string.IsNullOrEmpty(NextPostTitle))
     {
-        <a href="/post/@NextPostSlug" class="btn btn-outline-primary">
+        <NavLink href=@("/post/" + @NextPostSlug) class="btn btn-outline-primary">
             @NextPostTitle &rarr;
-        </a>
+        </NavLink>
     }
     else
     {

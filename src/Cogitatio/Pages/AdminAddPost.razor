@@ -3,7 +3,6 @@
 <h3>Create a new post</h3>
 @if (isAuthenticated)
 {
-    <h4>New Blog Entry</h4>
     <div class="mb-3">
         <label for="title" class="form-label">Title</label>
         <input id="title" @bind="title" class="form-control" placeholder="Title" />
@@ -19,5 +18,9 @@
         ApiKey="xabfxca9ddbq4r1833sdp13ycvfxwt7iz66rw55oqvt6bav5"
         @bind-Value="content"/>
     <button class="btn btn-primary mt-2" @onclick=@Publish>Publish</button>
+}
+else
+{
+    <div>Redirecting to Admin Login</div>
 }
 

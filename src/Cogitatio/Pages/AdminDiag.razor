@@ -1,13 +1,26 @@
 ﻿@page "/Diag"
-<h3>Diag</h3>
+<h3>Cogitatio Configuration</h3>
 
-<div>
-    <p>UserState InstanceId: @userState.InstanceId</p>
-    @userState.IsAdmin
-</div>
-<div>
-    1 = '@CogitatioAdminPassword'
-</div>
-<div>
-    2 = '@CogitatioSiteDB'
-</div>
+
+@if (@userState.IsAdmin)
+{
+    <div>
+        <p>UserState InstanceId: @userState.InstanceId</p>
+    </div>
+    <div>
+        1 = '@cogitatioAdminPassword'
+    </div>
+    <div>
+        2 = '@cogitatioSiteDB'
+    </div>
+    <div>
+        3 = '@workingDir'
+    </div>
+    <div>
+        <NavLink href="/Admin">Admin</NavLink>
+    </div>
+}
+else
+{
+    <div>Redirecting to Admin Login</div>
+}
