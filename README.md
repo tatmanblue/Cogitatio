@@ -11,7 +11,10 @@ It is a very simple to install on your own domain and get running.  Requirements
 1. Host can run dotnet core Application
 2. MS SQL instance. 
 3. [Tiny MCE](https://www.tiny.cloud/) cloud license
-4. Set up a couple environment variables and off you go!
+4. Set up a couple environment variables and off you go!  
+
+## Addendum
+Some of the pages in this project are specific to me.  I know there are good options for making this more configurable but it is not a priority for me at this time.  You are free to fork this project and make it work for you.   Pull requests are welcome.  Please keep in mind, however, this project is for me and if it complicates my ability to support my blog, I may insist that your changes remain the branch.  
 
 ## License
 Released with [Apache 2.0 license](https://github.com/tatmanblue/Cogitatio/blob/main/LICENSE)  
@@ -22,7 +25,7 @@ At this time, the installation/Configuration documentation is very short an brie
 
 ## MS SQL
 
-Cogitatio only needs a couple of database tables.  Because I have limited number of MS SQL instances, I have combined Cogitatio tables with other tables and have no issues.   The can be used in its own or shared instance.
+Cogitatio only needs a couple of database tables.  Because I have limited number of MS SQL instances, I have combined Cogitatio tables with other tables for other projects and have no issues.   The can be used in its own or shared instance.  Cogitatio is not multi-tennant so if you intended to host multiple Cogitatio sites, you will need to create separate databases for each site.
 
 ## Tiny MCE
 
