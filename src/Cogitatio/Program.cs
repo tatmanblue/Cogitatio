@@ -1,19 +1,18 @@
-using System.Collections;
-using Cogitatio.Components;
+using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Web;
 using Cogitatio.Interfaces;
 using Cogitatio.Models;
-using Microsoft.AspNetCore.Server.Kestrel.Core;
 
 var builder = WebApplication.CreateBuilder(args);
 
-DotNetEnv.Env.Load();
-
 // Add services to the container.
-builder.Services.AddRazorComponents()
-    .AddInteractiveServerComponents();
-builder.Services.AddHttpContextAccessor();
+builder.Services.AddRazorPages();
+builder.Services.AddServerSideBlazor()
+    .AddHubOptions(options => options.ClientTimeoutInterval = TimeSpan.FromMinutes(10));
 builder.Services.AddControllers();
 
+
+builder.Services.AddScoped<UserState>();
 builder.Services.AddScoped<IDatabase>(_ =>
 {
     var configuration = _.GetRequiredService<IConfiguration>();
@@ -30,31 +29,22 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Error", createScopeForErrors: true);
+    app.UseExceptionHandler("/Error");
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
-else
-{
-    app.Use(async (context, next) =>
-    {
-        context.Response.Headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0";
-        context.Response.Headers["Pragma"] = "no-cache";
-        context.Response.Headers["Expires"] = "0";
-        await next();
-    });
-}
 
 app.UseHttpsRedirection();
+
 app.UseStaticFiles();
+
 app.UseRouting();
-app.UseAntiforgery();
 app.UseEndpoints(endpoints =>
 {
     endpoints.MapControllers();
 });
 
-app.MapRazorComponents<App>()
-    .AddInteractiveServerRenderMode();
+app.MapBlazorHub();
+app.MapFallbackToPage("/_Host");
 
 app.Run();

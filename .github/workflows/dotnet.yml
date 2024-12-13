@@ -21,8 +21,8 @@ jobs:
       with:
         dotnet-version: 8.0.x
     - name: Restore dependencies
-      run: dotnet restore src/Arcus.sln
+      run: dotnet restore src/Cogitatio.sln
     - name: Build
-      run: dotnet build src/Arcus.sln --no-restore
+      run: dotnet build src/Cogitatio.sln --no-restore
     - name: Test
-      run: dotnet test src/Arcus.sln --no-build --verbosity normal
+      run: dotnet test src/Cogitatio.sln --no-build --verbosity normal

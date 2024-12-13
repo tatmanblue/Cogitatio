@@ -30,7 +30,10 @@ Tiny MCE provides the WYSIWYG editing for creating posts.  The free cloud licens
 
 ## Environment variables
 
-Configuration is pretty simple.  Two environment variables are needed for db connection and authentication for editing.
+Configuration is pretty simple.  Two environment variables are needed for db connection and authentication for editing.  You will need the following environment variables:
+
+- CogitatioAdminPassword :  This is the password to the admin portal
+- CogitatioSiteDB : connection string to the MS SQL database.   
 
 ## Additional work
 

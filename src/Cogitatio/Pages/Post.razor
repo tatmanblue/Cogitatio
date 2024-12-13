@@ -1,0 +1,7 @@
+﻿@page "/post/{PostId:int}"
+@page "/post/"
+@page "/post/{Slug}"
+@using Cogitatio.Shared
+
+<PageTitle>@PostContent?.Title</PageTitle>
+<BlogPostFull PostContent="@PostContent" />

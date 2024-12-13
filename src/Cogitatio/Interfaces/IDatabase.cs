@@ -1,5 +1,4 @@
-﻿using Cogitatio.Components.Pages;
-using Cogitatio.Models;
+﻿using Cogitatio.Models;
 
 namespace Cogitatio.Interfaces;
 
