@@ -1,4 +1,5 @@
 ﻿using System.Data;
+using System.Transactions;
 using Cogitatio.Interfaces;
 using Microsoft.Data.SqlClient;
 
@@ -151,42 +152,86 @@ public class SqlServer : IDatabase, IDisposable
 
     public void CreatePost(BlogPost post)
     {
-        Connect();
-        BlogPost result = null;
-        using SqlCommand cmd = new SqlCommand();  
-        cmd.CommandType = CommandType.Text;
-        cmd.Connection = connection;
-        cmd.Parameters.Clear();
-        cmd.CommandText = @"INSERT INTO Blog_Posts (Slug, Title, Author, Content, Status)
-            OUTPUT INSERTED.PostId 
-            VALUES
-            (
-                @slug,
-                @title,
-                @author,
-                @content,
-                1
-            )";
-        cmd.Parameters.AddWithValue("@slug", post.Slug);
-        cmd.Parameters.AddWithValue("@title", post.Title);
-        cmd.Parameters.AddWithValue("@author", post.Author);
-        cmd.Parameters.AddWithValue("@content", post.Content);
-        
-        post.Id = (int) cmd.ExecuteScalar();
-        logger.LogInformation($"Blog Post Created Successfully, id {post.Id}");
+        using var txscope = new TransactionScope(TransactionScopeOption.RequiresNew);
 
-        foreach (string tag in post.Tags)
+        try
         {
-            string cleanTag = tag.Replace(" ", "");
-            if (string.IsNullOrWhiteSpace(cleanTag))
-                continue;
+
+            Connect();
+            BlogPost result = null;
+            using SqlCommand cmd = new SqlCommand();  
+            cmd.CommandType = CommandType.Text;
+            cmd.Connection = connection;
+            cmd.Parameters.Clear();
+            cmd.CommandText = @"INSERT INTO Blog_Posts (Slug, Title, Author, Content, Status)
+                OUTPUT INSERTED.PostId 
+                VALUES
+                (
+                    @slug,
+                    @title,
+                    @author,
+                    @content,
+                    1
+                )";
+            cmd.Parameters.AddWithValue("@slug", post.Slug);
+            cmd.Parameters.AddWithValue("@title", post.Title);
+            cmd.Parameters.AddWithValue("@author", post.Author);
+            cmd.Parameters.AddWithValue("@content", post.Content);
+            
+            post.Id = (int) cmd.ExecuteScalar();
+            logger.LogInformation($"Blog Post Created Successfully, id {post.Id}");
+
+            SaveTags(post, cmd);
+            txscope.Complete();
+        }
+        catch (Exception ex)
+        {
+            logger.LogError($"Blog Post Created Failed, id {post.Id}. Exception: {ex.Message}");
+            throw;
+        }
+    }
+
+    public void UpdatePost(BlogPost post)
+    {
+        using var txscope = new TransactionScope(TransactionScopeOption.RequiresNew);
+
+        try
+        {
+            Connect();
+            using SqlCommand cmd = new SqlCommand();
+            cmd.CommandType = CommandType.Text;
+            cmd.Connection = connection;
+            cmd.CommandText = @"UPDATE Blog_Posts SET 
+                      title = @title,
+                      author = @author,
+                      content = @content
+                      WHERE PostId = @postId";
+            cmd.Parameters.AddWithValue("@postId", post.Id);
+            cmd.Parameters.AddWithValue("@title", post.Title);
+            cmd.Parameters.AddWithValue("@author", post.Author);
+            cmd.Parameters.AddWithValue("@content", post.Content);
+
+            int rows = cmd.ExecuteNonQuery();
+            if (rows == 0)
+                throw new Exception($"Blog Post Not Found, id {post.Id}");
             
             cmd.Parameters.Clear();
-            cmd.CommandText = @"INSERT INTO Blog_Tags (PostId, Tag) VALUES (@postId, @tag)";
+            cmd.CommandText = @"DELETE FROM Blog_Tags WHERE PostId = @postId";
             cmd.Parameters.AddWithValue("@postId", post.Id);
-            cmd.Parameters.AddWithValue("@tag", cleanTag);
-            cmd.ExecuteNonQuery();
+            rows = cmd.ExecuteNonQuery();
+            if (rows == 0)
+                logger.LogWarning($"Blog Tags Not Found, id {post.Id}");
+            
+            SaveTags(post, cmd);
+            
+            txscope.Complete();
         }
+        catch (Exception ex)
+        {
+            logger.LogError($"Blog Post Update Failed, id {post.Id}. Exception: {ex.Message}");
+            throw;
+        }
+
     }
 
     public List<string> GetAllTags()
@@ -351,6 +396,22 @@ public class SqlServer : IDatabase, IDisposable
         result.NextPost.Slug = rdr.AsString("NextSlug");
         
         return result;
+    }
+
+    private void SaveTags(BlogPost post, SqlCommand cmd)
+    {
+        foreach (string tag in post.Tags)
+        {
+            string cleanTag = tag.Replace(" ", "");
+            if (string.IsNullOrWhiteSpace(cleanTag))
+                continue;
+            
+            cmd.Parameters.Clear();
+            cmd.CommandText = @"INSERT INTO Blog_Tags (PostId, Tag) VALUES (@postId, @tag)";
+            cmd.Parameters.AddWithValue("@postId", post.Id);
+            cmd.Parameters.AddWithValue("@tag", cleanTag);
+            cmd.ExecuteNonQuery();
+        }
     }
 
     /// <summary>

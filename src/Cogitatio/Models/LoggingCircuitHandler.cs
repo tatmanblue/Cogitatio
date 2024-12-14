@@ -2,6 +2,9 @@
 
 namespace Cogitatio.Models;
 
+/// <summary>
+/// not used.  it was created to help debug some signalr issues
+/// </summary>
 public class LoggingCircuitHandler : CircuitHandler
 {
     private readonly ILogger<LoggingCircuitHandler> logger;

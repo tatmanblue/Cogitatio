@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Cogitatio.Interfaces;
 using Cogitatio.Models;
+using Serilog;
+using Serilog.Events;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,6 +25,18 @@ builder.Services.AddScoped<IDatabase>(_ =>
     return new SqlServer(logger, connectionString);
 });
 
+var logFilePath = Path.Combine(AppContext.BaseDirectory, "Logs");
+Directory.CreateDirectory(logFilePath); 
+
+// Configure Serilog
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Information()
+    .MinimumLevel.Override("Cogitatio", LogEventLevel.Debug)
+    .WriteTo.Console()
+    .WriteTo.File($"{logFilePath}/cogitatio-log.-.txt", rollingInterval: RollingInterval.Day)
+    .CreateLogger();
+
+builder.Host.UseSerilog();
 
 var app = builder.Build();
 
@@ -37,7 +51,7 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseStaticFiles();
-
+app.UseSerilogRequestLogging();
 app.UseRouting();
 app.UseEndpoints(endpoints =>
 {

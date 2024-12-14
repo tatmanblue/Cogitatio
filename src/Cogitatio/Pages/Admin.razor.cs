@@ -49,7 +49,7 @@ public partial class Admin : ComponentBase
         string adminPassword = configuration["CogitatioAdminPassword"];
         if (credential == adminPassword)
         {
-            logger.LogInformation($"A log in the userState id: {userState.InstanceId}");
+            logger.LogInformation($"Logged in. The userState id: {userState.InstanceId}");
             isAuthenticated = true;
             userState.IsAdmin = true;
             errorMessage = string.Empty;

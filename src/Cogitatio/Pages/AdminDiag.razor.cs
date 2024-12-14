@@ -17,6 +17,7 @@ public partial class AdminDiag : ComponentBase
     private string cogitatioAdminPassword { get; set; }
     private string cogitatioSiteDB { get; set; }
     private string workingDir { get; set; }
+    private string appDir { get; set; }
     
     protected override void OnParametersSet()
     {
@@ -26,5 +27,6 @@ public partial class AdminDiag : ComponentBase
         cogitatioAdminPassword = configuration["CogitatioAdminPassword"];
         cogitatioSiteDB = configuration["CogitatioSiteDB"];
         workingDir = Directory.GetCurrentDirectory();
+        appDir = Path.Combine(AppContext.BaseDirectory);
     }
 }

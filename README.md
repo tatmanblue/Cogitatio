@@ -5,7 +5,15 @@ Why Cogitatio CMS verses using a well established CMS?  Good question.
 
 The short answer is time.  In the time it took for me to learn and configure an established CMS system, I wrote Cogitatio and had it deployed.   Granted, Cogitatio is very lightweight but I have what I needed to run my own blog.  You can [read about it](http://blog.tatmanblue.com/post/thank-you-chatgpt-1823) a bit more about this, in my blog post. 
 
-## Basics
+## Features
+1. Add/Edit posts  
+2. Tag Posts with keywords  
+3. Search for posts  
+4. RSS Feed  
+5. Sitemap builder using posts  
+
+
+## System Requirements at a glance
 
 It is a very simple to install on your own domain and get running.  Requirements:  
 1. Host can run dotnet core Application
