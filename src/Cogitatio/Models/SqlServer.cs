@@ -8,19 +8,21 @@ namespace Cogitatio.Models;
 public class SqlServer : IDatabase, IDisposable
 {
     #region IDisposable
+
     public void Dispose()
     {
         if (null == connection) return;
-        
+
         connection.Close();
     }
+
     #endregion
 
     public string ConnectionString
     {
         get { return connectionStr; }
     }
-    
+
     private ILogger<IDatabase> logger;
     private string connectionStr = string.Empty;
     private SqlConnection connection = null;
@@ -30,7 +32,7 @@ public class SqlServer : IDatabase, IDisposable
         this.logger = logger;
         connectionStr = str;
     }
-    
+
     public void Connect()
     {
         if (null != connection) return;
@@ -63,7 +65,7 @@ public class SqlServer : IDatabase, IDisposable
             result = ReadPost(rdr);
             return false;
         });
-        
+
         return result;
     }
 
@@ -91,11 +93,8 @@ public class SqlServer : IDatabase, IDisposable
         {
             result = ReadPost(rdr);
             return false;
-        }, cmd =>
-        {
-            cmd.Parameters.AddWithValue("@slug", slug);
-        });
-        
+        }, cmd => { cmd.Parameters.AddWithValue("@slug", slug); });
+
         return result;
     }
 
@@ -123,30 +122,25 @@ public class SqlServer : IDatabase, IDisposable
         {
             result = ReadPost(rdr);
             return false;
-        }, cmd =>
-        {
-            cmd.Parameters.AddWithValue("@PostId", id);
-        });
-        
-        
+        }, cmd => { cmd.Parameters.AddWithValue("@PostId", id); });
+
+
         return result;
     }
 
     public List<string> GetPostTags(int postId)
     {
         List<string> result = new();
-        string sql = "SELECT STUFF((SELECT ',' + Tag FROM Blog_Tags WHERE PostId = @postId FOR XML PATH(''), TYPE).value('.', 'NVARCHAR(MAX)'),1,1,'') AS Tags";
-        
+        string sql =
+            "SELECT STUFF((SELECT ',' + Tag FROM Blog_Tags WHERE PostId = @postId FOR XML PATH(''), TYPE).value('.', 'NVARCHAR(MAX)'),1,1,'') AS Tags";
+
         ExecuteReader(sql, rdr =>
         {
             string tags = rdr.AsString("Tags");
             result.AddRange(tags.Split(","));
             return true;
-        }, cmd =>
-        {
-            cmd.Parameters.AddWithValue("@postId", postId);
-        });
-        
+        }, cmd => { cmd.Parameters.AddWithValue("@postId", postId); });
+
         return result;
     }
 
@@ -159,7 +153,7 @@ public class SqlServer : IDatabase, IDisposable
 
             Connect();
             BlogPost result = null;
-            using SqlCommand cmd = new SqlCommand();  
+            using SqlCommand cmd = new SqlCommand();
             cmd.CommandType = CommandType.Text;
             cmd.Connection = connection;
             cmd.Parameters.Clear();
@@ -177,8 +171,8 @@ public class SqlServer : IDatabase, IDisposable
             cmd.Parameters.AddWithValue("@title", post.Title);
             cmd.Parameters.AddWithValue("@author", post.Author);
             cmd.Parameters.AddWithValue("@content", post.Content);
-            
-            post.Id = (int) cmd.ExecuteScalar();
+
+            post.Id = (int)cmd.ExecuteScalar();
             logger.LogInformation($"Blog Post Created Successfully, id {post.Id}");
 
             SaveTags(post, cmd);
@@ -214,16 +208,16 @@ public class SqlServer : IDatabase, IDisposable
             int rows = cmd.ExecuteNonQuery();
             if (rows == 0)
                 throw new Exception($"Blog Post Not Found, id {post.Id}");
-            
+
             cmd.Parameters.Clear();
             cmd.CommandText = @"DELETE FROM Blog_Tags WHERE PostId = @postId";
             cmd.Parameters.AddWithValue("@postId", post.Id);
             rows = cmd.ExecuteNonQuery();
             if (rows == 0)
                 logger.LogWarning($"Blog Tags Not Found, id {post.Id}");
-            
+
             SaveTags(post, cmd);
-            
+
             txscope.Complete();
         }
         catch (Exception ex)
@@ -248,27 +242,27 @@ public class SqlServer : IDatabase, IDisposable
     public List<string> GetTopTags()
     {
         List<string> result = new();
-        ExecuteReader("SELECT TOP 10 Tag, Count(Tag) AS Count FROM Blog_Tags GROUP BY Tag ORDER BY Count DESC;", 
+        ExecuteReader("SELECT TOP 10 Tag, Count(Tag) AS Count FROM Blog_Tags GROUP BY Tag ORDER BY Count DESC;",
             (reader =>
-        {
-            result.Add(reader.AsString("Tag"));
-            return true;
-        }));
-        
+            {
+                result.Add(reader.AsString("Tag"));
+                return true;
+            }));
+
         return result;
     }
-    
+
     public List<string> GetAllPostSlugs()
     {
         List<string> result = new();
-        ExecuteReader("SELECT DISTINCT Slug FROM Blog_Posts;", 
+        ExecuteReader("SELECT DISTINCT Slug FROM Blog_Posts;",
             (reader =>
             {
                 result.Add(reader.AsString("Slug"));
                 return true;
             }));
-        
-        return result;        
+
+        return result;
     }
 
     public List<BlogPost> GetAllPostsByTag(string tag)
@@ -291,16 +285,13 @@ public class SqlServer : IDatabase, IDisposable
             WHERE
                 t1.PostId IN (SELECT PostId FROM Blog_Tags WHERE Tag = @tag)
             ORDER BY PublishedDate DESC;";
-        
+
         ExecuteReader(sql, rdr =>
         {
             result.Add(ReadPost(rdr));
             return true;
-        }, cmd =>
-        {
-            cmd.Parameters.AddWithValue("@tag", tag);
-        });
-        
+        }, cmd => { cmd.Parameters.AddWithValue("@tag", tag); });
+
         return result;
     }
 
@@ -360,7 +351,7 @@ public class SqlServer : IDatabase, IDisposable
             result.Add(ReadPost(rdr));
             return true;
         });
-        
+
         return result;
     }
 
@@ -370,6 +361,78 @@ public class SqlServer : IDatabase, IDisposable
         return GetPostsForRSS().Take(10).ToList();
     }
 
+    public int ContactCount()
+    {
+        Connect();
+        string sql = @"SELECT COUNT(*) FROM Blog_Request_Contact;";
+        using SqlCommand cmd = new SqlCommand();
+        cmd.CommandText = sql;
+        cmd.Parameters.Clear();
+        cmd.Connection = connection;
+        int result = Convert.ToInt32(cmd.ExecuteScalar());
+
+        return result;
+    }
+
+    public void SaveContactRequest(ContactRecord record)
+    {
+        Connect();
+        using SqlCommand cmd = new SqlCommand();
+        cmd.CommandType = CommandType.Text;
+        cmd.Connection = connection;
+        cmd.Parameters.Clear();
+        cmd.CommandText = @"INSERT INTO Blog_Request_Contact 
+                                (name, email, message, slug) 
+                                VALUES (@name, @email, @message, @slug);";
+
+        cmd.Parameters.AddWithValue("@name", record.Name);
+        cmd.Parameters.AddWithValue("@email", record.Email);
+        cmd.Parameters.AddWithValue("@message", record.Message);
+        cmd.Parameters.AddWithValue("@slug", record.Slug);
+
+        int rowsAffected = cmd.ExecuteNonQuery();
+        logger.LogDebug($"Contact request saved: {rowsAffected}");
+    }
+
+    public List<ContactRecord> GetContacts()
+    {
+        Connect();
+        List<ContactRecord> result = new();
+        using SqlCommand cmd = new SqlCommand();
+        cmd.CommandType = CommandType.Text;
+        cmd.Connection = connection;
+        cmd.CommandText = @"SELECT * FROM Blog_Request_Contact;";
+        using SqlDataReader reader = cmd.ExecuteReader();
+        while (reader.Read())
+        {
+            var contact = new ContactRecord()
+            {
+                Id = reader.AsInt("Id"),
+                Name = reader.AsString("Name"),
+                Email = reader.AsString("Email"),
+                Slug = reader.AsString("Slug"),
+                Message = reader.AsString("Message"),
+                DateAdded = reader.AsDateTime("RequestDate")
+            };
+            result.Add(contact);
+        }
+        
+        return result;
+    }
+
+    public void DeleteContact(ContactRecord contact)
+    {
+        Connect();
+        using SqlCommand cmd = new SqlCommand();
+        cmd.CommandType = CommandType.Text;
+        cmd.Connection = connection;
+        cmd.CommandText = @"DELETE FROM Blog_Request_Contact WHERE Id = @Id";
+        cmd.Parameters.Clear();
+        cmd.Parameters.AddWithValue("@Id", contact.Id);
+        int rowsAffected = cmd.ExecuteNonQuery();
+        logger.LogDebug($"Contact deleted: {contact.Id}, {rowsAffected}");
+    }
+    
     /// <summary>
     /// Gets all the common repeated functionality into a single method
     /// </summary>

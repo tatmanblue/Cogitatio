@@ -1,0 +1,7 @@
+﻿.expandable-content {
+    display: none;
+}
+
+tr:hover .expandable-content {
+    display: table-cell;
+}

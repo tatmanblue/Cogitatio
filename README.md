@@ -9,8 +9,9 @@ The short answer is time.  In the time it took for me to learn and configure an 
 1. Add/Edit posts  
 2. Tag Posts with keywords  
 3. Search for posts  
-4. RSS Feed  
-5. Sitemap builder using posts  
+4. Contact form, contact management  
+5. RSS Feed  
+6. Sitemap builder using posts  
 
 
 ## System Requirements at a glance

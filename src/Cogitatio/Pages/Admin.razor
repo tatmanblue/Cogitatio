@@ -1,7 +1,7 @@
 ﻿@page "/Admin"
 <h3>Admin Panel</h3>
 
-@if (!isAuthenticated)
+@if (!userState.IsAdmin)
 {
     <div class="login">
         <h4>Credentials are required:</h4>
@@ -24,10 +24,12 @@
     </div>
 }
 
-@if (isAuthenticated)
+@if (userState.IsAdmin)
 {
     <NavLink href="Diag" class="btn btn-outline-primary">Diag</NavLink>
     <NavLink href="AdminAddPost" class="btn btn-outline-primary">Add New Post</NavLink>
+    <NavLink href="AdminContact" class="btn btn-outline-primary">Contacts</NavLink>
+    <button class="btn btn-primary mt-2" @onclick=@Logout>Logout</button>
 }
 
 <p style="margin-top: 2em; font-size: x-small">@userState.InstanceId</p>

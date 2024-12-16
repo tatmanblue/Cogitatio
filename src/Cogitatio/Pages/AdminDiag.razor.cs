@@ -14,10 +14,12 @@ public partial class AdminDiag : ComponentBase
     [Inject] ILogger<AdminDiag> logger { get; set; }
     [Inject] NavigationManager navigationManager { get; set; }
     [Inject] UserState userState { get; set; }
+    [Inject] IDatabase database { get; set; }
     private string cogitatioAdminPassword { get; set; }
     private string cogitatioSiteDB { get; set; }
     private string workingDir { get; set; }
     private string appDir { get; set; }
+    private int contactCount { get; set; }
     
     protected override void OnParametersSet()
     {
@@ -28,5 +30,6 @@ public partial class AdminDiag : ComponentBase
         cogitatioSiteDB = configuration["CogitatioSiteDB"];
         workingDir = Directory.GetCurrentDirectory();
         appDir = Path.Combine(AppContext.BaseDirectory);
+        contactCount = database.ContactCount();
     }
 }

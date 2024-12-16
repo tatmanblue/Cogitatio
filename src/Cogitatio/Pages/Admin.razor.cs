@@ -15,33 +15,15 @@ public partial class Admin : ComponentBase
     [Inject] private NavigationManager navigationManager { get; set; }
     [Inject] private IDatabase database { get; set; }
     [Inject] private UserState userState { get; set; }
-    [Parameter] public EventCallback<bool> IsAuthenticatedValueChanged { get; set; }
 
     private string credential;
-    private bool isAuthenticated = false;
     private string errorMessage;
-    private string title;
-    private string tags;
-    private string content = "<b>New blog Post</b>";
     private string passwordInputType = "password";
-    private string passwordToggleIcon = "bi bi-eye-slash"; 
-    
-    
-    private Dictionary<string, object> editorConfig = new Dictionary<string, object>{
-        { "menubar", true },
-        { "plugins", "link image code" },
-        { "toolbar", "undo redo | styleselect | forecolor | bold italic | alignleft aligncenter alignright alignjustify | outdent indent | link image | code" }
-    };
-    
-    
+    private string passwordToggleIcon = "bi bi-eye-slash";
 
-    private async Task Publish()
+    private async Task Logout()
     {
-        logger.LogInformation("Publishing blog post");
-        BlogPost post = BlogPost.Create(title, content);
-        post.Tags.AddRange(tags.Split(','));
-        database.CreatePost(post);
-        navigationManager.NavigateTo("/", forceLoad: true);
+        userState.IsAdmin = false;
     }
     
     private async Task Login()
@@ -50,18 +32,16 @@ public partial class Admin : ComponentBase
         if (credential == adminPassword)
         {
             logger.LogInformation($"Logged in. The userState id: {userState.InstanceId}");
-            isAuthenticated = true;
             userState.IsAdmin = true;
+            credential = string.Empty;
             errorMessage = string.Empty;
         }
         else
         {
-            isAuthenticated = false;
             userState.IsAdmin = false;
             errorMessage = "Unable to verify credentials";
         }
         
-        await IsAuthenticatedValueChanged.InvokeAsync(isAuthenticated);
     }   
     
     private void TogglePasswordVisibility()

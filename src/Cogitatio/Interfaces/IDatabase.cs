@@ -18,5 +18,8 @@ public interface IDatabase
     List<BlogPost> GetAllPostsByDates(DateTime from, DateTime to);
     List<BlogPost> GetPostsForRSS();
     List<BlogPost> GetRecentPosts();
-
+    void SaveContactRequest(ContactRecord contact);
+    int ContactCount();
+    List<ContactRecord> GetContacts();
+    void DeleteContact(ContactRecord contact);
 }
