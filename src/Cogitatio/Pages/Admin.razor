@@ -26,10 +26,17 @@
 
 @if (userState.IsAdmin)
 {
-    <NavLink href="Diag" class="btn btn-outline-primary">Diag</NavLink>
-    <NavLink href="AdminAddPost" class="btn btn-outline-primary">Add New Post</NavLink>
-    <NavLink href="AdminContact" class="btn btn-outline-primary">Contacts</NavLink>
-    <button class="btn btn-primary mt-2" @onclick=@Logout>Logout</button>
+    <div class="card shadow-sm mb-3">
+        <div class="card-body">
+            <h5 class="card-title text-center">Admin Actions</h5>
+            <div class="btn-group d-flex flex-wrap justify-content-center" role="group">
+                <NavLink href="Diag" class="btn btn-outline-primary mx-1 my-1">Diag</NavLink>
+                <NavLink href="AdminAddPost" class="btn btn-outline-primary mx-1 my-1">Add New Post</NavLink>
+                <NavLink href="AdminContact" class="btn btn-outline-primary mx-1 my-1">Contacts</NavLink>
+                <button class="btn btn-primary mx-1 my-1" @onclick=@Logout>Logout</button>
+            </div>
+        </div>
+    </div>
 }
 
 <p style="margin-top: 2em; font-size: x-small">@userState.InstanceId</p>

@@ -36,7 +36,11 @@
     }
     else
     {
-        <p>Commenting is turned off at this time.</p>
+        <span style="text-align: center">If you'd like to comment on this post,
+            <NavLink href=@("/Contact/" + @PostContent.Slug) class="btn btn-link">
+                please reach out to me through the contact page &rarr;
+            </NavLink>.
+        </span>
     }
 </section>
 <nav aria-label="Post navigation">

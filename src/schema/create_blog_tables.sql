@@ -28,6 +28,16 @@ CREATE INDEX [IX_Blog_Tags_TagId] ON [Blog_Tags]
 
 CREATE NONCLUSTERED INDEX [IX_Blog_Tags_Tag] ON [Blog_Tags]
     (Tag);
+	
+CREATE TABLE Blog_Request_Contact
+(
+    Id INT IDENTITY (1,1) PRIMARY KEY,
+    Name VARCHAR(75) NOT NULL,
+    Email VARCHAR(75) NOT NULL,
+    Slug NVARCHAR(255),
+    Message VARCHAR(100),
+    RequestDate DATETIME NOT NULL DEFAULT GETDATE()
+);	
 
 /*
 Since comments are not supported right now, this table is not required

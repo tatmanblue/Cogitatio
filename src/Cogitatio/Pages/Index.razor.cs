@@ -6,17 +6,17 @@ namespace Cogitatio.Pages;
 
 public partial class Index
 {
-    [Inject]
-    private ILogger<System.Index> logger { get; set; }
+    [Inject] private ILogger<System.Index> logger { get; set; }
     
-    [Inject]
-    private IDatabase db { get; set; } = default!;  
+    [Inject] private IDatabase db { get; set; } = default!;
+    [Inject] private Statistics statistics { get; set; } = default!;
     
     private BlogPost? PostContent { get; set; }
     
     protected override async Task OnInitializedAsync()
     {
-        logger.LogInformation($"Getting Most recent post");
+        statistics.PageVisted();
+        logger.LogDebug($"Getting Most recent post");
         PostContent = db.GetMostRecent();
         PostContent.Tags = db.GetPostTags(PostContent.Id);
     }    

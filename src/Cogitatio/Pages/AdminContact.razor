@@ -1,5 +1,5 @@
 ﻿@page "/AdminContact"
-<h3>AdminContact</h3>
+<h3>Contact Admin</h3>
 
 @if (userState.IsAdmin == true)
 {
@@ -35,6 +35,12 @@
                 <tr class="bg-light" style="display: @(contact.ShowMessage ? "table-row" : "none");">
                     <td colspan="4" class="p-2">
                         <strong>Message:</strong> @contact.Message
+                        @if (!string.IsNullOrEmpty(contact.Slug))
+                        {
+                            <span>
+                                (<NavLink href=@("/Post/" + @contact.Slug) class="btn btn-link">Post &rarr;</NavLink>)
+                            </span>
+                        }
                     </td>
                 </tr>                
             }

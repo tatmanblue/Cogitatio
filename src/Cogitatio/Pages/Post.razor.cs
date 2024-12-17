@@ -7,11 +7,9 @@ namespace Cogitatio.Pages;
 
 partial class Post 
 {
-    [Inject]
-    private ILogger<Post> logger { get; set; }
-    
-    [Inject]
-    private IDatabase db { get; set; } = default!;
+    [Inject] private ILogger<Post> logger { get; set; }
+    [Inject] private IDatabase db { get; set; } = default!;
+    [Inject] private Statistics statistics { get; set; } = default!;
     
     [Parameter] public int? PostId { get; set; }
     [Parameter] public string Slug { get; set; }
@@ -20,6 +18,8 @@ partial class Post
 
     protected override void OnParametersSet()
     {
+        statistics.PageVisted();
+        
         logger.LogInformation($"OnInitializedAsync.  PostId.HasValue: {PostId.HasValue}");
         
         if (PostId.HasValue)
