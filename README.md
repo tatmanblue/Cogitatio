@@ -13,6 +13,7 @@ The short answer is time.  In the time it took for me to learn and configure an 
 5. RSS Feed  
 6. Sitemap builder 
 7. Admin portal
+8. [Google Analytics tracking](https://analytics.google.com/analytics/web)
 
 
 ## System Requirements at a glance
@@ -43,10 +44,11 @@ Tiny MCE provides the WYSIWYG editing for creating posts.  The free cloud licens
 
 ## Environment variables
 
-Configuration is pretty simple.  Two environment variables are needed for db connection and authentication for editing.  You will need the following environment variables:
+Configuration is pretty simple.  A few environment variables are needed as listed below.  You will need the following environment variables:
 
 - CogitatioAdminPassword :  This is the password to the admin portal
-- CogitatioSiteDB : connection string to the MS SQL database.   
+- CogitatioSiteDB : connection string to the MS SQL database.
+- CogitatioAnalyticsId: id for google analytics.  If this is empty, google analytics will not be installed.
 
 ## Additional work
 

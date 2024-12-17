@@ -17,6 +17,7 @@ public partial class AdminDiag : ComponentBase
     [Inject] IDatabase database { get; set; }
     private string cogitatioAdminPassword { get; set; }
     private string cogitatioSiteDB { get; set; }
+    private string analyticsId { get; set; }
     private string workingDir { get; set; }
     private string appDir { get; set; }
     private int contactCount { get; set; }
@@ -28,6 +29,7 @@ public partial class AdminDiag : ComponentBase
         
         cogitatioAdminPassword = configuration["CogitatioAdminPassword"];
         cogitatioSiteDB = configuration["CogitatioSiteDB"];
+        analyticsId = configuration["CogitatioAnalyticsId"];
         workingDir = Directory.GetCurrentDirectory();
         appDir = Path.Combine(AppContext.BaseDirectory);
         contactCount = database.ContactCount();

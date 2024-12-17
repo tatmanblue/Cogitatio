@@ -1,6 +1,7 @@
 ﻿@using Microsoft.AspNetCore.Components.Web
 @namespace Cogitatio.Pages
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@inject IConfiguration configuration;
 
 <!DOCTYPE html>
 <html lang="en">
@@ -15,14 +16,22 @@
     <component type="typeof(HeadOutlet)" render-mode="ServerPrerendered" />
 </head>
 <body>
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-WQCP7MJYLJ"></script>
-<script>
+
+@{
+string googleTag = configuration["CogitatioAnalyticsId"];
+}
+
+@if (!string.IsNullOrEmpty(googleTag))
+{
+    <script async src="https://www.googletagmanager.com/gtag/js?id=@googleTag"></script>
+    <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
-
-    gtag('config', 'G-WQCP7MJYLJ');
-</script>
+    
+    gtag('config', '@googleTag');
+    </script>
+}
 
 @RenderBody()
 
