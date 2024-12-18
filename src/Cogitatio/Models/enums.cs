@@ -7,3 +7,4 @@ public enum BlogPostStatuses
     NotVisible = 2,
     Deleted = 3
 }
+

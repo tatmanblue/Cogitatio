@@ -6,17 +6,21 @@ namespace Cogitatio.Pages;
 
 public partial class Search : ComponentBase
 {
+    public enum SearchRouteTypes
+    {
+        Post,
+        AdminEdit
+    }
+    
     [Inject] private ILogger<Search> logger { get; set; }
     [Inject] private IDatabase database { get; set; }
     
-    [Parameter]
-    public string? Tag { get; set; }
+    [Parameter] public string? Tag { get; set; }
 
-    [Parameter]
-    public DateTime? StartDate { get; set; }
+    [Parameter] public DateTime? StartDate { get; set; }
 
-    [Parameter]
-    public DateTime? EndDate { get; set; }
+    [Parameter] public DateTime? EndDate { get; set; }
+    [Parameter] public string ReturnTo { get; set; }
 
     private List<BlogPost> blogResults { get; set; } = new ();
     private List<string> topTags { get; set; } = new ();
@@ -42,9 +46,28 @@ public partial class Search : ComponentBase
         {
             ShowLastPosts();
         }
+
+        ReturnTo = GetCorrectUrlPath();
         
         if (0 == topTags.Count)
             topTags = database.GetTopTags();
+    }
+
+    /// <summary>
+    /// there are only two valid values for ReturnTo as the value
+    /// is used to build a route:  either post (for reading a post)
+    /// or adminedit (for editing a post)
+    /// </summary>
+    /// <returns></returns>
+    private string GetCorrectUrlPath()
+    {
+        if (string.IsNullOrEmpty(ReturnTo))
+            return "post";
+        
+        if ("admineditpost" == ReturnTo.ToLower())
+            return "AdminEditPost";
+        
+        return "post";
     }
 
     private void SearchByTag()

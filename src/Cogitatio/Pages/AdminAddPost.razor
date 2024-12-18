@@ -1,7 +1,7 @@
 ﻿@page "/AdminAddPost"
 
 <h3>Create a new post</h3>
-@if (isAuthenticated)
+@if (userState.IsAdmin)
 {
     <div class="mb-3">
         <label for="title" class="form-label">Title</label>

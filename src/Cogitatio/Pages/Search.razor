@@ -1,8 +1,9 @@
 ﻿@page "/search"
 @page "/search/{tag}"
 @page "/search/{startDate:datetime}/{endDate:datetime}"
-
+@page "/search/ret={ReturnTo}"
 @using System.Globalization
+@using Cogitatio.Models
 @using Cogitatio.Shared
 
 <PageTitle>Blog Search</PageTitle>
@@ -41,7 +42,7 @@
                 <ul class="list-group">
                     @foreach (var blog in blogResults)
                     {
-                        <NavLink class="nav-link" href=@("post/" + blog.Slug)>
+                        <NavLink class="nav-link" href=@(ReturnTo + "/" + blog.Slug)>
                             <li class="list-group-item">
                                 <strong>@blog.Title</strong> - @blog.PublishedDate.ToString("d", CultureInfo.InvariantCulture)
                             </li>
