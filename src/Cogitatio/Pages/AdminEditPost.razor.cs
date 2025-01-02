@@ -15,7 +15,7 @@ public partial class AdminEditPost : ComponentBase
     private string title = string.Empty;
     private string tags = string.Empty;
     private string content = "<b>New blog Post</b>";
-    
+    private BlogPost post = null;
     
     private Dictionary<string, object> editorConfig = new Dictionary<string, object>{
         { "menubar", true },
@@ -31,10 +31,27 @@ public partial class AdminEditPost : ComponentBase
         
         if (string.IsNullOrEmpty(Slug))
             navigationManager.NavigateTo("/search/ret=admineditpost");
+
+        if (string.IsNullOrEmpty(Slug)) return;
+        
+        post = database.GetBySlug(Slug);
+        title = post.Title;
+        content = post.Content;
+        
+        // if Tags.Count == 0, aggregate fails. It should never be 0 though
+        post.Tags = database.GetPostTags(post.Id);
+        tags = post.Tags.Aggregate((a, b) => a + ", " + b);
     }
     
     private async Task Update()
     {
         logger.LogInformation("Updating blog post");
+        post.Title = title;
+        post.Content = content;
+        post.Tags.Clear();
+        post.Tags.AddRange(tags.Split(','));
+        database.UpdatePost(post);
+        
+        navigationManager.NavigateTo("/Admin");
     }
 }
