@@ -17,8 +17,9 @@ builder.Services.AddServerSideBlazor()
         // https://stackoverflow.com/questions/66815009/blazor-connection-disconnected
         // https://stackoverflow.com/questions/62178858/blazor-question-close-circuit-connection-immediately-after-making-async-call
         
-        // setting all of this high just to see if we can get the error to go away
-        options.ClientTimeoutInterval = TimeSpan.FromMinutes(10);
+        // TODO: eval as this may not be needed now that this is hosted on azure and the error is not occuring
+        
+        options.ClientTimeoutInterval = TimeSpan.FromMinutes(5);
         options.HandshakeTimeout = TimeSpan.FromMinutes(2);
         options.KeepAliveInterval = TimeSpan.FromSeconds(30);
         options.MaximumParallelInvocationsPerClient = 10;
@@ -42,10 +43,11 @@ var logFilePath = Path.Combine(AppContext.BaseDirectory, "Logs");
 Directory.CreateDirectory(logFilePath); 
 
 // Configure Serilog
+// TODO use appsettings to configure
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Warning()
     .MinimumLevel.Override("System", LogEventLevel.Information)
-    .MinimumLevel.Override("Microsoft.AspNetCore.SignalR", LogEventLevel.Debug)
+    .MinimumLevel.Override("Microsoft.AspNetCore.SignalR", LogEventLevel.Information)
     .MinimumLevel.Override("Cogitatio", LogEventLevel.Debug)
     .WriteTo.Console()
     .WriteTo.File($"{logFilePath}/cogitatio-log.-.txt", rollingInterval: RollingInterval.Day)
