@@ -5,15 +5,8 @@ namespace Cogitatio.Controllers;
 
 [Route("/sitemap.xml")]
 [ApiController]
-public class SitemapController : ControllerBase
+public class SitemapController(IDatabase database) : ControllerBase
 {
-    private readonly IDatabase database;
-
-    public SitemapController(IDatabase database)
-    {
-        this.database = database;
-    }
-
     [HttpGet]
     public async Task<IActionResult> GetSitemap()
     {

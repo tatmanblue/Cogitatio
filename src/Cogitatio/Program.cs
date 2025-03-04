@@ -27,7 +27,6 @@ builder.Services.AddServerSideBlazor()
     });
 builder.Services.AddControllers();
 
-builder.Services.AddScoped<Statistics>();
 builder.Services.AddScoped<UserState>();
 builder.Services.AddScoped<IDatabase>(p =>
 {

@@ -39,6 +39,8 @@ public class BlogPost
             .Replace(".", "")        // Remove periods
             .Replace("'", "")        // Remove apostrophes
             .Replace("!", "")        // Remove exclamation marks
+            .Replace("?", "")
+            .Replace("&", "")
             .Trim();
         
         slugBase = slugBase.Length > 25 ? slugBase.Substring(0, 25) : slugBase;
