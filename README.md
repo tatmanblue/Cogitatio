@@ -14,6 +14,7 @@ The short answer is time.  In the time it took for me to learn and configure an 
 6. Sitemap builder 
 7. Admin portal
 8. [Google Analytics tracking](https://analytics.google.com/analytics/web)
+9. quasi multi-tenant
 
 
 ## System Requirements at a glance
@@ -36,7 +37,7 @@ At this time, the installation/Configuration documentation is very short an brie
 
 ## MS SQL
 
-Cogitatio only needs a couple of database tables.  Because I have limited number of MS SQL instances, I have combined Cogitatio tables with other tables for other projects and have no issues.   The database can be configured on its own or shared instance.  Cogitatio is not multi-tennant so if you intended to host multiple Cogitatio sites, you will need to create separate databases for each site.  The [DB schema](https://github.com/tatmanblue/Cogitatio/blob/main/src/schema/create_blog_tables.sql) is pretty simple.
+Cogitatio only needs a couple of database tables.  Because I have limited number of MS SQL instances, I have combined Cogitatio tables with other tables for other projects and have no issues.   The database can be configured on its own or shared instance.  The [DB schema](https://github.com/tatmanblue/Cogitatio/blob/main/src/schema/create_blog_tables.sql) is pretty simple.
 
 ## Tiny MCE
 
