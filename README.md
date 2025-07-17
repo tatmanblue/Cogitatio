@@ -49,6 +49,7 @@ Configuration is pretty simple.  A few environment variables are needed as liste
 - CogitatioAdminPassword :  This is the password to the admin portal
 - CogitatioSiteDB : connection string to the MS SQL database.
 - CogitatioAnalyticsId: id for google analytics.  If this is empty, google analytics will not be installed.
+- CogitatioTenantId: id for multi-tenant support.  If you are only running one site, this can be any value and defaults to zero if not set.
 
 ## Additional work
 

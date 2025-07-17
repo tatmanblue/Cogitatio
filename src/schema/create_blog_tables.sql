@@ -8,10 +8,14 @@ CREATE TABLE Blog_Posts (
     PublishedDate DATETIME NOT NULL DEFAULT GETDATE(), -- Publish date
     Content NVARCHAR(MAX) NOT NULL,       -- Content of the blog post
     Status INT NOT NULL DEFAULT 0,
+    TenantId INT NOT NULL DEFAULT 0,      -- Tenant ID for multi-tenant support
 );
 
 CREATE INDEX [IX_Blog_Posts_PostId] ON [Blog_Posts]
     (PostId);
+
+CREATE INDEX [IX_Blog_Posts_TenantId] ON [Blog_Posts]
+    (TenantId);
 
 CREATE INDEX [IX_Blog_Posts_Slug] ON [Blog_Posts]
     (Slug);
@@ -19,6 +23,7 @@ CREATE INDEX [IX_Blog_Posts_Slug] ON [Blog_Posts]
 CREATE TABLE Blog_Tags (
     TagId INT IDENTITY(1,1) PRIMARY KEY, -- Auto-incrementing ID
     PostId INT NOT NULL,                     -- Foreign key to BlogPosts table
+    TenantId INT NOT NULL DEFAULT 0,
     Tag NVARCHAR(100) NOT NULL,              -- Single Tag
     FOREIGN KEY (PostId) REFERENCES Blog_Posts(PostId) -- Foreign key constraint
 );

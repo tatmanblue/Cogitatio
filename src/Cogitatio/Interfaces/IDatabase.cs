@@ -16,7 +16,7 @@ public interface IDatabase
     List<string> GetAllPostSlugs();
     List<BlogPost> GetAllPostsByTag(string tag);
     List<BlogPost> GetAllPostsByDates(DateTime from, DateTime to);
-    List<BlogPost> GetPostsForRSS();
+    List<BlogPost> GetPostsForRSS(int max = 25);
     List<BlogPost> GetRecentPosts();
     void SaveContactRequest(ContactRecord contact);
     int ContactCount();

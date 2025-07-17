@@ -26,10 +26,12 @@ public class SqlServer : IDatabase, IDisposable
     private ILogger<IDatabase> logger;
     private string connectionStr = string.Empty;
     private SqlConnection connection = null;
+    private int tenantId = 0;
 
-    public SqlServer(ILogger<IDatabase> logger, string str)
+    public SqlServer(ILogger<IDatabase> logger, string str, int tenantId)
     {
         this.logger = logger;
+        this.tenantId = tenantId;
         connectionStr = str;
     }
 
@@ -44,21 +46,7 @@ public class SqlServer : IDatabase, IDisposable
     public BlogPost GetMostRecent()
     {
         BlogPost result = null;
-        string sql = @"SELECT
-                t1.*,
-                t2.PostId as PreviousId,
-                t2.Slug as PreviousSlug,
-                t2.Title as PreviousTitle,
-                t3.PostId as NextId,
-                t3.Slug as NextSlug,
-                t3.Title as NextTitle
-            FROM
-                Blog_Posts t1
-            LEFT JOIN
-                Blog_Posts t2 ON t2.PostId = t1.PostId - 1
-            LEFT JOIN
-                Blog_Posts t3 ON t3.PostId = t1.PostId + 1
-            WHERE
+        string sql = $@"{GetPostStartSql()} AND 
                 t1.PostId = (SELECT TOP 1 PostId FROM Blog_Posts WHERE Status = 1 ORDER BY PublishedDate DESC);";
         ExecuteReader(sql, rdr =>
         {
@@ -101,28 +89,17 @@ public class SqlServer : IDatabase, IDisposable
     public BlogPost GetById(int id)
     {
         BlogPost result = null;
-        string sql = @"SELECT
-                t1.*,
-                t2.PostId as PreviousId,
-                t2.Slug as PreviousSlug,
-                t2.Title as PreviousTitle,
-                t3.PostId as NextId,
-                t3.Slug as NextSlug,
-                t3.Title as NextTitle
-            FROM
-                Blog_Posts t1
-            LEFT JOIN
-                Blog_Posts t2 ON t2.PostId = t1.PostId - 1
-            LEFT JOIN
-                Blog_Posts t3 ON t3.PostId = t1.PostId + 1
-            WHERE
-                t1.PostId = @PostId;";
+        string sql = $"{GetPostStartSql()} AND t1.PostId = @PostId ;";
 
         ExecuteReader(sql, rdr =>
         {
             result = ReadPost(rdr);
             return false;
-        }, cmd => { cmd.Parameters.AddWithValue("@PostId", id); });
+        }, cmd =>
+        {
+            cmd.Parameters.AddWithValue("@PostId", id);
+            cmd.Parameters.AddWithValue("@TenantId", tenantId);
+        });
 
 
         return result;
@@ -157,7 +134,7 @@ public class SqlServer : IDatabase, IDisposable
             cmd.CommandType = CommandType.Text;
             cmd.Connection = connection;
             cmd.Parameters.Clear();
-            cmd.CommandText = @"INSERT INTO Blog_Posts (Slug, Title, Author, Content, Status)
+            cmd.CommandText = @"INSERT INTO Blog_Posts (Slug, Title, Author, Content, Status, TenantId)
                 OUTPUT INSERTED.PostId 
                 VALUES
                 (
@@ -165,12 +142,14 @@ public class SqlServer : IDatabase, IDisposable
                     @title,
                     @author,
                     @content,
-                    1
+                    1,
+                    @TenantId
                 )";
             cmd.Parameters.AddWithValue("@slug", post.Slug);
             cmd.Parameters.AddWithValue("@title", post.Title);
             cmd.Parameters.AddWithValue("@author", post.Author);
             cmd.Parameters.AddWithValue("@content", post.Content);
+            cmd.Parameters.AddWithValue("@TenantId", tenantId);
 
             post.Id = (int)cmd.ExecuteScalar();
             logger.LogInformation($"Blog Post Created Successfully, id {post.Id}");
@@ -231,7 +210,8 @@ public class SqlServer : IDatabase, IDisposable
     public List<string> GetAllTags()
     {
         List<string> result = new();
-        ExecuteReader("SELECT DISTINCT Tag FROM Blog_Tags", rdr =>
+        string sql = $"SELECT DISTINCT Tag FROM Blog_Tags WHERE tenantId = {tenantId};";
+        ExecuteReader(sql, rdr =>
         {
             result.Add(rdr.AsString("Tag"));
             return true;
@@ -242,7 +222,8 @@ public class SqlServer : IDatabase, IDisposable
     public List<string> GetTopTags()
     {
         List<string> result = new();
-        ExecuteReader("SELECT TOP 10 Tag, Count(Tag) AS Count FROM Blog_Tags GROUP BY Tag ORDER BY Count DESC;",
+        string sql = $@"SELECT TOP 10 Tag, Count(Tag) AS Count FROM Blog_Tags WHERE tenantId = {tenantId} GROUP BY Tag ORDER BY Count DESC;";
+        ExecuteReader(sql,
             (reader =>
             {
                 result.Add(reader.AsString("Tag"));
@@ -255,7 +236,8 @@ public class SqlServer : IDatabase, IDisposable
     public List<string> GetAllPostSlugs()
     {
         List<string> result = new();
-        ExecuteReader("SELECT DISTINCT Slug FROM Blog_Posts;",
+        string sql = $"SELECT DISTINCT Slug FROM Blog_Posts WHERE tenantId = {tenantId};";
+        ExecuteReader(sql,
             (reader =>
             {
                 result.Add(reader.AsString("Slug"));
@@ -268,29 +250,20 @@ public class SqlServer : IDatabase, IDisposable
     public List<BlogPost> GetAllPostsByTag(string tag)
     {
         List<BlogPost> result = new();
-        string sql = @"SELECT
-                t1.*,
-                t2.PostId as PreviousId,
-                t2.Slug as PreviousSlug,
-                t2.Title as PreviousTitle,
-                t3.PostId as NextId,
-                t3.Slug as NextSlug,
-                t3.Title as NextTitle
-            FROM
-                Blog_Posts t1
-            LEFT JOIN
-                Blog_Posts t2 ON t2.PostId = t1.PostId - 1
-            LEFT JOIN
-                Blog_Posts t3 ON t3.PostId = t1.PostId + 1
-            WHERE
-                t1.PostId IN (SELECT PostId FROM Blog_Tags WHERE Tag = @tag)
+        string sql = $@"{GetPostStartSql()} AND 
+                t1.PostId IN (SELECT PostId FROM Blog_Tags WHERE Tag = @tag AND TenantId = @TenantId)
             ORDER BY PublishedDate DESC;";
 
         ExecuteReader(sql, rdr =>
         {
             result.Add(ReadPost(rdr));
             return true;
-        }, cmd => { cmd.Parameters.AddWithValue("@tag", tag); });
+        },
+        cmd =>
+        {
+            cmd.Parameters.AddWithValue("@tag", tag); 
+            cmd.Parameters.AddWithValue("@TenantId", tenantId);
+        });
 
         return result;
     }
@@ -298,22 +271,10 @@ public class SqlServer : IDatabase, IDisposable
     public List<BlogPost> GetAllPostsByDates(DateTime from, DateTime to)
     {
         List<BlogPost> result = new();
-        string sql = @"SELECT
-                t1.*,
-                t2.PostId as PreviousId,
-                t2.Slug as PreviousSlug,
-                t2.Title as PreviousTitle,
-                t3.PostId as NextId,
-                t3.Slug as NextSlug,
-                t3.Title as NextTitle
-            FROM
-                Blog_Posts t1
-            LEFT JOIN
-                Blog_Posts t2 ON t2.PostId = t1.PostId - 1
-            LEFT JOIN
-                Blog_Posts t3 ON t3.PostId = t1.PostId + 1
-            WHERE
-                t1.PostId IN (SELECT PostId FROM Blog_Tags WHERE t1.PublishedDate BETWEEN @from AND @to)
+        string sql = $@"{GetPostStartSql()} AND 
+                t1.PostId IN (
+                    SELECT PostId FROM Blog_Tags WHERE t1.PublishedDate BETWEEN @from AND @to AND TenantId = @tenantId
+                )
             ORDER BY PublishedDate DESC;";
         ExecuteReader(sql, rdr =>
         {
@@ -323,32 +284,23 @@ public class SqlServer : IDatabase, IDisposable
         {
             cmd.Parameters.AddWithValue("@from", from);
             cmd.Parameters.AddWithValue("@to", to);
+            cmd.Parameters.AddWithValue("@tenantId", tenantId);
         });
 
         return result;
     }
 
-    public List<BlogPost> GetPostsForRSS()
+    public List<BlogPost> GetPostsForRSS(int max = 25)
     {
         List<BlogPost> result = new();
-        string sql = @"SELECT TOP 25 
-                t1.*,
-                t2.PostId as PreviousId,
-                t2.Slug as PreviousSlug,
-                t2.Title as PreviousTitle,
-                t3.PostId as NextId,
-                t3.Slug as NextSlug,
-                t3.Title as NextTitle
-            FROM
-                Blog_Posts t1
-            LEFT JOIN
-                Blog_Posts t2 ON t2.PostId = t1.PostId - 1
-            LEFT JOIN
-                Blog_Posts t3 ON t3.PostId = t1.PostId + 1
-            ORDER BY PublishedDate DESC;";
+        string sql = $@"{GetPostStartSql()} ORDER BY PublishedDate DESC;";
+        int count = 0;
         ExecuteReader(sql, rdr =>
         {
+            count++;
             result.Add(ReadPost(rdr));
+            if (count >= max)
+                return false;
             return true;
         });
 
@@ -358,7 +310,7 @@ public class SqlServer : IDatabase, IDisposable
     public List<BlogPost> GetRecentPosts()
     {
         // for now, being lazy and just use the RSS feed
-        return GetPostsForRSS().Take(10).ToList();
+        return GetPostsForRSS(10).ToList();
     }
 
     public int ContactCount()
@@ -437,8 +389,7 @@ public class SqlServer : IDatabase, IDisposable
     /// Gets all the common repeated functionality into a single method
     /// </summary>
     /// <param name="rdr"></param>
-    /// <param name="closeReader"></param>
-    /// <returns></returns>
+    /// <returns>BlogPost</returns>
     private BlogPost ReadPost(SqlDataReader rdr)
     {
         BlogPost result = new();
@@ -457,12 +408,14 @@ public class SqlServer : IDatabase, IDisposable
         result.NextPost.Id = rdr.AsInt("NextId");
         result.NextPost.Title = rdr.AsString("NextTitle");
         result.NextPost.Slug = rdr.AsString("NextSlug");
+        result.TenantId = rdr.AsInt("TenantId");
         
         return result;
     }
 
     private void SaveTags(BlogPost post, SqlCommand cmd)
     {
+        // TODO: for safety do we need to check if post.TenantId == this.tenantId?
         foreach (string tag in post.Tags)
         {
             string cleanTag = tag.Replace(" ", "");
@@ -470,9 +423,10 @@ public class SqlServer : IDatabase, IDisposable
                 continue;
             
             cmd.Parameters.Clear();
-            cmd.CommandText = @"INSERT INTO Blog_Tags (PostId, Tag) VALUES (@postId, @tag)";
+            cmd.CommandText = @"INSERT INTO Blog_Tags (PostId, Tag, TenantId) VALUES (@postId, @tag, @tenantId);";
             cmd.Parameters.AddWithValue("@postId", post.Id);
             cmd.Parameters.AddWithValue("@tag", cleanTag);
+            cmd.Parameters.AddWithValue("@tenantId", post.TenantId);
             cmd.ExecuteNonQuery();
         }
     }
@@ -500,5 +454,40 @@ public class SqlServer : IDatabase, IDisposable
                 break;
         }
         rdr.Close();
+    }
+
+    /// <summary>
+    /// returns a complete SQL statement to get all posts with previous/next links by tenant
+    /// you can add your own WHERE clause to the end by appending to the returned string starting with " AND ..."
+    /// </summary>
+    /// <returns></returns>
+    private string GetPostStartSql()
+    {
+        return @"WITH OrderedPosts AS (
+            SELECT 
+                PostId,
+                Slug,
+                Title,
+                TenantId,
+                ROW_NUMBER() OVER (PARTITION BY TenantId ORDER BY PublishedDate DESC) AS RowNum
+            FROM Blog_Posts
+            WHERE Status = 1 
+        )
+        SELECT 
+            t1.*,
+            t2.PostId AS PreviousId,
+            t2.Slug AS PreviousSlug,
+            t2.Title AS PreviousTitle,
+            t3.PostId AS NextId,
+            t3.Slug AS NextSlug,
+            t3.Title AS NextTitle
+        FROM Blog_Posts t1
+        LEFT JOIN OrderedPosts t2 
+            ON t2.TenantId = t1.TenantId 
+            AND t2.RowNum = (SELECT RowNum FROM OrderedPosts WHERE PostId = t1.PostId) + 1
+        LEFT JOIN OrderedPosts t3 
+            ON t3.TenantId = t1.TenantId 
+            AND t3.RowNum = (SELECT RowNum FROM OrderedPosts WHERE PostId = t1.PostId) - 1
+        WHERE t1.TenantId = @TenantId ";
     }
 }
