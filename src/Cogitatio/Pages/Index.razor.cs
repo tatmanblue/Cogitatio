@@ -16,6 +16,17 @@ public partial class Index
     {
         logger.LogDebug($"Getting Most recent post");
         PostContent = db.GetMostRecent();
+        if (PostContent == null)
+        {
+            PostContent = new BlogPost()
+            {
+                Title = "No posts exist yet",
+                Author = "System",
+                Tags = new()
+            };
+            
+            return;
+        }
         PostContent.Tags = db.GetPostTags(PostContent.Id);
     }    
 }

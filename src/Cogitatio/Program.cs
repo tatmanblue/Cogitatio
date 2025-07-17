@@ -32,7 +32,7 @@ builder.Services.AddScoped<IDatabase>(p =>
 {
     var configuration = p.GetRequiredService<IConfiguration>();
     var connectionString = configuration["CogitatioSiteDB"];
-    var tenantId = Convert.ToInt32(configuration["TenantId"] ?? "0");
+    var tenantId = Convert.ToInt32(configuration["CogitatioTenantId"] ?? "0");
     
     var logger = p.GetRequiredService<ILoggerFactory>()
         .CreateLogger<IDatabase>();

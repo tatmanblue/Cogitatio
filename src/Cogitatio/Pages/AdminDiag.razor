@@ -1,30 +1,36 @@
 ﻿@page "/Diag"
-<h3>Cogitatio Configuration</h3>
 
+<h3>Cogitatio Configuration</h3>
 
 @if (@userState.IsAdmin)
 {
+    <div style="background-color: #ffcccc; color: #a94442; padding: 10px; border: 1px solid #a94442; margin-bottom: 16px; font-weight: bold;">
+        Warning: You are viewing sensitive information!
+    </div>
     <div>
         <p>UserState InstanceId: @userState.InstanceId</p>
     </div>
     <div>
-        1 = '@cogitatioAdminPassword'
+        Admin PWD = '@cogitatioAdminPassword'
     </div>
     <div>
-        2 = '@cogitatioSiteDB'
+        DB Access = '@cogitatioSiteDB'
     </div>
     <div>
-        3 = '@analyticsId'
+        Google Analytics ID = '@analyticsId'
     </div>
     <div>
-        4 = '@workingDir'
+        Working Dir = '@workingDir'
     </div>
     <div>
-        5 = '@appDir'
+        App Dir = '@appDir'
     </div>
     <div>
-        6 = '@contactCount'
+        Tenant ID = '@tenantId'
     </div>
+    <div>
+        Count of contacts in DB = '@contactCount'
+    </div>    
     <div>
         <NavLink href="/Admin">Admin</NavLink>
     </div>
