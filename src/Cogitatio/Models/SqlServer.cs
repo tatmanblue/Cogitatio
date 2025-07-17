@@ -47,11 +47,14 @@ public class SqlServer : IDatabase, IDisposable
     {
         BlogPost result = null;
         string sql = $@"{GetPostStartSql()} AND 
-                t1.PostId = (SELECT TOP 1 PostId FROM Blog_Posts WHERE Status = 1 ORDER BY PublishedDate DESC);";
+                t1.PostId = (SELECT TOP 1 PostId FROM Blog_Posts WHERE Status = 1 AND TenantId = @TenantId ORDER BY PublishedDate DESC);";
         ExecuteReader(sql, rdr =>
         {
             result = ReadPost(rdr);
             return false;
+        }, setup =>
+        {
+            setup.Parameters.AddWithValue("@TenantId",  tenantId);  
         });
 
         return result;
@@ -302,6 +305,9 @@ public class SqlServer : IDatabase, IDisposable
             if (count >= max)
                 return false;
             return true;
+        }, cmd =>
+        {
+            cmd.Parameters.AddWithValue("@TenantId", tenantId);
         });
 
         return result;
@@ -459,6 +465,7 @@ public class SqlServer : IDatabase, IDisposable
     /// <summary>
     /// returns a complete SQL statement to get all posts with previous/next links by tenant
     /// you can add your own WHERE clause to the end by appending to the returned string starting with " AND ..."
+    /// NOTE!!!! use must add @TenantId parameter to your command
     /// </summary>
     /// <returns></returns>
     private string GetPostStartSql()
