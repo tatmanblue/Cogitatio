@@ -6,6 +6,7 @@
 public class BlogPost
 {
     public int Id { get; set; } = 0;
+    public int TenantId { get; set; } = 0;
     public string Title { get; set; } = string.Empty;
     public string Author { get; set; } = string.Empty;
     public DateTime PublishedDate { get; set; } = DateTime.MinValue;
@@ -17,10 +18,11 @@ public class BlogPost
     public BlogPost PreviousPost { get; set; } = null;
     public BlogPost NextPost { get; set; } = null;
 
-    public static BlogPost Create(string title, string content, string author = "Matt Raffel")
+    public static BlogPost Create(int tenantId, string title, string content, string author = "Matt Raffel")
     {
         BlogPost created = new()
         {
+            TenantId = tenantId,
             Title = title,
             Author = author,
             Content = content,

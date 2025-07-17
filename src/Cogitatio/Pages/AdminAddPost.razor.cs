@@ -32,7 +32,8 @@ public partial class AdminAddPost : ComponentBase
     private async Task Publish()
     {
         logger.LogInformation("Publishing blog post");
-        BlogPost post = BlogPost.Create(title, content);
+        var tenantId = Convert.ToInt32(configuration["CogitatioTenantId"] ?? "0");
+        BlogPost post = BlogPost.Create(tenantId, title, content);
         post.Tags.AddRange(tags.Split(','));
         database.CreatePost(post);
         navigationManager.NavigateTo("/", forceLoad: true);

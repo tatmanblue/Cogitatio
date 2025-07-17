@@ -21,6 +21,7 @@ public partial class AdminDiag : ComponentBase
     private string workingDir { get; set; }
     private string appDir { get; set; }
     private int contactCount { get; set; }
+    private int tenantId { get; set; } = 0;
     
     protected override void OnParametersSet()
     {
@@ -30,6 +31,7 @@ public partial class AdminDiag : ComponentBase
         cogitatioAdminPassword = configuration["CogitatioAdminPassword"];
         cogitatioSiteDB = configuration["CogitatioSiteDB"];
         analyticsId = configuration["CogitatioAnalyticsId"];
+        tenantId = Convert.ToInt32(configuration["CogitatioTenantId"] ?? "0");
         workingDir = Directory.GetCurrentDirectory();
         appDir = Path.Combine(AppContext.BaseDirectory);
         contactCount = database.ContactCount();

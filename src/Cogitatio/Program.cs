@@ -32,10 +32,11 @@ builder.Services.AddScoped<IDatabase>(p =>
 {
     var configuration = p.GetRequiredService<IConfiguration>();
     var connectionString = configuration["CogitatioSiteDB"];
+    var tenantId = Convert.ToInt32(configuration["CogitatioTenantId"] ?? "0");
     
     var logger = p.GetRequiredService<ILoggerFactory>()
         .CreateLogger<IDatabase>();
-    return new SqlServer(logger, connectionString);
+    return new SqlServer(logger, connectionString, tenantId);
 });
 
 var logFilePath = Path.Combine(AppContext.BaseDirectory, "Logs");
