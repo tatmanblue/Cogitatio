@@ -38,6 +38,11 @@ builder.Services.AddScoped<IDatabase>(p =>
         .CreateLogger<IDatabase>();
     return new SqlServer(logger, connectionString, tenantId);
 });
+builder.Services.AddScoped<SiteSettings>(p =>
+{
+    var database = p.GetRequiredService<IDatabase>();
+    return SiteSettings.Load(database);
+});
 
 var logFilePath = Path.Combine(AppContext.BaseDirectory, "Logs");
 Directory.CreateDirectory(logFilePath); 
