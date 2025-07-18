@@ -1,4 +1,6 @@
-﻿namespace Cogitatio.Models;
+﻿using System.ComponentModel;
+
+namespace Cogitatio.Models;
 
 public enum BlogPostStatuses
 {
@@ -8,3 +10,15 @@ public enum BlogPostStatuses
     Deleted = 3
 }
 
+// Settings keys for blog settings
+public enum BlogSettings
+{
+    [Description("The title left cornor of the blog")]
+    ShortTitle,
+    [Description("The title in the header of the blog")]
+    LongTitle,
+    [Description("The description of the blog which appears on the home page")]
+    Introduction,
+    [Description("The about page content")]
+    About,
+}

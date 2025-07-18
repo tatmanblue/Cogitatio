@@ -22,4 +22,7 @@ public interface IDatabase
     int ContactCount();
     List<ContactRecord> GetContacts();
     void DeleteContact(ContactRecord contact);
+    Dictionary<BlogSettings, string> GetAllSettings();
+    string GetSetting(BlogSettings setting);
+    void SaveSetting(BlogSettings setting, string value);
 }

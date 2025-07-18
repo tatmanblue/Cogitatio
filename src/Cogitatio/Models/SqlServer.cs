@@ -390,6 +390,66 @@ public class SqlServer : IDatabase, IDisposable
         int rowsAffected = cmd.ExecuteNonQuery();
         logger.LogDebug($"Contact deleted: {contact.Id}, {rowsAffected}");
     }
+
+    public Dictionary<BlogSettings, string> GetAllSettings()
+    {
+        string sql = @"SELECT * FROM Blog_Settings WHERE TenantId = @TenantId;";
+        Dictionary<BlogSettings, string> result = new();
+        ExecuteReader(sql, rdr =>
+        {
+            if (Enum.TryParse<BlogSettings>(rdr.AsString("SettingKey"), out var key))
+            {
+                result[key] = rdr.AsString("SettingValue");
+            }
+            else 
+            {
+                logger.LogWarning($"Unknown BlogSettings key found in database: {rdr.AsString("SettingKey")}");
+            }
+            return true;
+        }, cmd =>
+        {
+            cmd.Parameters.AddWithValue("@TenantId", tenantId);
+        });
+        return result;
+    }
+    
+    public string GetSetting(BlogSettings setting)
+    {
+        string result = string.Empty;
+        string sql = @"SELECT SettingValue FROM Blog_Settings WHERE SettingKey = @key AND TenantId = @TenantId;";
+        ExecuteReader(sql, rdr =>
+        {
+            result = rdr.AsString("SettingValue");
+            return false;
+        }, cmd =>
+        {
+            cmd.Parameters.AddWithValue("@key", setting.ToString());
+            cmd.Parameters.AddWithValue("@TenantId", tenantId);
+        });
+        return result;
+    }
+    
+    public void SaveSetting(BlogSettings setting, string value)
+    {
+        Connect();
+        using SqlCommand cmd = new SqlCommand();
+        cmd.CommandType = CommandType.Text;
+        cmd.Connection = connection;
+        cmd.CommandText = @"IF EXISTS (SELECT 1 FROM Blog_Settings WHERE SettingKey = @key AND TenantId = @TenantId)
+            BEGIN
+                UPDATE Blog_Settings SET SettingValue = @value WHERE SettingKey = @key AND TenantId = @TenantId;
+            END
+            ELSE
+            BEGIN
+                INSERT INTO Blog_Settings (SettingKey, SettingValue, TenantId) VALUES (@key, @value, @TenantId);
+            END";
+        cmd.Parameters.Clear();
+        cmd.Parameters.AddWithValue("@key", setting.ToString());
+        cmd.Parameters.AddWithValue("@value", value);
+        cmd.Parameters.AddWithValue("@TenantId", tenantId);
+        int rowsAffected = cmd.ExecuteNonQuery();
+        logger.LogDebug($"Setting saved: {setting}, {rowsAffected}");
+    }
     
     /// <summary>
     /// Gets all the common repeated functionality into a single method

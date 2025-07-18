@@ -30,10 +30,15 @@
         <div class="card-body">
             <h5 class="card-title text-center">Admin Actions</h5>
             <div class="btn-group d-flex flex-wrap justify-content-center" role="group">
-                <NavLink href="Diag" class="btn btn-outline-primary mx-1 my-1">Diag</NavLink>
+                <NavLink href="AdminDiag" class="btn btn-outline-primary mx-1 my-1">Diag</NavLink>
+                <NavLink href="AdminSettings" class="btn btn-outline-primary mx-1 my-1">Settings</NavLink>
+            </div>
+            <div class="btn-group d-flex flex-wrap justify-content-center" role="group">
                 <NavLink href="AdminAddPost" class="btn btn-outline-primary mx-1 my-1">Add New Post</NavLink>
                 <NavLink href="AdminEditPost" class="btn btn-outline-primary mx-1 my-1">Edit Post</NavLink>
                 <NavLink href="AdminContact" class="btn btn-outline-primary mx-1 my-1">Contacts</NavLink>
+            </div>
+            <div class="btn-group d-flex flex-wrap justify-content-center" role="group">
                 <button class="btn btn-primary mx-1 my-1" @onclick=@Logout>Logout</button>
             </div>
         </div>

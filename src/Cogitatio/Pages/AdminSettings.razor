@@ -1,0 +1,42 @@
+﻿@page "/AdminSettings"
+<h3>Admin Settings</h3>
+
+<p>This is the Admin Settings page. Only users with admin privileges can access this page.</p>
+@if (userState.IsAdmin)
+{
+    <div class="mb-3">
+        <label for="title" class="form-label">Short Title</label>
+        <input id="title" @bind="shortTitle" class="form-control" placeholder="catch line" />
+    </div>
+
+    <div class="mb-3">
+        <label for="tags" class="form-label">Lone Title</label>
+        <input id="tags" @bind="longTitle" class="form-control" placeholder="a bigger statement" />
+        <small class="form-text text-muted">Separate tags with commas.</small>
+    </div>
+    <div class="mb-3">
+        <label for="IntroductionEditor" class="form-label">Introduction</label>
+        <TinyMCE.Blazor.Editor
+            Id="IntroductionEditor"
+            Conf="@editorConfig"
+            ApiKey="@tinyMceKey"
+            @bind-Value="introduction"/>
+    </div>    
+    <div class="mb-3">
+        <label for="AboutEditor" class="form-label">About statements</label>
+        <TinyMCE.Blazor.Editor
+            Id="AboutEditor"
+            Conf="@editorConfig"
+            ApiKey="@tinyMceKey"
+            @bind-Value="about"/>
+    </div>
+    <button class="btn btn-primary mt-2" @onclick=@Save>Save</button>
+    <div>
+        <NavLink href="/Admin">Admin</NavLink>
+    </div>
+}
+else
+{
+    <div>Redirecting to Admin Login</div>
+}
+
