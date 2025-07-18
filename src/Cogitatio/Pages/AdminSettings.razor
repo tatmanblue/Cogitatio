@@ -5,6 +5,10 @@
 @if (userState.IsAdmin)
 {
     <div class="mb-3">
+        <label for="sitetitle" class="form-label">Site Title</label>
+        <input id="sitetitle" @bind="siteTitle" class="form-control" placeholder="catch line" />
+    </div>
+    <div class="mb-3">
         <label for="title" class="form-label">Short Title</label>
         <input id="title" @bind="shortTitle" class="form-control" placeholder="catch line" />
     </div>

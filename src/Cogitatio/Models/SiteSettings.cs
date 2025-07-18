@@ -4,6 +4,7 @@ namespace Cogitatio.Models;
 
 public class SiteSettings
 {
+    public string SiteTitle { get; private set; } = string.Empty;
     public string ShortTitle { get; private set; } = string.Empty;
     public string LongTitle { get; private set; } = string.Empty;
     public string Author { get; private set; } = string.Empty;
@@ -18,6 +19,9 @@ public class SiteSettings
         {
             switch (setting.Key)
             {
+                case BlogSettings.SiteTitle:
+                    site.SiteTitle = setting.Value;
+                    break;
                 case BlogSettings.ShortTitle:
                     site.ShortTitle = setting.Value;
                     break;

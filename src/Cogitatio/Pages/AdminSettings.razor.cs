@@ -20,6 +20,7 @@ public partial class AdminSettings : ComponentBase
     private string longTitle = string.Empty;
     private string about = string.Empty;
     private string introduction = string.Empty;
+    private string siteTitle = string.Empty;
     
     private string tinyMceKey = "no-api-key";
         
@@ -42,6 +43,9 @@ public partial class AdminSettings : ComponentBase
         {
             switch (setting.Key)
             {
+                case BlogSettings.SiteTitle:
+                    siteTitle = setting.Value;
+                    break;
                 case BlogSettings.ShortTitle:
                     shortTitle = setting.Value;
                     break;
@@ -60,6 +64,7 @@ public partial class AdminSettings : ComponentBase
 
     private async Task Save()
     {
+        database.SaveSetting(BlogSettings.SiteTitle, siteTitle);
         database.SaveSetting(BlogSettings.About, about);
         database.SaveSetting(BlogSettings.Introduction, introduction);
         database.SaveSetting(BlogSettings.ShortTitle, shortTitle);

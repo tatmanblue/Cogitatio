@@ -13,6 +13,8 @@ public enum BlogPostStatuses
 // Settings keys for blog settings
 public enum BlogSettings
 {
+    [Description("The title of the blog which appears in the browser tab")]
+    SiteTitle,
     [Description("The title left cornor of the blog")]
     ShortTitle,
     [Description("The title in the header of the blog")]

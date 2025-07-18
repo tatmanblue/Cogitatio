@@ -1,4 +1,6 @@
-﻿@inherits LayoutComponentBase
+﻿@using Cogitatio.Models
+@inherits LayoutComponentBase
+@inject SiteSettings SiteSettings
 
 <div class="page">
     <div class="sidebar">
@@ -8,7 +10,7 @@
     <main>
         <div class="top-row px-4">
             <!-- storing this here because Idk where I should https://cssgradient.io/ -->
-            Digital thoughts from a seasoned programmer
+            @SiteSettings.LongTitle
             <NavLink class="nav-link" href="About">
                 <i class="bi bi-question-square"></i> About
             </NavLink>
