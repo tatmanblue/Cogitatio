@@ -6,6 +6,7 @@ namespace Cogitatio.Pages;
 
 public partial class Index
 {
+    [Inject] private SiteSettings SiteSettings { get; set; } = default!;
     [Inject] private ILogger<System.Index> logger { get; set; }
     
     [Inject] private IDatabase db { get; set; } = default!;

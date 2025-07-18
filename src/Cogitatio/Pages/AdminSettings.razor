@@ -1,0 +1,48 @@
+﻿@page "/AdminSettings"
+<h3>Admin Settings</h3>
+
+<p>This is the Admin Settings page. Only users with admin privileges can access this page.</p>
+@if (userState.IsAdmin)
+{
+    <div class="mb-3">
+        <label for="sitetitle" class="form-label">Site Title</label>
+        <input id="sitetitle" @bind="siteTitle" class="form-control" placeholder="catch line" />
+    </div>
+    <div class="mb-3">
+        <label for="title" class="form-label">Short Title</label>
+        <input id="title" @bind="shortTitle" class="form-control" placeholder="catch line" />
+    </div>
+    <div class="mb-3">
+        <label for="tags" class="form-label">Long Title</label>
+        <input id="tags" @bind="longTitle" class="form-control" placeholder="a bigger statement" />
+    </div>
+    <div class="mb-3">
+        <label for="copyright" class="form-label">Copyright</label>
+        <input id="copyright" @bind="copyright" class="form-control" placeholder="Copyright (C) 2025 Matt Raffel. All rights reserved." />
+    </div>
+    <div class="mb-3">
+        <label for="IntroductionEditor" class="form-label">Introduction</label>
+        <TinyMCE.Blazor.Editor
+            Id="IntroductionEditor"
+            Conf="@editorConfig"
+            ApiKey="@tinyMceKey"
+            @bind-Value="introduction"/>
+    </div>    
+    <div class="mb-3">
+        <label for="AboutEditor" class="form-label">About statements</label>
+        <TinyMCE.Blazor.Editor
+            Id="AboutEditor"
+            Conf="@editorConfig"
+            ApiKey="@tinyMceKey"
+            @bind-Value="about"/>
+    </div>
+    <button class="btn btn-primary mt-2" @onclick=@Save>Save</button>
+    <div>
+        <NavLink href="/Admin">Admin</NavLink>
+    </div>
+}
+else
+{
+    <div>Redirecting to Admin Login</div>
+}
+

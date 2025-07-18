@@ -44,6 +44,15 @@ CREATE TABLE Blog_Request_Contact
     RequestDate DATETIME NOT NULL DEFAULT GETDATE()
 );	
 
+CREATE TABLE Blog_Settings
+(
+    Id INT IDENTITY (1,1) PRIMARY KEY,
+    TenantId INT NOT NULL DEFAULT 0,
+    SettingKey NVARCHAR(100) NOT NULL,
+    SettingValue NVARCHAR(MAX) NOT NULL,
+    UNIQUE (TenantId, SettingKey)
+);
+
 /*
 Since comments are not supported right now, this table is not required
 -- Table to store comments associated with blog posts
