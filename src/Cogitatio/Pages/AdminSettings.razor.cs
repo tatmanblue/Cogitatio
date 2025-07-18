@@ -21,6 +21,7 @@ public partial class AdminSettings : ComponentBase
     private string about = string.Empty;
     private string introduction = string.Empty;
     private string siteTitle = string.Empty;
+    private string copyright = string.Empty;
     
     private string tinyMceKey = "no-api-key";
         
@@ -43,6 +44,9 @@ public partial class AdminSettings : ComponentBase
         {
             switch (setting.Key)
             {
+                case BlogSettings.Copyright:
+                    copyright = setting.Value;
+                    break;
                 case BlogSettings.SiteTitle:
                     siteTitle = setting.Value;
                     break;
@@ -69,6 +73,7 @@ public partial class AdminSettings : ComponentBase
         database.SaveSetting(BlogSettings.Introduction, introduction);
         database.SaveSetting(BlogSettings.ShortTitle, shortTitle);
         database.SaveSetting(BlogSettings.LongTitle, longTitle);
+        database.SaveSetting(BlogSettings.Copyright, copyright);
         
         navigationManager.NavigateTo("/Admin");
     }

@@ -10,6 +10,7 @@ public class SiteSettings
     public string Author { get; private set; } = string.Empty;
     public string About { get; private set; } = string.Empty;
     public string Introduction { get; private set; } = string.Empty;
+    public string Copyright { get; private set; } = string.Empty;
     
     public static SiteSettings Load(IDatabase database)
     {
@@ -19,6 +20,9 @@ public class SiteSettings
         {
             switch (setting.Key)
             {
+                case BlogSettings.Copyright:
+                    site.Copyright = setting.Value;
+                    break;
                 case BlogSettings.SiteTitle:
                     site.SiteTitle = setting.Value;
                     break;

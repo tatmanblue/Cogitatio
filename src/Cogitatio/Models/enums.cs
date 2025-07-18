@@ -23,4 +23,6 @@ public enum BlogSettings
     Introduction,
     [Description("The about page content")]
     About,
+    [Description("The copyright information in the footer")]
+    Copyright,
 }
