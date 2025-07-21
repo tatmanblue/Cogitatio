@@ -15,7 +15,7 @@ The short answer is time.  In the time it took for me to learn and configure an 
 7. Admin portal
 8. [Google Analytics tracking](https://analytics.google.com/analytics/web)
 9. quasi multi-tenant
-10. customizatize the static text
+10. customize static text
 
 
 ## System Requirements at a glance
