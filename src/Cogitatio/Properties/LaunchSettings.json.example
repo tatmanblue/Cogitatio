@@ -1,0 +1,18 @@
+{
+  "profiles": {
+    "Cogitatio": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": true,
+      "applicationUrl": "http://localhost:5200",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "CogitatioAdminPassword": "Pwd1234!",
+        "CogitatioSiteDB": "User=sa;Password=YourStrong@Passw0rd;Server=localhost;Database=CogitatioSite;TrustServerCertificate=True",
+        "CogitatioAnalyticsId": "",
+        "CogitatioTinyMceKey": "enter your TinyMCE key here",
+        "CogitatioTenantId": "0"
+      }
+    }
+  }
+}
