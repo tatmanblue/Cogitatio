@@ -1,3 +1,4 @@
+using DotNetEnv;
 using Projects;
 
 string GetEnvVarWithLogging(string varName, string defaultValue = "")
@@ -10,6 +11,8 @@ string GetEnvVarWithLogging(string varName, string defaultValue = "")
     }
     return value;
 }
+
+Env.Load();
 
 var builder = DistributedApplication.CreateBuilder(args);
 
