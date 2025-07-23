@@ -2,6 +2,10 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cogitatio", "Cogitatio\Cogitatio.csproj", "{3DBB1E68-7211-4141-870F-4543ADB9B869}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cogitatio.AppHost", "AppHost\Cogitatio.AppHost.csproj", "{3F7E1947-7382-4AAC-A6D8-46CCB6E870B3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cogitatio.ServiceDefaults", "ServiceDefaults\Cogitatio.ServiceDefaults.csproj", "{470396A0-6C55-43F8-BC52-F1F2C168326C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +16,13 @@ Global
 		{3DBB1E68-7211-4141-870F-4543ADB9B869}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3DBB1E68-7211-4141-870F-4543ADB9B869}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3DBB1E68-7211-4141-870F-4543ADB9B869}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3F7E1947-7382-4AAC-A6D8-46CCB6E870B3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F7E1947-7382-4AAC-A6D8-46CCB6E870B3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F7E1947-7382-4AAC-A6D8-46CCB6E870B3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F7E1947-7382-4AAC-A6D8-46CCB6E870B3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{470396A0-6C55-43F8-BC52-F1F2C168326C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{470396A0-6C55-43F8-BC52-F1F2C168326C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{470396A0-6C55-43F8-BC52-F1F2C168326C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{470396A0-6C55-43F8-BC52-F1F2C168326C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
