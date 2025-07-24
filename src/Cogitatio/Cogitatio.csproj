@@ -14,4 +14,14 @@
       <PackageReference Include="Serilog.Sinks.File" Version="6.0.0" />
       <PackageReference Include="TinyMCE.Blazor" Version="2.0.0" />
     </ItemGroup>
+    <ItemGroup>
+      <ProjectReference Include="..\ServiceDefaults\Cogitatio.ServiceDefaults.csproj" />
+    </ItemGroup>
+    <ItemGroup>
+      <None Update="Properties\LaunchSettings.json.example">
+        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+        <CopyToPublishDirectory>Never</CopyToPublishDirectory>
+        <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      </None>
+    </ItemGroup>
 </Project>
