@@ -42,7 +42,7 @@ Cogitatio only needs a couple of database tables.  Because I have limited number
 
 ## Tiny MCE
 
-Tiny MCE provides the WYSIWYG editing for creating posts.  The free cloud license model is sufficient.
+[Tiny MCE](https://www.tiny.cloud/) provides the WYSIWYG editing for creating/editing posts.  The free cloud license model is sufficient.
 
 ## Environment variables
 
