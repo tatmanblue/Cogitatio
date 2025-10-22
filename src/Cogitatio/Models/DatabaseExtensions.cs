@@ -1,7 +1,11 @@
-﻿using Microsoft.Data.SqlClient;
+﻿using System.Data.Common;
+using Microsoft.Data.SqlClient;
 
 namespace Cogitatio.Models;
 
+/// <summary>
+/// TODO consider using IDataReader in place of DbDataReader
+/// </summary>
 public static class DatabaseExtensions
 {
     public static T ParseEnum<T>(string value)
@@ -9,7 +13,7 @@ public static class DatabaseExtensions
         return (T) Enum.Parse(typeof(T), value, true);
     }
 
-    public static int AsInt(this SqlDataReader rdr, string field)
+    public static int AsInt(this DbDataReader rdr, string field)
     {
         if (rdr.IsDBNull(rdr.GetOrdinal(field)))
             return -1;
@@ -17,7 +21,7 @@ public static class DatabaseExtensions
         return Convert.ToInt32(rdr[field]);
     }
     
-    public static string AsString(this SqlDataReader rdr, string field)
+    public static string AsString(this DbDataReader rdr, string field)
     {
         if (rdr.IsDBNull(rdr.GetOrdinal(field)))
             return string.Empty;
@@ -25,7 +29,7 @@ public static class DatabaseExtensions
         return rdr[field].ToString();
     }
 
-    public static double AsDouble(this SqlDataReader rdr, string field)
+    public static double AsDouble(this DbDataReader rdr, string field)
     {
         if (rdr.IsDBNull(rdr.GetOrdinal(field)))
             return 0.0;
@@ -33,7 +37,7 @@ public static class DatabaseExtensions
         return Convert.ToDouble(rdr[field]);
     }
 
-    public static DateTime AsDateTime(this SqlDataReader rdr, string field)
+    public static DateTime AsDateTime(this DbDataReader rdr, string field)
     {
         if (rdr.IsDBNull(rdr.GetOrdinal(field)))
             return DateTime.MinValue;
