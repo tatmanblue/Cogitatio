@@ -48,10 +48,16 @@ builder.Services.AddScoped<IDatabase>(p =>
             logger,
             connectionString,
             tenantId),
-        _ => throw new NotSupportedException($"Database type {dbType} is not supported.")
+        _ => ThrowUnsupported(dbType)
     };
     
     return db;
+    
+    IDatabase ThrowUnsupported(string type)
+    {
+        logger.LogWarning("Database type {DatabaseType} is not supported.", type);
+        throw new NotSupportedException($"Database type {type} is not supported.");
+    }
 });
 builder.Services.AddScoped<SiteSettings>(p =>
 {

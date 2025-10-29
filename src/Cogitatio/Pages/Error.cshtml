@@ -24,6 +24,10 @@
                     <strong>Request ID:</strong> <code>@Model.RequestId</code>
                 </p>
             }
+            <h3>Opps!</h3>
+            <p>
+                Sorry you got this error.   Please try again later or contact the site administrator if the problem persists.
+            </p>
 
             <h3>Development Mode</h3>
             <p>
@@ -35,6 +39,9 @@
                 For local debugging, enable the <strong>Development</strong> environment by setting the <strong>ASPNETCORE_ENVIRONMENT</strong> environment variable to <strong>Development</strong>
                 and restarting the app.
             </p>
+        </div>
+        <div>
+            <code>@Model.dbType</code> - <code>@Model.version</code>
         </div>
     </div>
 </body>
