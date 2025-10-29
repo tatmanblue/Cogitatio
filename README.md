@@ -16,13 +16,14 @@ The short answer is time.  In the time it took for me to learn and configure an 
 8. [Google Analytics tracking](https://analytics.google.com/analytics/web)
 9. quasi multi-tenant
 10. customize static text
+11. MS SQL or Postgres backend
 
 
 ## System Requirements at a glance
 
 It is a very simple to install on your own domain and get running.  Requirements:  
 1. Host can run dotnet core Application
-2. MS SQL instance. 
+2. MS SQL or Postgres SQL instance. 
 3. [Tiny MCE](https://www.tiny.cloud/) cloud license
 4. Create the DB schema, create a couple environment variables, build and deploy and off you go!  
 
@@ -36,9 +37,11 @@ Released with [Apache 2.0 license](https://github.com/tatmanblue/Cogitatio/blob/
 
 At this time, the installation/Configuration documentation is very short an brief.  Please reach out to me if you have any concerns.  Below information should help but it is still expected you have some background or ability to manually build and deploy a dotnet application on a website.
 
-## MS SQL
+## Database
 
-Cogitatio only needs a couple of database tables.  Because I have limited number of MS SQL instances, I have combined Cogitatio tables with other tables for other projects and have no issues.   The database can be configured on its own or shared instance.  The [DB schema](https://github.com/tatmanblue/Cogitatio/blob/main/src/schema/create_blog_tables.sql) is pretty simple.
+You can use [MS SQL Server](https://www.microsoft.com/en-us/sql-server) or [Postgres SQL](https://www.postgresql.org/) for the database backend.  See the environment variable section below for configuration.
+
+Cogitatio only needs a couple of database tables.  Because I had limited number of MS SQL instances available, I combined Cogitatio tables with other tables for other projects and have no issues.   The database can be configured on its own or shared instance.  The [DB schema](https://github.com/tatmanblue/Cogitatio/blob/main/src/schema/create_blog_tables.sql) is pretty simple.
 
 ## Tiny MCE
 
@@ -49,12 +52,13 @@ Cogitatio only needs a couple of database tables.  Because I have limited number
 Configuration is pretty simple.  A few environment variables are needed as listed below.  You will need the following environment variables:
 
 - CogitatioAdminPassword :  This is the password to the admin portal
-- CogitatioSiteDB : connection string to the MS SQL database.
+- CogitatioSiteDB : connection string to the database.
 - CogitatioAnalyticsId: id for google analytics.  If this is empty, google analytics will not be installed.
 - CogitatioTinyMceKey: Tiny MCE cloud license key.
 - CogitatioTenantId: id for multi-tenant support.  If you are only running one site, this can be any value and defaults to zero if not set.
+- CogitatioDBType: (optional for MS SQL, required for Postgres) set to "POSTGRES" if using Postgres database, "MSSQL" for MS SQL Server.
 
-## Additional work
+## Additional setup
 
 You will probably want to setup a robots.txt file to help with search engine discovery.
 
@@ -66,4 +70,4 @@ If you have any questions about the content of the repository, please email [mat
 ## Status
 Functional, continuing to add features.
 
-2025.07.18
+2025.10.29

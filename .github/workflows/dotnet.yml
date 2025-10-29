@@ -28,3 +28,6 @@ jobs:
       run: dotnet build src/Cogitatio.sln --no-restore
     - name: Test
       run: dotnet test src/Cogitatio.sln --no-build --verbosity normal
+    - name: Create version file
+      run: |
+        echo "{\"version\":\"$(git describe --tags --abbrev=0 || echo v0.0.0)\",\"commit\":\"$(git rev-parse --short HEAD)\",\"buildDate\":\"$(date -u +'%Y-%m-%dT%H:%M:%SZ')\"}" > src/Cogitatio/wwwroot/version.json      

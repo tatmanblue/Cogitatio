@@ -35,10 +35,29 @@ builder.Services.AddScoped<IDatabase>(p =>
     var configuration = p.GetRequiredService<IConfiguration>();
     var connectionString = configuration["CogitatioSiteDB"];
     var tenantId = Convert.ToInt32(configuration["CogitatioTenantId"] ?? "0");
-    
+    var dbType = configuration["CogitatioDBType"] ?? "MSSQL";
     var logger = p.GetRequiredService<ILoggerFactory>()
         .CreateLogger<IDatabase>();
-    return new SqlServer(logger, connectionString, tenantId);
+    IDatabase db = dbType switch
+    {
+        "MSSQL" => new SqlServer(
+            logger,
+            connectionString,
+            tenantId),
+        "POSTGRES" => new Postgresssql(
+            logger,
+            connectionString,
+            tenantId),
+        _ => ThrowUnsupported(dbType)
+    };
+    
+    return db;
+    
+    IDatabase ThrowUnsupported(string type)
+    {
+        logger.LogWarning("Database type {DatabaseType} is not supported.", type);
+        throw new NotSupportedException($"Database type {type} is not supported.");
+    }
 });
 builder.Services.AddScoped<SiteSettings>(p =>
 {

@@ -22,6 +22,8 @@ string adminPassword = Environment.GetEnvironmentVariable("CogitatioAdminPasswor
 string connectionStr = Environment.GetEnvironmentVariable("CogitatioSiteDB")
                        ?? throw new InvalidOperationException("Environment variable 'CogitatioSiteDB' is not set.");
 
+string dbType = Environment.GetEnvironmentVariable("CogitatioDBType")
+                    ?? throw new InvalidOperationException("Environment variable 'CogitatioDBType' is not set.");
 string analyticsId = GetEnvVarWithLogging("CogitatioAnalyticsId");
 string tinyMceKey = GetEnvVarWithLogging("CogitatioTinyMceKey");
 string tenantId = GetEnvVarWithLogging("CogitatioTenantId", "0");
@@ -30,6 +32,7 @@ string tenantId = GetEnvVarWithLogging("CogitatioTenantId", "0");
 builder.AddProject<Cogitatio>("Cogitatio")
     .WithEnvironment("CogitatioAdminPassword", adminPassword)
     .WithEnvironment("CogitatioSiteDB", connectionStr)
+    .WithEnvironment("CogitatioDBType", dbType)
     .WithEnvironment("CogitatioAnalyticsId", analyticsId)
     .WithEnvironment("CogitatioTinyMceKey", tinyMceKey)
     .WithEnvironment("CogitatioTenantId", tenantId);
