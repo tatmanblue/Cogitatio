@@ -22,6 +22,10 @@ public partial class AdminSettings : ComponentBase
     private string introduction = string.Empty;
     private string siteTitle = string.Empty;
     private string copyright = string.Empty;
+    private bool use2FA = false;
+    private string qrCodeUrl => use2FA
+        ? "/api/qrcode/generate"   // your real endpoint
+        : string.Empty;
     
     private string tinyMceKey = "no-api-key";
         
@@ -62,6 +66,9 @@ public partial class AdminSettings : ComponentBase
                 case BlogSettings.Introduction:
                     introduction = setting.Value;
                     break;
+                case BlogSettings.Use2FA:
+                    use2FA = Convert.ToBoolean(setting.Value);
+                    break;
             }
         }
     }
@@ -74,7 +81,7 @@ public partial class AdminSettings : ComponentBase
         database.SaveSetting(BlogSettings.ShortTitle, shortTitle);
         database.SaveSetting(BlogSettings.LongTitle, longTitle);
         database.SaveSetting(BlogSettings.Copyright, copyright);
-        
+        database.SaveSetting(BlogSettings.Use2FA, use2FA.ToString());
         navigationManager.NavigateTo("/Admin");
     }
 }

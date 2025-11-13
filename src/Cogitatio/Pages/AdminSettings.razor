@@ -40,6 +40,17 @@
     <div>
         <NavLink href="/Admin">Admin</NavLink>
     </div>
+    <div class="mb-3">
+        <label for="use2FA" class="form-label">Use 2FA</label>
+        <InputCheckbox id="use2FA" @bind="use2FA" class="form-check-input"></InputCheckbox>
+    </div>
+    <div class="mb-3" id="qrcodeSection" style="display:@(use2FA ? "block" : "none")">
+        <label class="form-label">QR Code for 2FA</label>
+        <div class="border p-3 text-center">
+            <!-- Put your QR-code image/component here -->
+            <img src="@qrCodeUrl" alt="2FA QR Code" class="img-fluid" />
+        </div>
+    </div>
 }
 else
 {

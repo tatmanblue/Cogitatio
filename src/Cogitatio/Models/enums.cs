@@ -25,4 +25,6 @@ public enum BlogSettings
     About,
     [Description("The copyright information in the footer")]
     Copyright,
+    [Description("Whether to require two factor authentication for admin users")]
+    Use2FA
 }
