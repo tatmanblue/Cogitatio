@@ -4,6 +4,50 @@
 <p>This is the Admin Settings page. Only users with admin privileges can access this page.</p>
 @if (userState.IsAdmin)
 {
+    <div class="@(use2FA ? "p-4 rounded border-2fa" : ""))"
+         style="padding: 0; margin: 0">
+        <div class="mb-3" style="padding: 0; margin: 0">
+            <label for="use2FA" class="form-label">Use 2FA</label>
+            <InputCheckbox 
+                Value="@use2FA" 
+                ValueChanged="@((bool newValue) => CheckboxChanged(newValue))"
+                ValueExpression="@(() => use2FA)"
+                class="form-check-input" 
+                id="isActiveCheck" />
+        </div>
+        <div class="mb-3" id="qrcodeSection" style="display:@(use2FA ? "block" : "none")">
+            <label class="form-label">Scan with your Authenticator App</label>
+
+            <div class="row align-items-center g-4">
+                <!-- LEFT: Current Code -->
+                <div class="col-md-6">
+                    <div class="alert alert-info mb-0 h-100 d-flex flex-column justify-content-center">
+                        <div>
+                            <strong>Current Code (for testing):</strong>
+                            <span class="badge bg-primary fs-4 ms-2">@currentTotpCode</span>
+                        </div>
+                        <small class="text-muted mt-1">
+                            Refreshes in <strong>@secondsRemaining</strong> seconds
+                        </small>
+                    </div>
+                </div>
+
+                <!-- RIGHT: QR Code -->
+                <div class="col-md-6 text-center">
+                    <div class="border p-3 rounded bg-white d-inline-block">
+                        <img src="@qrCodeUrl"
+                             alt="2FA QR Code"
+                             class="img-fluid"
+                             style="max-width:200px; height:auto;" />
+                    </div>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="totpCode" class="form-label">Enter verification code</label>
+                <InputText @bind-Value="verificationCode" class="form-control" id="totpCode" />
+            </div>
+        </div>
+    </div>
     <div class="mb-3">
         <label for="sitetitle" class="form-label">Site Title</label>
         <input id="sitetitle" @bind="siteTitle" class="form-control" placeholder="catch line" />
@@ -39,17 +83,6 @@
     <button class="btn btn-primary mt-2" @onclick=@Save>Save</button>
     <div>
         <NavLink href="/Admin">Admin</NavLink>
-    </div>
-    <div class="mb-3">
-        <label for="use2FA" class="form-label">Use 2FA</label>
-        <InputCheckbox id="use2FA" @bind="use2FA" class="form-check-input"></InputCheckbox>
-    </div>
-    <div class="mb-3" id="qrcodeSection" style="display:@(use2FA ? "block" : "none")">
-        <label class="form-label">QR Code for 2FA</label>
-        <div class="border p-3 text-center">
-            <!-- Put your QR-code image/component here -->
-            <img src="@qrCodeUrl" alt="2FA QR Code" class="img-fluid" />
-        </div>
     </div>
 }
 else
