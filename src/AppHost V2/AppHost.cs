@@ -17,13 +17,13 @@ Env.Load();
 var builder = DistributedApplication.CreateBuilder(args);
 
 string adminPassword = Environment.GetEnvironmentVariable("CogitatioAdminPassword")
-                    ?? throw new InvalidOperationException("Environment variable 'CogitatioAdminPassword' is not set.");
+                       ?? throw new InvalidOperationException("Environment variable 'CogitatioAdminPassword' is not set.");
 
 string connectionStr = Environment.GetEnvironmentVariable("CogitatioSiteDB")
                        ?? throw new InvalidOperationException("Environment variable 'CogitatioSiteDB' is not set.");
 
 string dbType = Environment.GetEnvironmentVariable("CogitatioDBType")
-                    ?? throw new InvalidOperationException("Environment variable 'CogitatioDBType' is not set.");
+                ?? throw new InvalidOperationException("Environment variable 'CogitatioDBType' is not set.");
 string analyticsId = GetEnvVarWithLogging("CogitatioAnalyticsId");
 string tinyMceKey = GetEnvVarWithLogging("CogitatioTinyMceKey");
 string tenantId = GetEnvVarWithLogging("CogitatioTenantId", "0");
