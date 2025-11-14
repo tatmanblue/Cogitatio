@@ -13,10 +13,12 @@ The short answer is time.  In the time it took for me to learn and configure an 
 5. RSS Feed  
 6. Sitemap builder 
 7. Admin portal
+   1. Admin account configuration, including optional 2FA
+   2. Site configuration
 8. [Google Analytics tracking](https://analytics.google.com/analytics/web)
-9. quasi multi-tenant
-10. customize static text
-11. MS SQL or Postgres backend
+9. quasi multi-tenant 
+10. MS SQL or Postgres backend
+
 
 
 ## System Requirements at a glance
@@ -37,6 +39,13 @@ Released with [Apache 2.0 license](https://github.com/tatmanblue/Cogitatio/blob/
 
 At this time, the installation/Configuration documentation is very short an brief.  Please reach out to me if you have any concerns.  Below information should help but it is still expected you have some background or ability to manually build and deploy a dotnet application on a website.
 
+## Default Admin account
+The default admin account is:
+- username: admin
+- password: Cogitatio2024!
+
+**CHANGE THIS PASSWORD IMMEDIATELY AFTER FIRST LOGIN!**  Both the username and password can be changed after login via the settings page.
+
 ## Database
 
 You can use [MS SQL Server](https://www.microsoft.com/en-us/sql-server) or [Postgres SQL](https://www.postgresql.org/) for the database backend.  See the environment variable section below for configuration.
@@ -49,9 +58,8 @@ Cogitatio only needs a couple of database tables.  Because I had limited number 
 
 ## Environment variables
 
-Configuration is pretty simple.  A few environment variables are needed as listed below.  You will need the following environment variables:
+Configuration is pretty simple.  A few environment variables are needed as listed below:
 
-- CogitatioAdminPassword :  This is the password to the admin portal
 - CogitatioSiteDB : connection string to the database.
 - CogitatioAnalyticsId: id for google analytics.  If this is empty, google analytics will not be installed.
 - CogitatioTinyMceKey: Tiny MCE cloud license key.
@@ -70,4 +78,4 @@ If you have any questions about the content of the repository, please email [mat
 ## Status
 Functional, continuing to add features.
 
-2025.10.29
+2025.11.15

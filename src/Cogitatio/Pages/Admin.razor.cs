@@ -17,10 +17,18 @@ public partial class Admin : ComponentBase
     [Inject] private IDatabase database { get; set; }
     [Inject] private UserState userState { get; set; }
 
+    private bool useTOTP = false;
+    private string accountId;
     private string credential;
+    private string toptId;
     private string errorMessage;
     private string passwordInputType = "password";
     private string passwordToggleIcon = "bi bi-eye-slash";
+    
+    protected override void OnInitialized()
+    {
+        useTOTP = database.GetSettingAsBool(BlogSettings.UseTOTP);
+    }
 
     private async Task Logout()
     {
@@ -29,36 +37,42 @@ public partial class Admin : ComponentBase
     
     private async Task Login()
     {
-        string adminPassword = configuration["CogitatioAdminPassword"];
-        bool useTOTP = Convert.ToBoolean(database.GetSetting(BlogSettings.UseTOTP));
+        string adminId = database.GetSetting(BlogSettings.AdminId, "admin");
+        string adminPassword = database.GetSetting(BlogSettings.AdminPassword, "Cogitatio2024!");
+        
+        userState.IsAdmin = false;
+        credential = string.Empty;
+        toptId = string.Empty;
+        errorMessage = string.Empty;
 
-        // if we are using TOTP we are expecting the input to match the TOTP code from the authenticator app
-        // otherwise we expect the admin password
-        if (useTOTP)
+        // the login logic path is 
+        // 1 - check if accountId matches adminId
+        // 2 - check if password matches adminPassword
+        // 3 - if useTOTP is true, check if TOTP code matches
+        if (accountId != adminId)
         {
-            string twoFactorSecret = database.GetSetting(BlogSettings.TwoFactorSecret);
-            var totp = new OtpNet.Totp(Base32Encoding.ToBytes(twoFactorSecret));
-            if (!totp.VerifyTotp(credential, out long timeStepMatched, VerificationWindow.RfcSpecifiedNetworkDelay))
-            {
-                logger.LogError($"Invalid two-factor secret: {credential}");
-                userState.IsAdmin = false;
-                errorMessage = "Unable to verify credentials";
-                return;
-            }
-        } 
-        else if (credential != adminPassword)
-        {
-            logger.LogError($"adminPassword required, but got: {credential}");
-            userState.IsAdmin = false;
-            errorMessage = "Unable to verify credentials";
+            errorMessage = "Unable to login with provided credentials.";
             return;
         }
 
-        logger.LogInformation($"Logged in. The userState id: {userState.InstanceId}");
+        if (adminPassword != adminPassword)
+        {
+            errorMessage = "Unable to login with provided credentials.";
+            return;
+        }
+        
+        if (useTOTP)
+        {
+            string twoFactorSecret = database.GetSetting(BlogSettings.TwoFactorSecret);
+            var totp = new Totp(Base32Encoding.ToBytes(twoFactorSecret));
+            if (!totp.VerifyTotp(toptId, out long timeStepMatched, VerificationWindow.RfcSpecifiedNetworkDelay))
+            {
+                errorMessage = "Unable to login with provided credentials.";
+                return;
+            }
+        }
         
         userState.IsAdmin = true;
-        credential = string.Empty;
-        errorMessage = string.Empty;
     }   
     
     private void TogglePasswordVisibility()

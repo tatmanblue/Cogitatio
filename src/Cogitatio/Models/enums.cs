@@ -28,5 +28,9 @@ public enum BlogSettings
     [Description("Whether to require authenticator authentication for admin users, false means use password only")]
     UseTOTP,
     [Description("The secret key used for two factor authentication")]
-    TwoFactorSecret
+    TwoFactorSecret,
+    [Description("The admin user ID, default is 'admin'")]
+    AdminId,
+    [Description("The admin user password in plain text, default is 'Cogitatio2024!'")]
+    AdminPassword,
 }

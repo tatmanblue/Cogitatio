@@ -1,4 +1,5 @@
 ﻿using System.Data.Common;
+using Cogitatio.Interfaces;
 using Microsoft.Data.SqlClient;
 
 namespace Cogitatio.Models;
@@ -43,5 +44,11 @@ public static class DatabaseExtensions
             return DateTime.MinValue;
 
         return DateTime.Parse(rdr.AsString(field));
+    }
+    
+    public static bool GetSettingAsBool(this IDatabase database, BlogSettings setting, bool defaultValue = false)
+    {
+        string value = database.GetSetting(setting, defaultValue ? "true" : "false");
+        return Convert.ToBoolean(value);
     }
 }

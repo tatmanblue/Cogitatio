@@ -13,6 +13,8 @@ public class SiteSettings
     public string Copyright { get; private set; } = string.Empty;
     public bool Use2FA { get; private set; } = false;
     public string TwoFactorSecret { get; set; } = string.Empty;
+    public string AdminId { get; private set; } = "admin";
+    public string AdminPassword { get; private set; } = "Cogitatio2024!";
     
     public static SiteSettings Load(IDatabase database)
     {
@@ -45,6 +47,12 @@ public class SiteSettings
                     break;
                 case BlogSettings.TwoFactorSecret:
                     site.TwoFactorSecret = setting.Value;
+                    break;
+                case BlogSettings.AdminId:
+                    site.AdminId = setting.Value;
+                    break;
+                case BlogSettings.AdminPassword:
+                    site.AdminPassword = setting.Value;
                     break;
             }
         }

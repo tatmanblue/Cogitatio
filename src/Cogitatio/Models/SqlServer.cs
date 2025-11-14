@@ -416,9 +416,9 @@ public class SqlServer : IDatabase, IDisposable
         return result;
     }
     
-    public string GetSetting(BlogSettings setting)
+    public string GetSetting(BlogSettings setting, string defaultValue = "")
     {
-        string result = string.Empty;
+        string result = defaultValue;
         string sql = @"SELECT SettingValue FROM Blog_Settings WHERE SettingKey = @key AND TenantId = @TenantId;";
         ExecuteReader(sql, rdr =>
         {

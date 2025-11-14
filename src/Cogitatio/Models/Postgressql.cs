@@ -415,9 +415,9 @@ public class Postgresssql : IDatabase, IDisposable
         return result;
     }
     
-    public string GetSetting(BlogSettings setting)
+    public string GetSetting(BlogSettings setting, string defaultValue = "")
     {
-        string result = string.Empty;
+        string result = defaultValue;
         string sql = @"SELECT setting_value FROM blog_settings WHERE setting_key = @n1 AND tenant_id = @n2;";
         ExecuteReader(sql, rdr =>
         {
