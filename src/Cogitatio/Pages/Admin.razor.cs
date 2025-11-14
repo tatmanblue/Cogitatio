@@ -1,6 +1,7 @@
 ﻿using Cogitatio.Interfaces;
 using Cogitatio.Models;
 using Microsoft.AspNetCore.Components;
+using OtpNet;
 
 namespace Cogitatio.Pages;
 
@@ -16,10 +17,18 @@ public partial class Admin : ComponentBase
     [Inject] private IDatabase database { get; set; }
     [Inject] private UserState userState { get; set; }
 
+    private bool useTOTP = false;
+    private string accountId;
     private string credential;
+    private string toptId;
     private string errorMessage;
     private string passwordInputType = "password";
     private string passwordToggleIcon = "bi bi-eye-slash";
+    
+    protected override void OnInitialized()
+    {
+        useTOTP = database.GetSettingAsBool(BlogSettings.UseTOTP);
+    }
 
     private async Task Logout()
     {
@@ -28,20 +37,51 @@ public partial class Admin : ComponentBase
     
     private async Task Login()
     {
-        string adminPassword = configuration["CogitatioAdminPassword"];
-        if (credential == adminPassword)
+        // Anonymous method to clear credentials
+        Action clearCredentials = () =>
         {
-            logger.LogInformation($"Logged in. The userState id: {userState.InstanceId}");
-            userState.IsAdmin = true;
+            accountId = string.Empty;
             credential = string.Empty;
-            errorMessage = string.Empty;
-        }
-        else
+            toptId = string.Empty;
+            errorMessage = "Unable to login with provided credentials.";
+            StateHasChanged();
+        };
+
+        string adminId = database.GetSetting(BlogSettings.AdminId, "admin");
+        string adminPassword = database.GetSetting(BlogSettings.AdminPassword, "Cogitatio2024!");
+        
+        userState.IsAdmin = false;
+        errorMessage = string.Empty;
+
+        // the login logic path is 
+        // 1 - check if accountId matches adminId
+        // 2 - check if password matches adminPassword
+        // 3 - if useTOTP is true, check if TOTP code matches
+        if (accountId != adminId)
         {
-            userState.IsAdmin = false;
-            errorMessage = "Unable to verify credentials";
+            clearCredentials();
+            return;
+        }
+
+        if (credential != adminPassword)
+        {
+            
+            clearCredentials();
+            return;
         }
         
+        if (useTOTP)
+        {
+            string twoFactorSecret = database.GetSetting(BlogSettings.TwoFactorSecret);
+            var totp = new Totp(Base32Encoding.ToBytes(twoFactorSecret));
+            if (!totp.VerifyTotp(toptId, out long timeStepMatched, VerificationWindow.RfcSpecifiedNetworkDelay))
+            {
+                clearCredentials();
+                return;
+            }
+        }
+        
+        userState.IsAdmin = true;
     }   
     
     private void TogglePasswordVisibility()

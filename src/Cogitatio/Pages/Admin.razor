@@ -6,14 +6,27 @@
     <div class="login">
         <h4>Credentials are required:</h4>
         <div class="mb-3">
-            <div class="input-group">
-                <input id="credential" @bind="credential"
-                       type="@passwordInputType"
-                       placeholder="Enter credentials"
-                       class="form-control" />
-                <button type="button" class="btn btn-outline-secondary" @onclick="TogglePasswordVisibility">
-                    <i class="@passwordToggleIcon"></i>
-                </button>
+            <div class="d-flex flex-column">
+                <div class="mb-2">
+                    <input id="accountId" @bind="accountId" placeholder="Enter your id" class="form-control"/>
+                </div>
+                <div class="mb-2">
+                    <div class="input-group">
+                        <input id="credential" @bind="credential"
+                               type="@passwordInputType"
+                               placeholder="Enter your credential"
+                               class="form-control"/>
+                        <button type="button" class="btn btn-outline-secondary" @onclick="TogglePasswordVisibility">
+                            <i class="@passwordToggleIcon"></i>
+                        </button>
+                    </div>
+                </div>
+                @if (useTOTP)
+                {
+                    <div class="mb-2">
+                        <input id="toptId" @bind="toptId" placeholder="Enter the TOPT value" class="form-control"/>
+                    </div>
+                }
             </div>
         </div>        
         <button class="btn btn-primary mt-2" @onclick=@Login>Login</button>

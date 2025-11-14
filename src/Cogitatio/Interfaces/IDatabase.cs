@@ -23,6 +23,6 @@ public interface IDatabase
     List<ContactRecord> GetContacts();
     void DeleteContact(ContactRecord contact);
     Dictionary<BlogSettings, string> GetAllSettings();
-    string GetSetting(BlogSettings setting);
+    string GetSetting(BlogSettings setting, string defaultValue = "");
     void SaveSetting(BlogSettings setting, string value);
 }
