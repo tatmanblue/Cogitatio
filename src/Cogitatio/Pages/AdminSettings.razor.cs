@@ -11,6 +11,8 @@ namespace Cogitatio.Pages;
 /// For editing site-wide settings. Only accessible to admins.
 /// design is clunky, but it works because its hardcoding the ui without a lot of dynamic stuff.
 /// but the database underneath is dynamic so we can add new settings without changing the code.
+///
+/// The data model could use some refactoring to make it cleaner by separating it out from the UI.
 /// </summary>
 public partial class AdminSettings : ComponentBase
 {
@@ -68,7 +70,7 @@ public partial class AdminSettings : ComponentBase
     
     protected override void OnParametersSet()
     {
-        logger.LogError("OnParametersSet() called with parameters: " + string.Join(", ", editorConfig.Keys.ToArray()));
+        logger.LogError("OnParametersSet() called with parameters:");
         tinyMceKey = configuration.GetValue<string>("CogitatioTinyMceKey") ?? "no-api";
         
         if (!userState.IsAdmin)
@@ -206,16 +208,13 @@ public partial class AdminSettings : ComponentBase
     {
         logger.LogError("On2FAChanged() called. use2FA={use2FA} newValue={newValue}", use2FA, newValue);
         use2FA = newValue;
-        logger.LogError("On2FAChanged() called. use2FA={use2FA}", use2FA);
         if (use2FA)
         {
-            logger.LogDebug("2FA enabled...generating secret and QR code.");
             // Generate new secret
             var key = KeyGeneration.GenerateRandomKey(20);
             var base32Secret = Base32Encoding.ToString(key);
             // twoFactorSecret gets saved to database on Save()
             twoFactorSecret = base32Secret;
-            logger.LogDebug($"2FA enabled...generating secret and QR code using secret '{twoFactorSecret}'");
 
             // Generate QR code
             GenerateQRCode(twoFactorSecret);
@@ -235,6 +234,8 @@ public partial class AdminSettings : ComponentBase
 
     private void CheckPasswordStrength(string pwd)
     {
+        // theres no need for method call here and the code can be inlined,
+        // but I found a reason to use a tuple.
         (passwordStrength, passwordStrengthLabel) = EvaluatePasswordStrength(pwd);
     }
     
