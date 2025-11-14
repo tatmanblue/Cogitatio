@@ -37,12 +37,20 @@ public partial class Admin : ComponentBase
     
     private async Task Login()
     {
+        // Anonymous method to clear credentials
+        Action clearCredentials = () =>
+        {
+            accountId = string.Empty;
+            credential = string.Empty;
+            toptId = string.Empty;
+            errorMessage = "Unable to login with provided credentials.";
+            StateHasChanged();
+        };
+
         string adminId = database.GetSetting(BlogSettings.AdminId, "admin");
         string adminPassword = database.GetSetting(BlogSettings.AdminPassword, "Cogitatio2024!");
         
         userState.IsAdmin = false;
-        credential = string.Empty;
-        toptId = string.Empty;
         errorMessage = string.Empty;
 
         // the login logic path is 
@@ -51,13 +59,14 @@ public partial class Admin : ComponentBase
         // 3 - if useTOTP is true, check if TOTP code matches
         if (accountId != adminId)
         {
-            errorMessage = "Unable to login with provided credentials.";
+            clearCredentials();
             return;
         }
 
-        if (adminPassword != adminPassword)
+        if (credential != adminPassword)
         {
-            errorMessage = "Unable to login with provided credentials.";
+            
+            clearCredentials();
             return;
         }
         
@@ -67,7 +76,7 @@ public partial class Admin : ComponentBase
             var totp = new Totp(Base32Encoding.ToBytes(twoFactorSecret));
             if (!totp.VerifyTotp(toptId, out long timeStepMatched, VerificationWindow.RfcSpecifiedNetworkDelay))
             {
-                errorMessage = "Unable to login with provided credentials.";
+                clearCredentials();
                 return;
             }
         }

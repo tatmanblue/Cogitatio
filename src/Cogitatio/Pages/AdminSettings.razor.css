@@ -1,4 +1,15 @@
 ﻿.border-2fa {
-    border: 2px solid rgb(120, 154, 161); !important;
+    border: 2px solid rgb(138, 166, 172) !important;
     background-color: #f8fbff;
+}
+
+.progress-bar {
+    background-color: rgb(138, 166, 172) !important;
+    color: rgb(138, 166, 172) !important;
+}
+
+.progress-bar .strength-label {
+    color: #fff;               /* white works nicely on the dark bar */
+    font-size: 0.85rem;        /* ~13-14 px, a bit smaller */
+    font-weight: 500;
 }

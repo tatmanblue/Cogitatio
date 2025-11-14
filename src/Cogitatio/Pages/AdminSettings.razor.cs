@@ -33,12 +33,15 @@ public partial class AdminSettings : ComponentBase
     private string adminPassword = "Cogitatio2024!";
     private string passwordInputType = "password";
     private string passwordToggleIcon = "bi bi-eye-slash";
+    private int passwordStrength = 0;
+    private string passwordStrengthLabel = "";
     
     // -------------------------------------------------------------------------
     // only needed for 2FA setup
     private bool use2FA = false;
     private string twoFactorSecret = string.Empty;
     private string verificationCode = string.Empty;
+    private string errorMessage = string.Empty;
     private string qrCodeUrl = string.Empty;
     private string currentTotpCode = "- - - - - -";
     private int secondsRemaining = 30;
@@ -103,6 +106,9 @@ public partial class AdminSettings : ComponentBase
                 case BlogSettings.AdminPassword:
                     adminPassword = string.IsNullOrEmpty(adminPassword) ? "Cogitatio2024!" : setting.Value;
                     break;
+                case BlogSettings.TwoFactorSecret:
+                    twoFactorSecret = setting.Value;
+                    break;
             }
         }
         
@@ -111,7 +117,16 @@ public partial class AdminSettings : ComponentBase
             GenerateQRCode(twoFactorSecret);
             UpdateTotpCode();
             StartTotpTimer();
+            StateHasChanged();
         }
+        
+        CheckPasswordStrength(adminPassword);
+    }
+
+    private void OnPasswordChanged(ChangeEventArgs e)
+    {
+        adminPassword = e.Value?.ToString() ?? string.Empty;
+        CheckPasswordStrength(adminPassword);
     }
 
     private void StartTotpTimer()
@@ -150,6 +165,16 @@ public partial class AdminSettings : ComponentBase
 
     private async Task Save()
     {
+        if (use2FA)
+        {
+            var totp = new Totp(Base32Encoding.ToBytes(twoFactorSecret));
+            if (!totp.VerifyTotp(verificationCode, out long timeStepMatched, VerificationWindow.RfcSpecifiedNetworkDelay))
+            {
+                errorMessage = "Mismatched verification code for 2FA. Please try again.";
+                return;
+            }
+        }
+        
         database.SaveSetting(BlogSettings.SiteTitle, siteTitle);
         database.SaveSetting(BlogSettings.About, about);
         database.SaveSetting(BlogSettings.Introduction, introduction);
@@ -207,6 +232,11 @@ public partial class AdminSettings : ComponentBase
 
         StateHasChanged();
     }
+
+    private void CheckPasswordStrength(string pwd)
+    {
+        (passwordStrength, passwordStrengthLabel) = EvaluatePasswordStrength(pwd);
+    }
     
     private (int, string) EvaluatePasswordStrength(string password)
     {
@@ -240,9 +270,10 @@ public partial class AdminSettings : ComponentBase
         // Evaluate score
         string strengthWord = score switch
         {
-            >= 5 => "Strong",
-            3 or 4 => "Moderate",
-            _ => "Weak"
+            >= 6 => "Ft Knox Strong",
+            5 => "Solid password",
+            3 or 4 => "Script kiddy level",
+            _ => "Dude! That's weak..."
         };
         
         return (score, strengthWord);
