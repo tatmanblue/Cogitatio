@@ -16,9 +16,6 @@ Env.Load();
 
 var builder = DistributedApplication.CreateBuilder(args);
 
-string adminPassword = Environment.GetEnvironmentVariable("CogitatioAdminPassword")
-                       ?? throw new InvalidOperationException("Environment variable 'CogitatioAdminPassword' is not set.");
-
 string connectionStr = Environment.GetEnvironmentVariable("CogitatioSiteDB")
                        ?? throw new InvalidOperationException("Environment variable 'CogitatioSiteDB' is not set.");
 
@@ -30,7 +27,6 @@ string tenantId = GetEnvVarWithLogging("CogitatioTenantId", "0");
 
 
 builder.AddProject<Cogitatio>("Cogitatio")
-    .WithEnvironment("CogitatioAdminPassword", adminPassword)
     .WithEnvironment("CogitatioSiteDB", connectionStr)
     .WithEnvironment("CogitatioDBType", dbType)
     .WithEnvironment("CogitatioAnalyticsId", analyticsId)
