@@ -2,3 +2,22 @@
     padding-top: 1em;
     color: rgb(120, 154, 161);
 }
+
+.action-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 10px;
+    width: 150px; /* Ensure all action items have the same width */
+}
+
+.action-item .btn {
+    width: 100%; /* Make buttons fill the width of the container */
+}
+
+.action-description {
+    margin-top: 5px;
+    text-align: center;
+    font-size: 0.9rem;
+    color: #6c757d; /* Optional: Muted text color */
+}

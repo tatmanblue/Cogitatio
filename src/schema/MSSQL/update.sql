@@ -19,3 +19,6 @@ CREATE TABLE Blog_Settings
     SettingValue NVARCHAR(MAX) NOT NULL,
     UNIQUE (TenantId, SettingKey)
 );
+
+
+SELECT * FROM Blog_Settings

@@ -15,7 +15,6 @@ public partial class AdminDiag : ComponentBase
     [Inject] NavigationManager navigationManager { get; set; }
     [Inject] UserState userState { get; set; }
     [Inject] IDatabase database { get; set; }
-    private string cogitatioAdminPassword { get; set; }
     private string cogitatioSiteDB { get; set; }
     private string analyticsId { get; set; }
     private string workingDir { get; set; }
@@ -29,7 +28,6 @@ public partial class AdminDiag : ComponentBase
         if (!userState.IsAdmin)
             navigationManager.NavigateTo("/Admin");
         
-        cogitatioAdminPassword = configuration["CogitatioAdminPassword"];
         cogitatioSiteDB = configuration["CogitatioSiteDB"];
         analyticsId = configuration["CogitatioAnalyticsId"];
         dbType = configuration["CogitatioDBType"] ?? "MSSQL";

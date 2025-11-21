@@ -25,6 +25,11 @@ public partial class Admin : ComponentBase
     private string passwordInputType = "password";
     private string passwordToggleIcon = "bi bi-eye-slash";
     
+#if DEBUG
+    // this is a debugging helper, and should ever be exposed in production
+    private bool byPassAuth => configuration.GetValue<bool>("ByPassAuth");
+#endif
+    
     protected override void OnInitialized()
     {
         useTOTP = database.GetSettingAsBool(BlogSettings.UseTOTP);
@@ -69,6 +74,15 @@ public partial class Admin : ComponentBase
             clearCredentials();
             return;
         }
+        
+#if DEBUG
+        if (useTOTP && byPassAuth) 
+        {
+            // for debugging purposes, allow bypassing TOTP if configured (only in DEBUG)
+            userState.IsAdmin = true;
+            return;
+        }
+#endif
         
         if (useTOTP)
         {

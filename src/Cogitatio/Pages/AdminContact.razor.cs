@@ -4,6 +4,9 @@ using Microsoft.AspNetCore.Components;
 
 namespace Cogitatio.Pages;
 
+/// <summary>
+/// Lists contact entries submitted via the contact form and saved in the database
+/// </summary>
 public partial class AdminContact : ComponentBase
 {
     [Inject] private ILogger<AdminContact> logger { get; set; }

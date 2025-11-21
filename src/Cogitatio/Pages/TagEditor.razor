@@ -1,0 +1,47 @@
+﻿@page "/TagEditor"
+<h3>Tag Editor</h3>
+
+@if (userState.IsAdmin == true)
+{
+    @if (posts == null)
+    {
+        <p>Loading...</p>
+    }
+    else if (!posts.Any())
+    
+        <p>No posts found.</p>
+    }
+    else
+    {
+        <table class="table table-striped table-hover">
+            <thead class="table-dark">
+            <tr>
+                <th></th>
+                <th>Title</th>
+                <th>Date</th>
+                <th>Tags</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var post in posts)
+            {
+                <tr @onmouseover="() => ShowMessage(post.Id)" @onmouseout="() => HideMessage(post.Id)">
+                    <td></td>
+                    <td>@post.Title</td>
+                    <td>@post.PublishedDate.ToShortDateString()</td>
+                    <td>@post.TagsDisplay</td>
+                </tr>
+                <tr class="bg-light" style="display: @(post.ShowDetails ? "table-row" : "none");">
+                    <td colspan="4" class="p-2">
+                        <strong>Tags:</strong> @post.TagsDisplay
+                    </td>
+                </tr>           
+            }
+            </tbody>
+        </table>
+    }
+}
+else
+{
+    <div>Redirecting to Admin Login</div>
+}

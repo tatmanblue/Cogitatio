@@ -24,6 +24,7 @@ string dbType = Environment.GetEnvironmentVariable("CogitatioDBType")
 string analyticsId = GetEnvVarWithLogging("CogitatioAnalyticsId");
 string tinyMceKey = GetEnvVarWithLogging("CogitatioTinyMceKey");
 string tenantId = GetEnvVarWithLogging("CogitatioTenantId", "0");
+string byPassAuth = GetEnvVarWithLogging("ByPassAuth", "false");
 
 
 builder.AddProject<Cogitatio>("Cogitatio")
@@ -31,7 +32,8 @@ builder.AddProject<Cogitatio>("Cogitatio")
     .WithEnvironment("CogitatioDBType", dbType)
     .WithEnvironment("CogitatioAnalyticsId", analyticsId)
     .WithEnvironment("CogitatioTinyMceKey", tinyMceKey)
-    .WithEnvironment("CogitatioTenantId", tenantId);
+    .WithEnvironment("CogitatioTenantId", tenantId)
+    .WithEnvironment("ByPassAuth", byPassAuth);
 
 
 builder.Build().Run();
