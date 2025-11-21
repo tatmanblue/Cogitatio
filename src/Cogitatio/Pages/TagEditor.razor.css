@@ -1,0 +1,12 @@
+.bg-light {
+    transition: all 0.3s ease;
+}
+
+.bg-light input {
+    width: 100%;
+    max-width: 400px;
+}
+
+.w-80 {
+    width: 80%;
+}

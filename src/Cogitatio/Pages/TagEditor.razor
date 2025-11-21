@@ -8,7 +8,7 @@
         <p>Loading...</p>
     }
     else if (!posts.Any())
-    
+    {
         <p>No posts found.</p>
     }
     else
@@ -25,7 +25,7 @@
             <tbody>
             @foreach (var post in posts)
             {
-                <tr @onmouseover="() => ShowMessage(post.Id)" @onmouseout="() => HideMessage(post.Id)">
+                <tr @onmouseover="() => ShowMessage(post.Id)">
                     <td></td>
                     <td>@post.Title</td>
                     <td>@post.PublishedDate.ToShortDateString()</td>
@@ -33,7 +33,12 @@
                 </tr>
                 <tr class="bg-light" style="display: @(post.ShowDetails ? "table-row" : "none");">
                     <td colspan="4" class="p-2">
-                        <strong>Tags:</strong> @post.TagsDisplay
+                        <strong>Edit Tags:</strong>
+                        <input type="text" class="form-control w-80" @bind="post.EditableTags" />
+                        <div class="mt-2">
+                            <button class="btn btn-primary btn-sm" @onclick="() => SaveTags(post.Id)">Save</button>
+                            <button class="btn btn-secondary btn-sm" @onclick="() => HideMessage(post.Id)">Close</button>
+                        </div>
                     </td>
                 </tr>           
             }

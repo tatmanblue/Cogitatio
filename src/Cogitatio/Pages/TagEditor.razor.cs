@@ -27,41 +27,60 @@ public partial class TagEditor : ComponentBase
         DateTime end = DateTime.Now.AddDays(1);
         
         // probably need another method in the database interface to get posts by date range and get tags in one call
-        posts = database.GetAllPostsByDates(start, end).Select(b => new BlogPostModel
+        posts = database.GetAllPostsByDates(start, end).Select(b =>
         {
-            Id = b.Id,
-            Author = b.Author,
-            Content = b.Content,
-            Title = b.Title,
-            Slug = b.Slug,
-            PublishedDate =  b.PublishedDate,
-            Tags = database.GetPostTags(b.Id)
+            BlogPostModel bpm = new BlogPostModel()
+            {   
+                Id = b.Id,
+                Author = b.Author,
+                Content = b.Content,
+                Title = b.Title,
+                Slug = b.Slug,
+                PublishedDate = b.PublishedDate,
+                Tags = database.GetPostTags(b.Id),
+            };
+            bpm.EditableTags = string.Join(", ", bpm.Tags ?? new List<string>());
+            return bpm;
         }).ToList();
     }
     
     private void ShowMessage(int id)
     {
-        var contact = posts.FirstOrDefault(c => c.Id == id);
-        if (contact != null)
+        var post = posts.FirstOrDefault(c => c.Id == id);
+        if (post != null)
         {
-            contact.ShowDetails = true;
+            post.ShowDetails = true;
+            post.EditableTags = string.Join(", ", post.Tags); // Initialize editable tags
         }
     }
 
     private void HideMessage(int id)
     {
-        var contact = posts.FirstOrDefault(c => c.Id == id);
-        if (contact != null)
+        var post = posts.FirstOrDefault(c => c.Id == id);
+        if (post != null)
         {
-            contact.ShowDetails = false;
+            post.ShowDetails = false;
         }
     }
 
-
+    private void SaveTags(int id)
+    {
+        var post = posts.FirstOrDefault(c => c.Id == id);
+        if (post != null)
+        {
+            post.Tags = post.EditableTags.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                                         .Select(tag => tag.Trim())
+                                         .ToList();
+            post.ShowDetails = false; // Hide the row after saving
+            // TODO optimize to only update tags in the database
+            database.UpdatePost(post);
+        }
+    }
 
     private class BlogPostModel : BlogPost
     {
         public bool ShowDetails { get; set; }
+        public string EditableTags { get; set; } 
 
         // New: comma-delimited tags string limited to max 25 displayed characters.
         public string TagsDisplay
