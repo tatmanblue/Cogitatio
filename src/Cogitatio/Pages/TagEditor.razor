@@ -33,12 +33,33 @@
                 </tr>
                 <tr class="bg-light" style="display: @(post.ShowDetails ? "table-row" : "none");">
                     <td colspan="4" class="p-2">
+                        <div class="d-flex gap-2 align-items-center">
+                            <div class="flex-grow-1">
+                                <strong>Edit Tags:</strong>
+                                <input type="text"
+                                       @bind="post.EditableTags"
+                                       @oninput="() => MarkAsChanged(post.Id)"
+                                       class="form-control"
+                                       style="width: 78%; min-width: 300px;"
+                                       placeholder="Enter tags separated by commas" />
+                            </div>
+                            <div class="flex-shrink-0 mt-3">  <!-- Buttons stay on the same line, aligned nicely -->
+                                <button class="btn btn-primary btn-sm" @onclick="() => SaveTags(post.Id)">Save</button>
+                                <button class="btn btn-secondary btn-sm ms-2" @onclick="() => HideMessage(post.Id)">Cancel</button>
+                            </div>
+                        </div>
+                    <!--
                         <strong>Edit Tags:</strong>
-                        <input type="text" class="form-control w-80" @bind="post.EditableTags" />
+                        <input type="text"
+                               @bind="post.EditableTags"
+                               @oninput="() => MarkTagEdits(post.Id)"
+                               class="form-control w-80"
+                               placeholder="Enter tags separated by commas"/>
                         <div class="mt-2">
                             <button class="btn btn-primary btn-sm" @onclick="() => SaveTags(post.Id)">Save</button>
                             <button class="btn btn-secondary btn-sm" @onclick="() => HideMessage(post.Id)">Close</button>
                         </div>
+                        -->
                     </td>
                 </tr>           
             }

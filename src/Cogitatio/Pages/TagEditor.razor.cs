@@ -13,6 +13,8 @@ public partial class TagEditor : ComponentBase
     [Inject] private NavigationManager navigationManager { get; set; }
 
     private List<BlogPostModel> posts = new();
+    private int selectedPostId = -1;
+    private bool hasChanges = false;
     
     protected override void OnParametersSet()
     {
@@ -46,12 +48,22 @@ public partial class TagEditor : ComponentBase
     
     private void ShowMessage(int id)
     {
+        if (selectedPostId != -1 && hasChanges)
+            return;
+        
+        if (selectedPostId != -1)
+            HideMessage(selectedPostId);
+        
         var post = posts.FirstOrDefault(c => c.Id == id);
         if (post != null)
         {
             post.ShowDetails = true;
             post.EditableTags = string.Join(", ", post.Tags); // Initialize editable tags
+            selectedPostId = id;
+            hasChanges = false;
         }
+        
+        StateHasChanged();
     }
 
     private void HideMessage(int id)
@@ -60,9 +72,17 @@ public partial class TagEditor : ComponentBase
         if (post != null)
         {
             post.ShowDetails = false;
+            selectedPostId = -1;
+            hasChanges = false;
         }
     }
 
+    private void MarkAsChanged(int id)
+    {
+        selectedPostId = id;
+        hasChanges = true;
+    }
+    
     private void SaveTags(int id)
     {
         var post = posts.FirstOrDefault(c => c.Id == id);
@@ -74,6 +94,9 @@ public partial class TagEditor : ComponentBase
             post.ShowDetails = false; // Hide the row after saving
             // TODO optimize to only update tags in the database
             database.UpdatePost(post);
+            hasChanges = false;
+            selectedPostId = -1;
+            HideMessage(id);
         }
     }
 
