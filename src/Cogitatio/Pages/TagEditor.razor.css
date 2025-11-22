@@ -10,3 +10,57 @@
 .w-80 {
     width: 80%;
 }
+
+/* Tag card styles */
+.tag-list {
+    /* container handled by bootstrap classes in markup */
+}
+
+.tag-card {
+    background: #f8f9fa;
+    border: 1px solid rgba(0,0,0,0.06);
+    border-radius: 6px;
+    padding: 0.25rem 0.5rem;
+    gap: 0.5rem;
+    align-items: center;
+    white-space: nowrap;
+    max-height: 36px;
+}
+
+/* tag name smaller to keep cards compact */
+.tag-name {
+    font-size: 0.85rem;
+    color: #212529;
+    margin-right: 0.35rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* small square showing count */
+.tag-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    background-color: rgb(120, 154, 161); /* bootstrap primary */
+    color: #fff;
+    font-size: 0.75rem;
+    border-radius: 4px;
+    flex: 0 0 auto;
+}
+
+/* ensure good wrapping on small screens */
+@media (max-width: 576px) {
+    .tag-card {
+        padding: 0.2rem 0.4rem;
+    }
+    .tag-name {
+        font-size: 0.8rem;
+    }
+    .tag-count {
+        width: 20px;
+        height: 20px;
+        font-size: 0.7rem;
+    }
+}

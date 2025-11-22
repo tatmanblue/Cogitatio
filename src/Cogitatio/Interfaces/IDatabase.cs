@@ -13,6 +13,7 @@ public interface IDatabase
     void UpdatePost(BlogPost post);
     List<string> GetAllTags();
     List<string> GetTopTags();
+    Dictionary<string, int> GetAllTagsWithCount();
     List<string> GetAllPostSlugs();
     List<BlogPost> GetAllPostsByTag(string tag);
     List<BlogPost> GetAllPostsByDates(DateTime from, DateTime to);

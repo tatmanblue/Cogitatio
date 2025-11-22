@@ -236,6 +236,19 @@ public class Postgresssql : IDatabase, IDisposable
         return result;
     }
 
+    public Dictionary<string, int> GetAllTagsWithCount()
+    {
+        Dictionary<string, int> result = new();
+        string sql = $@"SELECT tag, Count(tag) AS Count FROM blog_tags WHERE tenant_id = {tenantId} GROUP BY tag ORDER BY Count DESC;";
+        ExecuteReader(sql,
+            (reader =>
+            {
+                result[reader.AsString("tag")] = reader.AsInt("Count");
+                return true;
+            }));
+
+        return result;
+    }
     public List<string> GetAllPostSlugs()
     {
         List<string> result = new();

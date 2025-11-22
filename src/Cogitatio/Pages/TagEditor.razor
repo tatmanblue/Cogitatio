@@ -1,6 +1,24 @@
 ﻿@page "/TagEditor"
 <h3>Tag Editor</h3>
 
+@* Tag summary cards: responsive, multiple per row *@
+@if (usedTags == null || !usedTags.Any())
+{
+    <p class="text-muted small">Loading tags...</p>
+}
+else
+{
+    <div class="tag-list d-flex flex-wrap gap-2 mb-3">
+        @foreach (var kv in usedTags.OrderByDescending(t => t.Value))
+        {
+            <div class="tag-card d-inline-flex align-items-center">
+                <span class="tag-name">@kv.Key</span>
+                <span class="tag-count" title="@($"{kv.Value} usages")">@kv.Value</span>
+            </div>
+        }
+    </div>
+}
+
 @if (userState.IsAdmin == true)
 {
     @if (posts == null)
@@ -39,8 +57,7 @@
                                 <input type="text"
                                        @bind="post.EditableTags"
                                        @oninput="() => MarkAsChanged(post.Id)"
-                                       class="form-control"
-                                       style="width: 78%; min-width: 300px;"
+                                       class="form-control w-80"
                                        placeholder="Enter tags separated by commas" />
                             </div>
                             <div class="flex-shrink-0 mt-3">  <!-- Buttons stay on the same line, aligned nicely -->

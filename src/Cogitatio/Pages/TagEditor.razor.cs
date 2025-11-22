@@ -13,6 +13,7 @@ public partial class TagEditor : ComponentBase
     [Inject] private NavigationManager navigationManager { get; set; }
 
     private List<BlogPostModel> posts = new();
+    private Dictionary<string, int> usedTags = new();
     private int selectedPostId = -1;
     private bool hasChanges = false;
     
@@ -24,6 +25,8 @@ public partial class TagEditor : ComponentBase
     
     protected override void OnInitialized()
     {
+        usedTags = database.GetAllTagsWithCount();
+        
         // for now we are getting all of the posts but the idea is to limit this by a date range on the UI
         DateTime start = new DateTime(2000, 1, 1);
         DateTime end = DateTime.Now.AddDays(1);

@@ -238,6 +238,20 @@ public class SqlServer : IDatabase, IDisposable
 
         return result;
     }
+    
+    public Dictionary<string, int> GetAllTagsWithCount()
+    {
+        Dictionary<string, int> result = new();
+        string sql = $@"SELECT Tag, Count(Tag) AS Count FROM Blog_Tags WHERE tenantId = {tenantId} GROUP BY Tag ORDER BY Count DESC;";
+        ExecuteReader(sql,
+            (reader =>
+            {
+                result[reader.AsString("Tag")] = reader.AsInt("Count");
+                return true;
+            }));
+
+        return result;
+    }
 
     public List<string> GetAllPostSlugs()
     {
