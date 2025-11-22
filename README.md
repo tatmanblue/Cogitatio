@@ -15,6 +15,7 @@ The short answer is time.  In the time it took for me to learn and configure an 
 7. Admin portal
    1. Admin account configuration, including optional 2FA
    2. Site configuration
+   3. Post and tag editing
 8. [Google Analytics tracking](https://analytics.google.com/analytics/web)
 9. quasi multi-tenant 
 10. MS SQL or Postgres backend
