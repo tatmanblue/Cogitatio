@@ -64,3 +64,12 @@
         font-size: 0.7rem;
     }
 }
+
+/* override table header background for this page (override Bootstrap .table-dark) */
+table.table thead.table-dark th,
+table.table thead.table-dark {
+    background-color: rgb(79, 117, 129) !important;
+    color: #ffffff !important;
+    /* optional: keep border subtle */
+    border-color: rgba(0, 0, 0, 0.05) !important;
+}
