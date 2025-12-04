@@ -86,6 +86,12 @@ public partial class Admin : ComponentBase
         
         if (useTOTP)
         {
+            if (string.IsNullOrEmpty(toptId))
+            {
+                clearCredentials();
+                return;
+            }
+            
             string twoFactorSecret = database.GetSetting(BlogSettings.TwoFactorSecret);
             var totp = new Totp(Base32Encoding.ToBytes(twoFactorSecret));
             if (!totp.VerifyTotp(toptId, out long timeStepMatched, VerificationWindow.RfcSpecifiedNetworkDelay))
