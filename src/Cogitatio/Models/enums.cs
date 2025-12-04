@@ -43,8 +43,10 @@ public enum BlogSettings
 
 public enum UserAccountStates
 {
-    Created = 0,                        // user entered account information, need to verify email
-    CommentWithApproval = 1,            // level one commenting, each comment must be approved
-    CommentWithoutApproval = 2,         // level two commenting, can comment without approval
-    Blocked = 3
+    Unknown = 0,
+    Created = 1,                        // user entered account information, need to verify email
+    CommentWithApproval = 2,            // level one commenting, each comment must be approved
+    CommentWithoutApproval = 3,         // level two commenting, can comment without approval
+    Moderator = 4,                      // level three commenting, can approve comments
+    Blocked = 5                         // user is blocked from commenting,
 }

@@ -15,7 +15,7 @@ public partial class AdminHome : ComponentBase
     [Inject] private IConfiguration configuration { get; set; }
     [Inject] private NavigationManager navigationManager { get; set; }
     [Inject] private IDatabase database { get; set; }
-    [Inject] private UserState userState { get; set; }
+    [Inject] private AdminUserState AdminUserState { get; set; }
 
     private bool useTOTP = false;
     private string accountId;
@@ -37,7 +37,7 @@ public partial class AdminHome : ComponentBase
 
     private async Task Logout()
     {
-        userState.IsAdmin = false;
+        AdminUserState.IsAdmin = false;
     }
     
     private async Task Login()
@@ -55,7 +55,7 @@ public partial class AdminHome : ComponentBase
         string adminId = database.GetSetting(BlogSettings.AdminId, "admin");
         string adminPassword = database.GetSetting(BlogSettings.AdminPassword, "Cogitatio2024!");
         
-        userState.IsAdmin = false;
+        AdminUserState.IsAdmin = false;
         errorMessage = string.Empty;
 
         // the login logic path is 
@@ -79,7 +79,7 @@ public partial class AdminHome : ComponentBase
         if (useTOTP && byPassAuth) 
         {
             // for debugging purposes, allow bypassing TOTP if configured (only in DEBUG)
-            userState.IsAdmin = true;
+            AdminUserState.IsAdmin = true;
             return;
         }
 #endif
@@ -101,7 +101,7 @@ public partial class AdminHome : ComponentBase
             }
         }
         
-        userState.IsAdmin = true;
+        AdminUserState.IsAdmin = true;
     }   
     
     private void TogglePasswordVisibility()

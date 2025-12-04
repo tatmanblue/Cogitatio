@@ -13,7 +13,7 @@ public partial class AdminDiag : ComponentBase
     [Inject] IConfiguration configuration { get; set; }
     [Inject] ILogger<AdminDiag> logger { get; set; }
     [Inject] NavigationManager navigationManager { get; set; }
-    [Inject] UserState userState { get; set; }
+    [Inject] AdminUserState AdminUserState { get; set; }
     [Inject] IDatabase database { get; set; }
     private string cogitatioSiteDB { get; set; }
     private string analyticsId { get; set; }
@@ -25,7 +25,7 @@ public partial class AdminDiag : ComponentBase
     
     protected override void OnParametersSet()
     {
-        if (!userState.IsAdmin)
+        if (!AdminUserState.IsAdmin)
             navigationManager.NavigateTo("/Admin");
         
         cogitatioSiteDB = configuration["CogitatioSiteDB"];

@@ -2,7 +2,7 @@
 @page "/AdminEditPost/{Slug}"
 <h3>Editing Post</h3>
 
-@if (userState.IsAdmin)
+@if (AdminUserState.IsAdmin)
 {
     if (!string.IsNullOrEmpty(Slug))
     {

@@ -9,7 +9,7 @@ public partial class AdminEditPost : ComponentBase
     [Inject] private ILogger<AdminEditPost> logger { get; set; }
     [Inject] private NavigationManager navigationManager { get; set; }
     [Inject] private IDatabase database { get; set; }
-    [Inject] private UserState userState { get; set; }
+    [Inject] private AdminUserState AdminUserState { get; set; }
     [Parameter] public string Slug { get; set; }
     
     private string title = string.Empty;
@@ -26,7 +26,7 @@ public partial class AdminEditPost : ComponentBase
     
     protected override void OnParametersSet()
     {
-        if (!userState.IsAdmin)
+        if (!AdminUserState.IsAdmin)
             navigationManager.NavigateTo("/Admin");
         
         if (string.IsNullOrEmpty(Slug))

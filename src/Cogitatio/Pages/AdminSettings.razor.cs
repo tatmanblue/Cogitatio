@@ -20,7 +20,7 @@ public partial class AdminSettings : ComponentBase
     [Inject] private IConfiguration configuration { get; set; }
     [Inject] private IDatabase database { get; set; }
     [Inject] private NavigationManager navigationManager { get; set; }
-    [Inject] private UserState userState { get; set; }
+    [Inject] private AdminUserState AdminUserState { get; set; }
     
     private string shortTitle = string.Empty;
     private string longTitle = string.Empty;
@@ -73,7 +73,7 @@ public partial class AdminSettings : ComponentBase
         logger.LogError("OnParametersSet() called with parameters:");
         tinyMceKey = configuration.GetValue<string>("CogitatioTinyMceKey") ?? "no-api";
         
-        if (!userState.IsAdmin)
+        if (!AdminUserState.IsAdmin)
             navigationManager.NavigateTo("/Admin");
         
         Dictionary<BlogSettings, string> settings = database.GetAllSettings();

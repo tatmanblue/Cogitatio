@@ -31,7 +31,9 @@ builder.Services.AddControllers();
 
 // ------------- Application Services -------------
 // User State -- for main admin account for managing site
-builder.Services.AddScoped<UserState>();
+builder.Services.AddScoped<AdminUserState>();
+// User State -- for blog user account state tracking
+builder.Services.AddScoped<BlogUserState>();
 // Database -- general blog database access
 builder.Services.AddScoped<IDatabase>(p =>
 {

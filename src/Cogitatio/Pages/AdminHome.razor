@@ -1,7 +1,7 @@
 ﻿@page "/Admin"
 <h3>Admin Panel</h3>
 
-@if (!userState.IsAdmin)
+@if (!AdminUserState.IsAdmin)
 {
     <div class="login">
         <h4>Credentials are required:</h4>
@@ -37,7 +37,7 @@
     </div>
 }
 
-@if (userState.IsAdmin)
+@if (AdminUserState.IsAdmin)
 {
     <div class="card shadow-sm mb-3">
         <div class="card-body">
@@ -75,4 +75,4 @@
     </div>
 }
 
-<p style="margin-top: 2em; font-size: x-small">@userState.InstanceId</p>
+<p style="margin-top: 2em; font-size: x-small">@AdminUserState.InstanceId</p>

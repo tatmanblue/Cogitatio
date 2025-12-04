@@ -11,14 +11,14 @@ public partial class AdminContact : ComponentBase
 {
     [Inject] private ILogger<AdminContact> logger { get; set; }
     [Inject] private IDatabase database { get; set; }
-    [Inject] UserState userState { get; set; }
+    [Inject] AdminUserState AdminUserState { get; set; }
     [Inject] private NavigationManager navigationManager { get; set; }
     
     private List<ContactRecordModel> contacts;
 
     protected override void OnParametersSet()
     {
-        if (!userState.IsAdmin)
+        if (!AdminUserState.IsAdmin)
             navigationManager.NavigateTo("/Admin");
     }
     

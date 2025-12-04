@@ -2,13 +2,13 @@
 
 <h3>Cogitatio Configuration</h3>
 
-@if (@userState.IsAdmin)
+@if (AdminUserState.IsAdmin)
 {
     <div style="background-color: #ffcccc; color: #a94442; padding: 10px; border: 1px solid #a94442; margin-bottom: 16px; font-weight: bold;">
         Warning: You are viewing sensitive information!
     </div>
     <div>
-        <p>UserState InstanceId: @userState.InstanceId</p>
+        <p>UserState InstanceId: @AdminUserState.InstanceId</p>
     </div>
     <div>
         DB Access = '@cogitatioSiteDB'
