@@ -19,30 +19,8 @@
     </footer>
 </article>
 
-<section class="comments">
-    <h2>Comments</h2>
-    @if (PostContent.Comments?.Any() == true)
-    {
-        <ul>
-            @foreach (var comment in PostContent.Comments)
-            {
-                <li>
-                    <p><strong>@comment.Author</strong> says:</p>
-                    <blockquote>@comment.Text</blockquote>
-                    <p class="meta">@comment.PostedDate.ToString("MMMM dd, yyyy HH:mm")</p>
-                </li>
-            }
-        </ul>
-    }
-    else
-    {
-        <span style="text-align: center">If you'd like to comment on this post,
-            <NavLink href=@("/Contact/" + @PostContent.Slug) class="btn btn-link">
-                please reach out to me through the contact page
-            </NavLink>.
-        </span>
-    }
-</section>
+<BlogComments PostContent="@PostContent"></BlogComments>
+
 <nav aria-label="Post navigation">
     <BlogPostNavigation
         NextPostSlug=@PostContent.NextPost.Slug

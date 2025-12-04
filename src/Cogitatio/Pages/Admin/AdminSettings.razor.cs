@@ -29,6 +29,10 @@ public partial class AdminSettings : ComponentBase
     private string siteTitle = string.Empty;
     private string copyright = string.Empty;
     
+    // --------------------------------------------------------------------------
+    // comment configuration
+    private bool allowComments = false;
+    
     // -------------------------------------------------------------------------
     // admin credentials
     private string adminId = "admin";
@@ -54,7 +58,7 @@ public partial class AdminSettings : ComponentBase
     // -------------------------------------------------------------------------
     // screen configuration 
     private int activeTab = 0;
-    private readonly string[] tabTitles = { "Security", "Site Info", "Introduction", "About" };
+    private readonly string[] tabTitles = { "Security", "Site Info", "Introduction", "About", "Comments" };
         
     private Dictionary<string, object> editorConfig = new Dictionary<string, object>{
         { "menubar", true },
@@ -74,7 +78,7 @@ public partial class AdminSettings : ComponentBase
         tinyMceKey = configuration.GetValue<string>("CogitatioTinyMceKey") ?? "no-api";
         
         if (!AdminUserState.IsAdmin)
-            navigationManager.NavigateTo("/Admin");
+            navigationManager.NavigateTo("/a/Admin");
         
         Dictionary<BlogSettings, string> settings = database.GetAllSettings();
         foreach (var setting in settings)
@@ -110,6 +114,9 @@ public partial class AdminSettings : ComponentBase
                     break;
                 case BlogSettings.TwoFactorSecret:
                     twoFactorSecret = setting.Value;
+                    break;
+                case BlogSettings.AllowComments:
+                    allowComments = Convert.ToBoolean(setting.Value);
                     break;
             }
         }
@@ -185,13 +192,14 @@ public partial class AdminSettings : ComponentBase
         database.SaveSetting(BlogSettings.Copyright, copyright);
         database.SaveSetting(BlogSettings.UseTOTP, use2FA.ToString());
         database.SaveSetting(BlogSettings.TwoFactorSecret, twoFactorSecret);
+        database.SaveSetting(BlogSettings.AllowComments, allowComments.ToString());
         
         if (!string.IsNullOrEmpty(adminId))
             database.SaveSetting(BlogSettings.AdminId, adminId);
         if (!string.IsNullOrEmpty(adminPassword))
             database.SaveSetting(BlogSettings.AdminPassword, adminPassword);
         
-        navigationManager.NavigateTo("/Admin");
+        navigationManager.NavigateTo("/a/Admin");
     }
     
     private void GenerateQRCode(string base32Secret)
