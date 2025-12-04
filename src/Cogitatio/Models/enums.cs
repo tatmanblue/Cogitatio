@@ -35,6 +35,10 @@ public enum BlogSettings
     AdminPassword,
     [Description("Turns on or off comments on blog posts")]
     AllowComments,
+    [Description("The maximum length of a comment allowed")]
+    CommentMaxLength,
+    [Description("The maximum number of comments allowed per blog post")]
+    MaxCommentsPerPost,
     [Description("Salt value used when hashing user passwords")]
     PasswordSalt,
     [Description("The connection string for the user database")]
