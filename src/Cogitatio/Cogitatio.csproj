@@ -28,5 +28,14 @@
         <CopyToPublishDirectory>Never</CopyToPublishDirectory>
         <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       </None>
+      <None Include="Properties\LaunchSettings.json">
+        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+        <CopyToPublishDirectory>Never</CopyToPublishDirectory>
+        <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      </None>
+    </ItemGroup>
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="Pages\Admin\Admin.razor" />
+      <_ContentIncludedByDefault Remove="Pages\Admin\_Imports.razor" />
     </ItemGroup>
 </Project>

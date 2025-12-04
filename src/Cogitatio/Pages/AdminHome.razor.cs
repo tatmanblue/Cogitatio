@@ -9,9 +9,9 @@ namespace Cogitatio.Pages;
 /// Simple page for creating new blog posts
 /// For reference see https://www.tiny.cloud/blog/enrich-blazor-textbox/
 /// </summary>
-public partial class Admin : ComponentBase
+public partial class AdminHome : ComponentBase
 {
-    [Inject] private ILogger<Admin> logger { get; set; }
+    [Inject] private ILogger<AdminHome> logger { get; set; }
     [Inject] private IConfiguration configuration { get; set; }
     [Inject] private NavigationManager navigationManager { get; set; }
     [Inject] private IDatabase database { get; set; }
