@@ -61,6 +61,7 @@ CREATE TABLE Blog_Comments (
     PostId INT NOT NULL,                     -- Foreign key to BlogPosts table
     Author NVARCHAR(100) NOT NULL,           -- Comment author's name
     Text NVARCHAR(MAX) NOT NULL,             -- Comment text
+    TenantId INT NOT NULL DEFAULT 0,
     PostedDate DATETIME NOT NULL DEFAULT GETDATE(), -- Comment posted date
     FOREIGN KEY (PostId) REFERENCES Blog_Posts(PostId) -- Foreign key constraint
 );

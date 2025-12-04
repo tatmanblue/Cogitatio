@@ -29,7 +29,10 @@ builder.Services.AddServerSideBlazor()
     });
 builder.Services.AddControllers();
 
+// ------------- Application Services -------------
+// User State -- for main admin account for managing site
 builder.Services.AddScoped<UserState>();
+// Database -- general blog database access
 builder.Services.AddScoped<IDatabase>(p =>
 {
     var configuration = p.GetRequiredService<IConfiguration>();
@@ -59,11 +62,46 @@ builder.Services.AddScoped<IDatabase>(p =>
         throw new NotSupportedException($"Database type {type} is not supported.");
     }
 });
+// Site Settings
 builder.Services.AddScoped<SiteSettings>(p =>
 {
     var database = p.GetRequiredService<IDatabase>();
     return SiteSettings.Load(database);
 });
+// User Database -- for user accounts
+builder.Services.AddScoped<IUserDatabase>(p =>
+{
+    var configuration = p.GetRequiredService<IConfiguration>();
+    var tenantId = Convert.ToInt32(configuration["CogitatioTenantId"] ?? "0");
+    var dbType = configuration["CogitatioDBType"] ?? "MSSQL";
+    var db = p.GetRequiredService<IDatabase>();
+    var logger = p.GetRequiredService<ILoggerFactory>()
+        .CreateLogger<IUserDatabase>();
+
+    var connectionString = db.GetSetting(BlogSettings.UserDBConnectionString);
+    
+    IUserDatabase userDB = dbType switch
+    {
+        "MSSQL" => new SqlServerUsers(
+            logger,
+            connectionString,
+            tenantId),
+        "POSTGRES" => new PostgresssqlUsers(
+            logger,
+            connectionString,
+            tenantId),
+        _ => ThrowUnsupported(dbType)
+    };
+    
+    return userDB;
+
+    IUserDatabase ThrowUnsupported(string type)
+    {
+        logger.LogWarning("Database type {DatabaseType} is not supported.", type);
+        throw new NotSupportedException($"Database type {type} is not supported.");
+    }
+});
+
 
 var logFilePath = Path.Combine(AppContext.BaseDirectory, "Logs");
 Directory.CreateDirectory(logFilePath); 

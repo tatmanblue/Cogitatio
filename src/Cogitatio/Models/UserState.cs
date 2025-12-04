@@ -1,5 +1,9 @@
 ﻿namespace Cogitatio.Models;
 
+/// <summary>
+/// For main admin account state tracking.
+/// TODO can we use this for blog users too?
+/// </summary>
 public class UserState
 {
     private ILogger<UserState> logger;

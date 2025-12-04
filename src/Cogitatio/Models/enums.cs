@@ -33,4 +33,18 @@ public enum BlogSettings
     AdminId,
     [Description("The admin user password in plain text, default is 'Cogitatio2024!'")]
     AdminPassword,
+    [Description("Turns on or off comments on blog posts")]
+    AllowComments,
+    [Description("Salt value used when hashing user passwords")]
+    PasswordSalt,
+    [Description("The connection string for the user database")]
+    UserDBConnectionString
+}
+
+public enum UserAccountStates
+{
+    Created = 0,                        // user entered account information, need to verify email
+    CommentWithApproval = 1,            // level one commenting, each comment must be approved
+    CommentWithoutApproval = 2,         // level two commenting, can comment without approval
+    Blocked = 3
 }
