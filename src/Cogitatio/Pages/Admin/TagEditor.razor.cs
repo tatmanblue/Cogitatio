@@ -3,11 +3,11 @@ using Cogitatio.Models;
 using Microsoft.AspNetCore.Components;
 using System.Linq;
 
-namespace Cogitatio.Pages;
+namespace Cogitatio.Pages.Admin;
 
 public partial class TagEditor : ComponentBase
 {
-    [Inject] private ILogger<AdminContact> logger { get; set; }
+    [Inject] private ILogger<TagEditor> logger { get; set; }
     [Inject] private IDatabase database { get; set; }
     [Inject] AdminUserState AdminUserState { get; set; }
     [Inject] private NavigationManager navigationManager { get; set; }

@@ -2,7 +2,7 @@
 using Cogitatio.Models;
 using Microsoft.AspNetCore.Components;
 
-namespace Cogitatio.Pages;
+namespace Cogitatio.Pages.Admin;
 
 /// <summary>
 /// Lists contact entries submitted via the contact form and saved in the database

@@ -3,7 +3,7 @@ using Cogitatio.Models;
 using Microsoft.AspNetCore.Components;
 using OtpNet;
 
-namespace Cogitatio.Pages;
+namespace Cogitatio.Pages.Admin;
 
 /// <summary>
 /// Simple page for creating new blog posts

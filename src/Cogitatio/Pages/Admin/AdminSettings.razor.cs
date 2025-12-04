@@ -5,7 +5,7 @@ using Google.Protobuf.WellKnownTypes;
 using OtpNet;
 using QRCoder;
 
-namespace Cogitatio.Pages;
+namespace Cogitatio.Pages.Admin;
 
 /// <summary>
 /// For editing site-wide settings. Only accessible to admins.

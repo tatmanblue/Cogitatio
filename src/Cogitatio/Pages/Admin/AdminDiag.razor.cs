@@ -3,7 +3,7 @@ using Cogitatio.Models;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 
-namespace Cogitatio.Pages;
+namespace Cogitatio.Pages.Admin;
 
 /// <summary>
 /// Gonna keep this around for a bit in case I need it again for debugging something

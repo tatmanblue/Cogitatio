@@ -2,7 +2,7 @@
 using Cogitatio.Models;
 using Microsoft.AspNetCore.Components;
 
-namespace Cogitatio.Pages;
+namespace Cogitatio.Pages.Admin;
 
 public partial class AdminAddPost : ComponentBase
 {
