@@ -49,8 +49,9 @@ public enum UserAccountStates
 {
     Unknown = 0,
     Created = 1,                        // user entered account information, need to verify email
-    CommentWithApproval = 2,            // level one commenting, each comment must be approved
-    CommentWithoutApproval = 3,         // level two commenting, can comment without approval
-    Moderator = 4,                      // level three commenting, can approve comments
-    Blocked = 5                         // user is blocked from commenting,
+    AwaitingApproval = 2,               // user email verified, awaiting admin approval
+    CommentWithApproval = 3,            // level one commenting, each comment must be approved
+    CommentWithoutApproval = 4,         // level two commenting, can comment without approval
+    Moderator = 5,                      // level three commenting, can approve comments
+    Blocked = 6                         // user is blocked from commenting,
 }

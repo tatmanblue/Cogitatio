@@ -6,7 +6,8 @@ using Microsoft.Data.SqlClient;
 namespace Cogitatio.Models;
 
 /// <summary>
-/// TODO duplicity with Postgressql will be addressed in a future update 
+/// TODO duplicity with Postgressql will be addressed in a future update
+/// TODO there is some commonality here with SqlServerUsers database access that could be refactored
 /// </summary>
 public class SqlServer : IDatabase, IDisposable
 {

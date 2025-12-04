@@ -1,4 +1,6 @@
-﻿namespace Cogitatio.Interfaces;
+﻿using Cogitatio.Models;
+
+namespace Cogitatio.Interfaces;
 
 /// <summary>
 /// Separate blog database access from user database access to allow for the user
@@ -6,5 +8,7 @@
 /// </summary>
 public interface IUserDatabase
 {
-    
+    void Save(BlogUserRecord user);    
+    BlogUserRecord Load(string email);
+    bool DoesUserExist(string email);
 }

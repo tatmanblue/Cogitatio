@@ -32,6 +32,8 @@ public partial class AdminSettings : ComponentBase
     // --------------------------------------------------------------------------
     // comment configuration
     private bool allowComments = false;
+    private int commentMaxLen = 500;
+    private int maxCommentsPerPost = 100;
     
     // -------------------------------------------------------------------------
     // admin credentials
@@ -118,6 +120,12 @@ public partial class AdminSettings : ComponentBase
                 case BlogSettings.AllowComments:
                     allowComments = Convert.ToBoolean(setting.Value);
                     break;
+                case BlogSettings.CommentMaxLength:
+                    commentMaxLen = Convert.ToInt32(setting.Value);
+                    break;
+                case BlogSettings.MaxCommentsPerPost:
+                    maxCommentsPerPost = Convert.ToInt32(setting.Value);
+                    break;
             }
         }
         
@@ -176,6 +184,7 @@ public partial class AdminSettings : ComponentBase
     {
         if (use2FA)
         {
+            // TODO: if the 2fa information was not changed, should we require re-verification?
             var totp = new Totp(Base32Encoding.ToBytes(twoFactorSecret));
             if (!totp.VerifyTotp(verificationCode, out long timeStepMatched, VerificationWindow.RfcSpecifiedNetworkDelay))
             {
@@ -193,6 +202,8 @@ public partial class AdminSettings : ComponentBase
         database.SaveSetting(BlogSettings.UseTOTP, use2FA.ToString());
         database.SaveSetting(BlogSettings.TwoFactorSecret, twoFactorSecret);
         database.SaveSetting(BlogSettings.AllowComments, allowComments.ToString());
+        database.SaveSetting(BlogSettings.CommentMaxLength, commentMaxLen.ToString());
+        database.SaveSetting(BlogSettings.MaxCommentsPerPost, maxCommentsPerPost.ToString());
         
         if (!string.IsNullOrEmpty(adminId))
             database.SaveSetting(BlogSettings.AdminId, adminId);
@@ -288,7 +299,9 @@ public partial class AdminSettings : ComponentBase
         return (score, strengthWord);
     }
     
-
+    /// <summary>
+    /// This behavior exists on multiple pages, consider refactoring into a shared component
+    /// </summary>
     private void TogglePasswordVisibility()
     {
         if (passwordInputType == "password")

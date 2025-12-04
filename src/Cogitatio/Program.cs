@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using Microsoft.AspNetCore.HttpOverrides;
 using Cogitatio.Interfaces;
 using Cogitatio.Models;
 using Serilog;
@@ -28,6 +29,15 @@ builder.Services.AddServerSideBlazor()
         options.MaximumReceiveMessageSize = 64 * 1024;
     });
 builder.Services.AddControllers();
+builder.Services.AddHttpContextAccessor();
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+    // Clear known networks/proxies so the middleware will accept forwarded headers from Azure
+    options.KnownNetworks.Clear();
+    options.KnownProxies.Clear();
+});
+
 
 // ------------- Application Services -------------
 // User State -- for main admin account for managing site
@@ -122,6 +132,7 @@ Log.Logger = new LoggerConfiguration()
 builder.Host.UseSerilog();
 
 var app = builder.Build();
+app.UseForwardedHeaders();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -132,7 +143,12 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
+/*
+// do we need this
+app.UseAuthentication();
+app.UseAuthorization();
+app.MapControllers();
+ */
 app.UseStaticFiles();
 app.UseSerilogRequestLogging();
 app.UseRouting();
@@ -143,5 +159,14 @@ app.UseEndpoints(endpoints =>
 
 app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
+app.MapGet("/api/pow/challenge", () =>
+{
+    // this little endpoint generates a random 32 byte challenge for proof of work used in the sign up workflow
+    var bytes = new byte[32];
+    Random.Shared.NextBytes(bytes);
+    var challenge = Convert.ToBase64String(bytes);
+
+    return Results.Json(new { challenge });
+});
 
 app.Run();
