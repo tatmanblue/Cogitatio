@@ -14,21 +14,23 @@ else if (signUpState == SignUpState.Initial || signUpState == SignUpState.Error)
     <div class="mb-3">
         <div class="d-flex flex-column">
             <div class="mb-2">
-                <input id="email" @bind="record.Email" placeholder="Enter your email address" class="form-control"/>
+                <input id="email" @bind="record.Email" placeholder="Email address" class="form-control"/>
             </div>
             <div class="mb-2">
-                <input id="displayName" @bind="record.DisplayName" placeholder="Enter your Display Name" class="form-control"/>
+                <input id="displayName" @bind="record.DisplayName" placeholder="Display Name" class="form-control"/>
             </div>
             <div class="mb-2">
-                <input id="password"
-                       type="@passwordInputType"
-                       value=""
-                       @oninput="e => record.Password = e.Value?.ToString()"
-                       placeholder="Enter your password"
-                       class="form-control"/>
-                <button type="button" class="btn btn-outline-secondary" @onclick="TogglePasswordVisibility">
-                    <i class="@passwordToggleIcon"></i>
-                </button>
+                <div class="input-group">
+                    <input id="password"
+                           type="@passwordInputType"
+                           value=""
+                           @oninput="e => record.Password = e.Value?.ToString()"
+                           placeholder="Password"
+                           class="form-control"/>
+                    <button type="button" class="btn btn-outline-secondary" @onclick="TogglePasswordVisibility">
+                        <i class="@passwordToggleIcon"></i>
+                    </button>
+                </div>
             </div>
             <div class="mb-2">
                 <p class="text-muted">Your IP: @userIp</p>
