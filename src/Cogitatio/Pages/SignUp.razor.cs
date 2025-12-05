@@ -1,5 +1,6 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
+using Cogitatio.General;
 using Cogitatio.Interfaces;
 using Cogitatio.Logic;
 using Cogitatio.Models;

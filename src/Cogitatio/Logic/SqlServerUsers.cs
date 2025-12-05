@@ -1,4 +1,5 @@
 ﻿using System.Data;
+using Cogitatio.General;
 using Cogitatio.Interfaces;
 using Cogitatio.Models;
 using Microsoft.Data.SqlClient;
