@@ -42,7 +42,8 @@ public partial class SignUp : ComponentBase
         Initial,
         Confirm,
         Saved,
-        Error
+        Error,
+        NotAllowed
     }
 
     private string userIp = string.Empty;
@@ -52,7 +53,7 @@ public partial class SignUp : ComponentBase
     private string waitMessage = "Getting all the bits in a row...";        // TODO again like to make this configurable
     private string progress = "starting…";
     private PoWResult powResult = null;
-    private int powDifficulty = 20; // TODO: make configurable
+    private int powDifficulty = 21;                                         // TODO: make configurable
     
     private BlogUserRecord record = new();
     private string errorMessage = string.Empty;
@@ -62,6 +63,9 @@ public partial class SignUp : ComponentBase
     {
         var ip = HttpContextAccessor?.HttpContext?.Connection?.RemoteIpAddress?.ToString();
         userIp = string.IsNullOrEmpty(ip) ? "unknown" : ip;
+        var allowNewUsers = database.GetSettingAsBool(BlogSettings.AllowNewUsers);
+        if (false == allowNewUsers)
+            signUpState = SignUpState.NotAllowed;
     }
     
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -69,12 +73,11 @@ public partial class SignUp : ComponentBase
         logger.LogDebug("OnAfterRenderAsync");
         if (signUpState == SignUpState.VerifyingHuman)
         {
-            // Start the PoW (exactly the same secure flow as before)
-            // TODO: make the difficulty configurable
             powResult = await JS.InvokeAsync<PoWResult>("startProofOfWork", powDifficulty);
-
+            if (!string.IsNullOrEmpty(userState.SignInChallenge)) powResult.Challenge = userState.SignInChallenge;
+            
             signUpState = SignUpState.Initial;
-            logger.LogDebug("OnAfterRenderAsync: verified human with nonce {Nonce}", powResult.Nonce);
+            logger.LogDebug("OnAfterRenderAsync: verified human with nonce {Nonce} & challenge {Challange}", powResult.Nonce, powResult.Challenge);
             StateHasChanged();
         }
     }

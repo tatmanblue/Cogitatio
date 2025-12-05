@@ -9,4 +9,5 @@ public class BlogUserState
     public Guid InstanceId { get; } = Guid.NewGuid();
     public UserAccountStates AccountState { get; set; } = UserAccountStates.Unknown;
     public DateTime LastLogin { get; set; } = DateTime.MinValue;
+    public string SignInChallenge { get; set; } = string.Empty;
 }

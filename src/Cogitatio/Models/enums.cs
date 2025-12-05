@@ -42,7 +42,9 @@ public enum BlogSettings
     [Description("Salt value used when hashing user passwords")]
     PasswordSalt,
     [Description("The connection string for the user database")]
-    UserDBConnectionString
+    UserDBConnectionString,
+    [Description("Whether new user registrations are allowed")]
+    AllowNewUsers
 }
 
 public enum UserAccountStates

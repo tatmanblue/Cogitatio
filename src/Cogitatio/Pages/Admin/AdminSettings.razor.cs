@@ -34,6 +34,9 @@ public partial class AdminSettings : ComponentBase
     private bool allowComments = false;
     private int commentMaxLen = 500;
     private int maxCommentsPerPost = 100;
+    private bool allowNewUsers = false;
+    private string usersDBConnectionString = string.Empty;
+    private string connectionStringNotice = string.Empty;
     
     // -------------------------------------------------------------------------
     // admin credentials
@@ -126,6 +129,16 @@ public partial class AdminSettings : ComponentBase
                 case BlogSettings.MaxCommentsPerPost:
                     maxCommentsPerPost = Convert.ToInt32(setting.Value);
                     break;
+                case BlogSettings.UserDBConnectionString:
+                    usersDBConnectionString = setting.Value;
+                    if (string.IsNullOrEmpty(usersDBConnectionString))
+                    {
+                        connectionStringNotice = "Using default database.";
+                    }
+                    break;
+                case BlogSettings.AllowNewUsers:
+                    allowNewUsers = Convert.ToBoolean(setting.Value);
+                    break;
             }
         }
         
@@ -204,6 +217,8 @@ public partial class AdminSettings : ComponentBase
         database.SaveSetting(BlogSettings.AllowComments, allowComments.ToString());
         database.SaveSetting(BlogSettings.CommentMaxLength, commentMaxLen.ToString());
         database.SaveSetting(BlogSettings.MaxCommentsPerPost, maxCommentsPerPost.ToString());
+        database.SaveSetting(BlogSettings.UserDBConnectionString, usersDBConnectionString);
+        database.SaveSetting(BlogSettings.AllowNewUsers, allowNewUsers.ToString());
         
         if (!string.IsNullOrEmpty(adminId))
             database.SaveSetting(BlogSettings.AdminId, adminId);

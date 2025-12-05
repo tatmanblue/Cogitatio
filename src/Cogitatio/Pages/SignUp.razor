@@ -1,110 +1,112 @@
 ﻿@page "/SignUp"
 <h3>Sign Up</h3>
 
-@if (signUpState == SignUpState.VerifyingHuman)
+
+@switch (signUpState)
 {
-    <div class="pow-box">
-        <p class="pow-message">@waitMessage</p>
-        <p class="pow-progress">(@progress • usually 1–3 seconds)</p>
-        <div class="spinner"></div>
-    </div>
-}
-else if (signUpState == SignUpState.Initial || signUpState == SignUpState.Error)
-{
-    <div class="mb-3">
+    case SignUpState.VerifyingHuman:
         <div class="d-flex flex-column">
-            <div class="mb-2">
-                <input id="email" @bind="record.Email" placeholder="Email address" class="form-control"/>
+            <div class="pow-box">
+                <p class="pow-message">@waitMessage</p>
+                <p class="pow-progress">(@progress • usually 5 seconds)</p>
+                <div class="spinner"></div>
             </div>
-            <div class="mb-2">
-                <input id="displayName" @bind="record.DisplayName" placeholder="Display Name" class="form-control"/>
-            </div>
-            <div class="mb-2">
-                <div class="input-group">
-                    <input id="password"
-                           type="@passwordInputType"
-                           value=""
-                           @oninput="e => record.Password = e.Value?.ToString()"
-                           placeholder="Password"
-                           class="form-control"/>
-                    <button type="button" class="btn btn-outline-secondary" @onclick="TogglePasswordVisibility">
-                        <i class="@passwordToggleIcon"></i>
-                    </button>
+            <NavLink href="/Contact">Support</NavLink>
+            <NavLink href="/">Back to Start</NavLink>
+        </div>
+        break;
+    case SignUpState.Initial:
+    case SignUpState.Error:
+        <div class="mb-3">
+            <div class="d-flex flex-column">
+                <div class="mb-2">
+                    <input id="email" @bind="record.Email" placeholder="Email address" class="form-control"/>
+                </div>
+                <div class="mb-2">
+                    <input id="displayName" @bind="record.DisplayName" placeholder="Display Name" class="form-control"/>
+                </div>
+                <div class="mb-2">
+                    <div class="input-group">
+                        <input id="password"
+                               type="@passwordInputType"
+                               value=""
+                               @oninput="e => record.Password = e.Value?.ToString()"
+                               placeholder="Password"
+                               class="form-control"/>
+                        <button type="button" class="btn btn-outline-secondary" @onclick="TogglePasswordVisibility">
+                            <i class="@passwordToggleIcon"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="mb-2">
+                    <p class="text-muted">Your IP: @userIp</p>
                 </div>
             </div>
             <div class="mb-2">
-                <p class="text-muted">Your IP: @userIp</p>
+                <p class="text-muted">@errorMessage</p>
             </div>
-        </div>
-        <div class="mb-2">
-            <p class="text-muted">@errorMessage</p>
-        </div>
-        <button class="btn btn-primary mt-2" @onclick="Save">Save</button>
-        <div>
-            <NavLink href="/">Back to Start</NavLink>
-        </div>
-    </div>
-}
-else if (signUpState == SignUpState.Confirm)
-{
-    <div class="mb-3">
-        
-        <div class="d-flex flex-column">
-            <div class="mb-2">
-                Email: <strong>@record.Email</strong>
+            <button class="btn btn-primary mt-2" @onclick="Save">Save</button>
+            <div>
+                <NavLink href="/">Back to Start</NavLink>
             </div>
+        </div>        
+        break;
+    case SignUpState.Confirm:
+        <div class="mb-3">
+            <div class="d-flex flex-column">
+                <div class="mb-2">
+                    Email: <strong>@record.Email</strong>
+                </div>
 
-            <!-- User agreement: readonly, scrollable, numbered list with bold/italic -->
-            <div class="mb-2">
-                <LicensePrivacyAgreement />
-                <div class="form-check mt-2">
-                    <label class="form-check-label" for="agreeCheckbox">I have read the agreement in its entirety, I understand and I agree</label>
-                    <input class="form-check-input" type="checkbox" id="agreeCheckbox" @bind="userAgreed" />
+                <!-- User agreement: readonly, scrollable, numbered list with bold/italic -->
+                <div class="mb-2">
+                    <LicensePrivacyAgreement />
+                    <div class="form-check mt-2">
+                        <label class="form-check-label" for="agreeCheckbox">I have read the agreement in its entirety, I understand and I agree</label>
+                        <input class="form-check-input" type="checkbox" id="agreeCheckbox" @bind="userAgreed" />
+                    </div>
+                </div>
+
+                <div class="mb-2">
+                    Display Name: <strong>@record.DisplayName</strong>
+                </div>
+                <div class="mb-2">
+                    Password: <strong>********</strong>
+                </div>
+                <div class="mb-2">
+                    <p class="text-muted">Your IP: @userIp</p>
                 </div>
             </div>
-
             <div class="mb-2">
-                Display Name: <strong>@record.DisplayName</strong>
+                <p class="text-muted">@errorMessage</p>
             </div>
-            <div class="mb-2">
-                Password: <strong>********</strong>
+            <button class="btn btn-primary mt-2" @onclick="Edit">Edit</button>
+            <button class="btn btn-primary mt-2" @onclick="Save">Save</button>
+            <div>
+                <NavLink href="/">Back to Start</NavLink>
             </div>
+        </div>            
+        break;
+    case SignUpState.Saved:
+        <div class="d-flex flex-column">
             <div class="mb-2">
-                <p class="text-muted">Your IP: @userIp</p>
+                <!-- TODO make this welcome message configurable -->
+                <p class="text-success">Thank you for choosing to be part of the Cogitatio Community. Please verify your email,
+                    which was sent to @record.Email. Once verification is complete, an administrator will activate your account.
+                </p>
+                <NavLink href="/">Back to Start</NavLink>
             </div>
         </div>
-        <div class="mb-2">
-            <p class="text-muted">@errorMessage</p>
-        </div>
-        <button class="btn btn-primary mt-2" @onclick="Edit">Edit</button>
-        <button class="btn btn-primary mt-2" @onclick="Save">Save</button>
-        <div>
+        break;
+    case SignUpState.NotAllowed:
+    default:
+        <div class="d-flex flex-column">
+            New user registrations are currently not turned off.  Please check back soon.  
+            If you think this is an error, please contact support.
+            <NavLink href="/Contact">Support</NavLink>
             <NavLink href="/">Back to Start</NavLink>
         </div>
-    </div>    
-}
-else if (signUpState == SignUpState.Saved)
-{
-    <div class="d-flex flex-column">
-        <div class="mb-2">
-            <!-- TODO make this welcome message configurable -->
-            <p class="text-success">Thank you for choosing to be part of the Cogitatio Community. Please verify your email,
-                which was sent to @record.Email. Once verification is complete, an administrator will activate your account.
-            </p>
-            <NavLink href="/">Back to Start</NavLink>
-        </div>
-    </div>
-}
-else
-{
-    <div class="d-flex flex-column">
-        <div class="mb-2">
-            <p class="text-success">There seems to be some kind of error that prevents creating an account at this time.
-                We apologize for the inconvenience. Please try again later.
-            </p>
-            <NavLink href="/">Back to Start</NavLink>
-        </div>
-    </div>    
+        break;
 }
 
 <script src="js/pow.js"></script>

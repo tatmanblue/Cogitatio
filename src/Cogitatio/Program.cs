@@ -1,9 +1,11 @@
+using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.HttpOverrides;
 using Cogitatio.Interfaces;
 using Cogitatio.Logic;
 using Cogitatio.Models;
+using Microsoft.AspNetCore.RateLimiting;
 using Serilog;
 using Serilog.Events;
 
@@ -29,6 +31,20 @@ builder.Services.AddServerSideBlazor()
         options.MaximumParallelInvocationsPerClient = 10;
         options.MaximumReceiveMessageSize = 64 * 1024;
     });
+builder.Services.AddRateLimiter(options =>
+{
+    options.AddFixedWindowLimiter("users_rate_limiting", fixedWindowOptions =>
+    {
+        fixedWindowOptions.PermitLimit = 5; // Allow 5 requests
+        fixedWindowOptions.Window = TimeSpan.FromSeconds(10); // in a 10 second window
+        fixedWindowOptions.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+        fixedWindowOptions.QueueLimit = 0; // Don't queue extra requests
+
+    });
+
+    // Optional: Set a specific response status code when the limit is hit
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+});
 builder.Services.AddControllers();
 builder.Services.AddHttpContextAccessor();
 builder.Services.Configure<ForwardedHeadersOptions>(options =>
@@ -91,7 +107,10 @@ builder.Services.AddScoped<IUserDatabase>(p =>
     var logger = p.GetRequiredService<ILoggerFactory>()
         .CreateLogger<IUserDatabase>();
 
-    var connectionString = db.GetSetting(BlogSettings.UserDBConnectionString);
+    // technically this is not needed because user functions have to be turned on in site settings
+    // prior to the system trying to access the user database
+    var defaultConnection = configuration["CogitatioSiteDB"];
+    var connectionString = db.GetSetting(BlogSettings.UserDBConnectionString, defaultConnection);
     
     IUserDatabase userDB = dbType switch
     {
@@ -134,6 +153,8 @@ builder.Host.UseSerilog();
 
 var app = builder.Build();
 app.UseForwardedHeaders();
+app.UseRateLimiter();
+
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -142,6 +163,7 @@ if (!app.Environment.IsDevelopment())
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
+
 
 app.UseHttpsRedirection();
 /*
@@ -157,19 +179,10 @@ app.UseEndpoints(endpoints =>
 {
     endpoints.MapControllers();
 });
+app.MapGet("/api/users", () => "This endpoint is rate limited")
+    .RequireRateLimiting("users_rate_limiting"); 
 
 app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
-app.MapGet("/api/pow/challenge", () =>
-{
-    // this little endpoint generates a random 32 byte challenge for proof of work used in the sign up workflow
-    var bytes = new byte[32];
-    Random.Shared.NextBytes(bytes);
-    var challenge = Convert.ToBase64String(bytes);
-    // var expires = DateTimeOffset.UtcNow.AddMinutes(5).ToUnixTimeSeconds();
-    return Results.Json(new { challenge});
-})
-.WithName("GetPoWChallenge")
-.Produces<string>(); 
 
 app.Run();
