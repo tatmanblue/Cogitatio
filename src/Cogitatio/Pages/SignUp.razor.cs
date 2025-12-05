@@ -1,4 +1,6 @@
-﻿using Cogitatio.Interfaces;
+﻿using System.Security.Cryptography;
+using System.Text;
+using Cogitatio.Interfaces;
 using Cogitatio.Models;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
@@ -21,6 +23,7 @@ public partial class SignUp : ComponentBase
     public class PoWResult
     {
         public long Nonce { get; set; }
+        public string Challenge { get; set; } = string.Empty;
     }
     
     [Inject] IJSRuntime JS { get; set; } = null!;
@@ -46,7 +49,8 @@ public partial class SignUp : ComponentBase
     private string passwordToggleIcon = "bi bi-eye-slash";
     private string waitMessage = "Getting all the bits in a row...";        // TODO again like to make this configurable
     private string progress = "starting…";
-    private long solvedNonce = 0;
+    private PoWResult powResult = null;
+    private int powDifficulty = 20; // TODO: make configurable
     
     private BlogUserRecord record = new();
     private string errorMessage = string.Empty;
@@ -63,13 +67,12 @@ public partial class SignUp : ComponentBase
         logger.LogDebug("OnAfterRenderAsync");
         if (signUpState == SignUpState.VerifyingHuman)
         {
-
             // Start the PoW (exactly the same secure flow as before)
-            var result = await JS.InvokeAsync<PoWResult>("startProofOfWork", 22);
-            solvedNonce = result.Nonce;
+            // TODO: make the difficulty configurable
+            powResult = await JS.InvokeAsync<PoWResult>("startProofOfWork", powDifficulty);
 
             signUpState = SignUpState.Initial;
-            logger.LogInformation("OnAfterRenderAsync: verified human with nonce {Nonce}", solvedNonce);
+            logger.LogDebug("OnAfterRenderAsync: verified human with nonce {Nonce}", powResult.Nonce);
             StateHasChanged();
         }
     }
@@ -103,6 +106,16 @@ public partial class SignUp : ComponentBase
         {
             errorMessage = "You must agree to the user agreement before creating an account.";
             signUpState = SignUpState.Confirm;
+            StateHasChanged();
+            return;
+        }
+        
+        // Verify Proof of Work
+        if (!VerifyProofOfWork(powResult.Challenge, powResult.Nonce))
+        {
+            signUpState = SignUpState.Error;
+            logger.LogWarning("Failed PoW verification from IP {UserIp}", userIp);
+            errorMessage = "Unable to verify you are a human. Please try again.";
             StateHasChanged();
             return;
         }
@@ -146,5 +159,28 @@ public partial class SignUp : ComponentBase
             passwordInputType = "password";
             passwordToggleIcon = "bi bi-eye-slash";
         }
+    }
+    
+    private bool VerifyProofOfWork(string challenge, long nonce)
+    {
+        // Prevent replay attacks
+        if (!challenge.StartsWith(DateTime.UtcNow.ToString("yyyyMMddHH")))
+            return false;
+
+        using var sha256 = SHA256.Create();
+        var input = challenge + nonce;
+        var bytes = Encoding.UTF8.GetBytes(input);
+        var hashBytes = sha256.ComputeHash(bytes);
+    
+        // Convert first 4 bytes to int (big-endian)
+        uint hashValue = (uint)(
+            (hashBytes[0] << 24) |
+            (hashBytes[1] << 16) |
+            (hashBytes[2] << 8)  |
+            hashBytes[3]);
+
+        // Difficulty 22 = need first 22 bits to be zero → hash < 2^(32-22) = 2^10 = 1024
+        uint target = 1u << (32 - powDifficulty); // 1 << 10 = 1024
+        return hashValue < target;
     }
 }

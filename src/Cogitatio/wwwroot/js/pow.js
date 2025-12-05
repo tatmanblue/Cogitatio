@@ -1,6 +1,6 @@
-﻿let currentChallenge = null;
-
+﻿
 window.startProofOfWork = async (difficulty) => {
+    console.log("Difficulty received in JS:", difficulty, "→ target =", 1 << (32 - difficulty));
     const response = await fetch('/api/pow/challenge');
     const data = await response.json();               // { challenge: "base64string", salt: "xyz" }
     currentChallenge = data.challenge;
@@ -9,6 +9,9 @@ window.startProofOfWork = async (difficulty) => {
     let nonce = 0;
     while (true) {
         nonce++;
+        if (nonce % 500000 === 0) {
+            console.log("Still working… nonce =", nonce, " time is ", new Date().toLocaleTimeString());
+        }
         if (nonce % 100000 === 0) {
             const percent = Math.min(99, Math.floor(nonce / 50000));
             const progressElement = document.getElementById("progress");
@@ -19,11 +22,11 @@ window.startProofOfWork = async (difficulty) => {
 
         const hashBuffer = await crypto.subtle.digest('SHA-256',
             new TextEncoder().encode(currentChallenge + nonce));
-        const hashArray = Array.from(new Uint8Array(hashBuffer));
-        const hashInt = (hashArray[0] << 24) | (hashArray[1] << 16) | (hashArray[2] << 8) | hashArray[3];
+        const view = new DataView(hashBuffer);
+        const hashInt = view.getUint32(0);  // reads first 4 bytes as big-endian uint32
 
         if (hashInt < target) {
-            return { nonce: nonce };
+            return { nonce: nonce, challenge: currentChallenge};
         }
     }
 };

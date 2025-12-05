@@ -165,8 +165,10 @@ app.MapGet("/api/pow/challenge", () =>
     var bytes = new byte[32];
     Random.Shared.NextBytes(bytes);
     var challenge = Convert.ToBase64String(bytes);
-
-    return Results.Json(new { challenge });
-});
+    var expires = DateTimeOffset.UtcNow.AddMinutes(5).ToUnixTimeSeconds();
+    return Results.Json(new { challenge, expires });
+})
+.WithName("GetPoWChallenge")
+.Produces<string>(); 
 
 app.Run();
