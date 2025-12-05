@@ -9,9 +9,10 @@ window.startProofOfWork = async (difficulty) => {
     let nonce = 0;
     while (true) {
         nonce++;
+        /*
         if (nonce % 500000 === 0) {
             console.log("Still working… nonce =", nonce, " time is ", new Date().toLocaleTimeString());
-        }
+        }*/
         if (nonce % 100000 === 0) {
             const percent = Math.min(99, Math.floor(nonce / 50000));
             const progressElement = document.getElementById("progress");
@@ -25,6 +26,7 @@ window.startProofOfWork = async (difficulty) => {
         const view = new DataView(hashBuffer);
         const hashInt = view.getUint32(0);  // reads first 4 bytes as big-endian uint32
 
+        // TODO: we should not be returning the challenge, its already on the server
         if (hashInt < target) {
             return { nonce: nonce, challenge: currentChallenge};
         }

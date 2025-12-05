@@ -1,6 +1,7 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
 using Cogitatio.Interfaces;
+using Cogitatio.Logic;
 using Cogitatio.Models;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
@@ -130,6 +131,7 @@ public partial class SignUp : ComponentBase
             record.Password = Password.HashPassword(passwordSalt + record.Password);
             record.AccountState = UserAccountStates.Created;
             record.IpAddress = userIp;
+            record.VerificationId = Guid.NewGuid().ToString("N").Substring(0, 12).ToUpperInvariant();
             
             userDB.Save(record);
             signUpState = SignUpState.Saved;

@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.HttpOverrides;
 using Cogitatio.Interfaces;
+using Cogitatio.Logic;
 using Cogitatio.Models;
 using Serilog;
 using Serilog.Events;
@@ -165,8 +166,8 @@ app.MapGet("/api/pow/challenge", () =>
     var bytes = new byte[32];
     Random.Shared.NextBytes(bytes);
     var challenge = Convert.ToBase64String(bytes);
-    var expires = DateTimeOffset.UtcNow.AddMinutes(5).ToUnixTimeSeconds();
-    return Results.Json(new { challenge, expires });
+    // var expires = DateTimeOffset.UtcNow.AddMinutes(5).ToUnixTimeSeconds();
+    return Results.Json(new { challenge});
 })
 .WithName("GetPoWChallenge")
 .Produces<string>(); 

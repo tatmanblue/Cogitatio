@@ -1,10 +1,11 @@
 ﻿using System.Data;
 using System.Transactions;
 using Cogitatio.Interfaces;
+using Cogitatio.Models;
 using Microsoft.Data.SqlClient;
 using Npgsql;
 
-namespace Cogitatio.Models;
+namespace Cogitatio.Logic;
 
 /// <summary>
 /// TODO duplicity with SqlServer will be addressed in a future update 

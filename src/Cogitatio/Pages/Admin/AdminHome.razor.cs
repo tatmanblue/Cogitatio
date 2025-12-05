@@ -1,4 +1,5 @@
 ﻿using Cogitatio.Interfaces;
+using Cogitatio.Logic;
 using Cogitatio.Models;
 using Microsoft.AspNetCore.Components;
 using OtpNet;

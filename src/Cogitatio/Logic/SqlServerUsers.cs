@@ -1,8 +1,9 @@
 ﻿using System.Data;
 using Cogitatio.Interfaces;
+using Cogitatio.Models;
 using Microsoft.Data.SqlClient;
 
-namespace Cogitatio.Models;
+namespace Cogitatio.Logic;
 
 /// <summary>
 ///
@@ -34,7 +35,7 @@ public class SqlServerUsers(ILogger<IUserDatabase> logger, string connectionStr,
         cmd.CommandType = CommandType.Text;
         cmd.Connection = connection;
         cmd.Parameters.Clear();
-        cmd.CommandText = @"INSERT INTO Blog_Users (DisplayName, Email, IpAddress, TwoFactorSecret, PasswordHash, AccountState, TenantId)
+        cmd.CommandText = @"INSERT INTO Blog_Users (DisplayName, Email, IpAddress, TwoFactorSecret, VerificationId, PasswordHash, AccountState, TenantId)
                 OUTPUT INSERTED.PostId 
                 VALUES
                 (
@@ -42,6 +43,7 @@ public class SqlServerUsers(ILogger<IUserDatabase> logger, string connectionStr,
                     @email,
                     @IpAddress,
                     @twoFactorSecret,
+                    @verificationId,
                     @passwordHash,
                     @accountState,
                     @TenantId
@@ -50,6 +52,7 @@ public class SqlServerUsers(ILogger<IUserDatabase> logger, string connectionStr,
         cmd.Parameters.AddWithValue("@email", user.Email);
         cmd.Parameters.AddWithValue("@IpAddress", user.IpAddress);
         cmd.Parameters.AddWithValue("@twoFactorSecret", user.TwoFactorSecret);
+        cmd.Parameters.AddWithValue("@verificationId", user.VerificationId);
         cmd.Parameters.AddWithValue("@passwordHash", user.Password);
         cmd.Parameters.AddWithValue("@accountState", (int)user.AccountState);
         cmd.Parameters.AddWithValue("@TenantId", tenantId);

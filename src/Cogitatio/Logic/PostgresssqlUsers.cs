@@ -1,6 +1,7 @@
 ﻿using Cogitatio.Interfaces;
+using Cogitatio.Models;
 
-namespace Cogitatio.Models;
+namespace Cogitatio.Logic;
 
 public class PostgresssqlUsers(ILogger<IUserDatabase> logger, string connectionString, int tenantId) : IUserDatabase
 {

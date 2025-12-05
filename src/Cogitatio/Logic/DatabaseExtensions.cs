@@ -1,8 +1,9 @@
 ﻿using System.Data.Common;
 using Cogitatio.Interfaces;
+using Cogitatio.Models;
 using Microsoft.Data.SqlClient;
 
-namespace Cogitatio.Models;
+namespace Cogitatio.Logic;
 
 /// <summary>
 /// TODO consider using IDataReader in place of DbDataReader

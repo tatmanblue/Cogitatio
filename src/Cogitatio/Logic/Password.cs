@@ -1,7 +1,7 @@
 ﻿using System.Security.Cryptography;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 
-namespace Cogitatio.Models;
+namespace Cogitatio.Logic;
 
 public static class Password
 {

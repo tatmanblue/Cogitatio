@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Cogitatio.Interfaces;
+using Cogitatio.Logic;
 using Cogitatio.Models;
 
 namespace Cogitatio.Shared;
