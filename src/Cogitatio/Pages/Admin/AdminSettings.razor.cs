@@ -1,4 +1,5 @@
 ﻿using Cogitatio.Interfaces;
+using Cogitatio.Logic;
 using Microsoft.AspNetCore.Components;
 using Cogitatio.Models;
 using Google.Protobuf.WellKnownTypes;
@@ -37,6 +38,10 @@ public partial class AdminSettings : ComponentBase
     private bool allowNewUsers = false;
     private string usersDBConnectionString = string.Empty;
     private string connectionStringNotice = string.Empty;
+    private int minDisplayNameLen = 6;
+    private int maxDisplayNameLen = 30;
+    private int minPasswordLength = 6;
+    private int maxPasswordLength = 30;
     
     // -------------------------------------------------------------------------
     // admin credentials
@@ -44,8 +49,7 @@ public partial class AdminSettings : ComponentBase
     private string adminPassword = "Cogitatio2024!";
     private string passwordInputType = "password";
     private string passwordToggleIcon = "bi bi-eye-slash";
-    private int passwordStrength = 0;
-    private string passwordStrengthLabel = "";
+
     
     // -------------------------------------------------------------------------
     // only needed for 2FA setup
@@ -139,6 +143,18 @@ public partial class AdminSettings : ComponentBase
                 case BlogSettings.AllowNewUsers:
                     allowNewUsers = Convert.ToBoolean(setting.Value);
                     break;
+                case BlogSettings.MinPasswordLength:
+                    minPasswordLength = Convert.ToInt32(setting.Value);
+                    break;
+                case BlogSettings.MaxPasswordLength:
+                    maxPasswordLength = Convert.ToInt32(setting.Value);
+                    break;
+                case BlogSettings.MinDisplayNameLength:
+                    minDisplayNameLen = Convert.ToInt32(setting.Value);
+                    break;
+                case BlogSettings.MaxDisplayNameLength:
+                    maxDisplayNameLen = Convert.ToInt32(setting.Value);
+                    break;
             }
         }
         
@@ -150,13 +166,6 @@ public partial class AdminSettings : ComponentBase
             StateHasChanged();
         }
         
-        CheckPasswordStrength(adminPassword);
-    }
-
-    private void OnPasswordChanged(ChangeEventArgs e)
-    {
-        adminPassword = e.Value?.ToString() ?? string.Empty;
-        CheckPasswordStrength(adminPassword);
     }
 
     private void StartTotpTimer()
@@ -219,6 +228,10 @@ public partial class AdminSettings : ComponentBase
         database.SaveSetting(BlogSettings.MaxCommentsPerPost, maxCommentsPerPost.ToString());
         database.SaveSetting(BlogSettings.UserDBConnectionString, usersDBConnectionString);
         database.SaveSetting(BlogSettings.AllowNewUsers, allowNewUsers.ToString());
+        database.SaveSetting(BlogSettings.MinPasswordLength, minPasswordLength.ToString());
+        database.SaveSetting(BlogSettings.MaxPasswordLength, maxPasswordLength.ToString());
+        database.SaveSetting(BlogSettings.MinDisplayNameLength, minDisplayNameLen.ToString());
+        database.SaveSetting(BlogSettings.MaxDisplayNameLength, maxDisplayNameLen.ToString());
         
         if (!string.IsNullOrEmpty(adminId))
             database.SaveSetting(BlogSettings.AdminId, adminId);
@@ -265,71 +278,6 @@ public partial class AdminSettings : ComponentBase
 
         StateHasChanged();
     }
-
-    private void CheckPasswordStrength(string pwd)
-    {
-        // theres no need for method call here and the code can be inlined,
-        // but I found a reason to use a tuple.
-        (passwordStrength, passwordStrengthLabel) = EvaluatePasswordStrength(pwd);
-    }
-    
-    private (int, string) EvaluatePasswordStrength(string password)
-    {
-        if (string.IsNullOrEmpty(password))
-            return (0, "Come on dude!");
-    
-        int score = 0;
-    
-        // Length check
-        if (password.Length >= 8)
-            score++;
-        if (password.Length >= 12)
-            score++;
-    
-        // Contains uppercase letters
-        if (password.Any(char.IsUpper))
-            score++;
-    
-        // Contains lowercase letters
-        if (password.Any(char.IsLower))
-            score++;
-    
-        // Contains digits
-        if (password.Any(char.IsDigit))
-            score++;
-    
-        // Contains special characters
-        if (password.Any(ch => !char.IsLetterOrDigit(ch)))
-            score++;
-    
-        // Evaluate score
-        string strengthWord = score switch
-        {
-            >= 6 => "Ft Knox Strong",
-            5 => "Solid password",
-            3 or 4 => "Script kiddy level",
-            _ => "Dude! That's weak..."
-        };
-        
-        return (score, strengthWord);
-    }
-    
-    /// <summary>
-    /// This behavior exists on multiple pages, consider refactoring into a shared component
-    /// </summary>
-    private void TogglePasswordVisibility()
-    {
-        if (passwordInputType == "password")
-        {
-            passwordInputType = "text";
-            passwordToggleIcon = "bi bi-eye"; // Eye icon for visible password
-        }
-        else
-        {
-            passwordInputType = "password";
-            passwordToggleIcon = "bi bi-eye-slash"; // Eye-slash icon for hidden password
-        }
-    }   
     
     private string GetOtpAuthUrl(string secret)
     {

@@ -21,25 +21,26 @@
             <div class="d-flex flex-column">
                 <div class="mb-2">
                     <input id="email" @bind="record.Email" placeholder="Email address" class="form-control"/>
-                </div>
-                <div class="mb-2">
-                    <input id="displayName" @bind="record.DisplayName" placeholder="Display Name" class="form-control"/>
-                </div>
-                <div class="mb-2">
-                    <div class="input-group">
-                        <input id="password"
-                               type="@passwordInputType"
-                               value=""
-                               @oninput="e => record.Password = e.Value?.ToString()"
-                               placeholder="Password"
-                               class="form-control"/>
-                        <button type="button" class="btn btn-outline-secondary" @onclick="TogglePasswordVisibility">
-                            <i class="@passwordToggleIcon"></i>
-                        </button>
+                    <div class="invalid-feedback">
+                        Please enter a valid email address.
                     </div>
                 </div>
                 <div class="mb-2">
-                    <p class="text-muted">Your IP: @userIp</p>
+                    <input 
+                        id="displayName" 
+                        @bind="record.DisplayName" 
+                        placeholder="Display Name"
+                        minlength="@minDisplayNameLen"
+                        maxlength="@maxDisplayNameLen"
+                        class="form-control"/>
+                    <div class="invalid-feedback">
+                        Please enter a valid email address.
+                    </div>
+                </div>
+                <PasswordEditor @bind-Password="record.Password" ShowStrengthMeter="true" />
+                <PasswordEditor Password="@confirmPassword" ShowStrengthMeter="false" PasswordChanged="OnConfirmPasswordChanged" />
+                <div class="mb-2">
+                    <p class="text-danger">@passwordMessage</p>
                 </div>
             </div>
             <div class="mb-2">

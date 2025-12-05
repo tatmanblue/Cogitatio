@@ -15,41 +15,53 @@ public static class DatabaseExtensions
         return (T) Enum.Parse(typeof(T), value, true);
     }
 
-    public static int AsInt(this DbDataReader rdr, string field)
+    extension(DbDataReader rdr)
     {
-        if (rdr.IsDBNull(rdr.GetOrdinal(field)))
-            return -1;
+        public int AsInt(string field)
+        {
+            if (rdr.IsDBNull(rdr.GetOrdinal(field)))
+                return -1;
         
-        return Convert.ToInt32(rdr[field]);
-    }
-    
-    public static string AsString(this DbDataReader rdr, string field)
-    {
-        if (rdr.IsDBNull(rdr.GetOrdinal(field)))
-            return string.Empty;
+            return Convert.ToInt32(rdr[field]);
+        }
+
+        public string AsString(string field)
+        {
+            if (rdr.IsDBNull(rdr.GetOrdinal(field)))
+                return string.Empty;
         
-        return rdr[field].ToString();
+            return rdr[field].ToString();
+        }
+
+        public double AsDouble(string field)
+        {
+            if (rdr.IsDBNull(rdr.GetOrdinal(field)))
+                return 0.0;
+
+            return Convert.ToDouble(rdr[field]);
+        }
+
+        public DateTime AsDateTime(string field)
+        {
+            if (rdr.IsDBNull(rdr.GetOrdinal(field)))
+                return DateTime.MinValue;
+
+            return DateTime.Parse(rdr.AsString(field));
+        }
     }
 
-    public static double AsDouble(this DbDataReader rdr, string field)
+    extension(IDatabase database)
     {
-        if (rdr.IsDBNull(rdr.GetOrdinal(field)))
-            return 0.0;
+        public bool GetSettingAsBool(BlogSettings setting, bool defaultValue = false)
+        {
+            string value = database.GetSetting(setting, defaultValue ? "true" : "false");
+            return Convert.ToBoolean(value);
+        }
 
-        return Convert.ToDouble(rdr[field]);
-    }
-
-    public static DateTime AsDateTime(this DbDataReader rdr, string field)
-    {
-        if (rdr.IsDBNull(rdr.GetOrdinal(field)))
-            return DateTime.MinValue;
-
-        return DateTime.Parse(rdr.AsString(field));
-    }
-    
-    public static bool GetSettingAsBool(this IDatabase database, BlogSettings setting, bool defaultValue = false)
-    {
-        string value = database.GetSetting(setting, defaultValue ? "true" : "false");
-        return Convert.ToBoolean(value);
+        public int GetSettingAsInt(BlogSettings setting, int defaultValue = 0)
+        {
+            string value = database.GetSetting(setting, defaultValue.ToString());
+            return Convert.ToInt32(value);
+        }
     }
 }

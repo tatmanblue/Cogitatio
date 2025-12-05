@@ -1,4 +1,5 @@
-﻿using System.Security.Cryptography;
+﻿using System.Net;
+using System.Security.Cryptography;
 using System.Text;
 using Cogitatio.General;
 using Cogitatio.Interfaces;
@@ -48,14 +49,18 @@ public partial class SignUp : ComponentBase
 
     private string userIp = string.Empty;
     private SignUpState signUpState = SignUpState.VerifyingHuman;
-    private string passwordInputType = "password";
-    private string passwordToggleIcon = "bi bi-eye-slash";
     private string waitMessage = "Getting all the bits in a row...";        // TODO again like to make this configurable
     private string progress = "starting…";
     private PoWResult powResult = null;
     private int powDifficulty = 21;                                         // TODO: make configurable
+    private int minPasswordLength = 6;
+    private int maxPasswordLength = 30;
+    private int minDisplayNameLen = 6;
+    private int maxDisplayNameLen = 30;
     
     private BlogUserRecord record = new();
+    private string confirmPassword = string.Empty;
+    private string passwordMessage = string.Empty;
     private string errorMessage = string.Empty;
     private bool userAgreed = false;
     
@@ -66,6 +71,11 @@ public partial class SignUp : ComponentBase
         var allowNewUsers = database.GetSettingAsBool(BlogSettings.AllowNewUsers);
         if (false == allowNewUsers)
             signUpState = SignUpState.NotAllowed;
+        
+        minPasswordLength = database.GetSettingAsInt(BlogSettings.MinPasswordLength, 6);
+        maxPasswordLength = database.GetSettingAsInt(BlogSettings.MaxPasswordLength, 30);
+        minDisplayNameLen = database.GetSettingAsInt(BlogSettings.MinDisplayNameLength, 6);
+        maxDisplayNameLen = database.GetSettingAsInt(BlogSettings.MaxDisplayNameLength, 30);
     }
     
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -100,6 +110,24 @@ public partial class SignUp : ComponentBase
 
         if (signUpState == SignUpState.Initial || signUpState == SignUpState.Error)
         {
+            passwordMessage = string.Empty;
+            if (confirmPassword != record.Password)
+            {
+                passwordMessage = "Passwords don't match.";
+                signUpState = SignUpState.Error;
+                StateHasChanged();
+                return;
+            }
+
+            switch (record.Password.Length)
+            {
+                case var length when length < minPasswordLength || length > maxPasswordLength:
+                    passwordMessage = $"Password must be between {minPasswordLength} and {maxPasswordLength} characters long.";
+                    signUpState = SignUpState.Error;
+                    StateHasChanged();
+                    return;
+            }
+
             signUpState = SignUpState.Confirm;
             errorMessage = string.Empty;
             StateHasChanged();
@@ -150,29 +178,14 @@ public partial class SignUp : ComponentBase
         StateHasChanged();
     }
     
-    /// <summary>
-    /// This behavior exists on multiple pages, consider refactoring into a shared component
-    /// </summary>
-    private void TogglePasswordVisibility()
-    {
-        if (passwordInputType == "password")
-        {
-            passwordInputType = "text";
-            passwordToggleIcon = "bi bi-eye"; 
-        }
-        else
-        {
-            passwordInputType = "password";
-            passwordToggleIcon = "bi bi-eye-slash";
-        }
-    }
-    
     private bool VerifyProofOfWork(string challenge, long nonce)
     {
+        /*
         // Prevent replay attacks
         if (!challenge.StartsWith(DateTime.UtcNow.ToString("yyyyMMddHH")))
             return false;
-
+        */
+        
         using var sha256 = SHA256.Create();
         var input = challenge + nonce;
         var bytes = Encoding.UTF8.GetBytes(input);
@@ -188,5 +201,14 @@ public partial class SignUp : ComponentBase
         // Difficulty 22 = need first 22 bits to be zero → hash < 2^(32-22) = 2^10 = 1024
         uint target = 1u << (32 - powDifficulty); // 1 << 10 = 1024
         return hashValue < target;
+    }
+
+    private void OnConfirmPasswordChanged(string newValue)
+    {
+        confirmPassword = newValue;
+        if (confirmPassword != record.Password)
+            passwordMessage = "Passwords don't match.";
+        else
+            passwordMessage = string.Empty; 
     }
 }

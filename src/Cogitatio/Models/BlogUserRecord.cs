@@ -13,7 +13,7 @@ public class BlogUserRecord
     public UserAccountStates AccountState { get; set; } = UserAccountStates.Unknown;
     public string TwoFactorSecret { get; set; } = string.Empty;
     public string VerificationId { get; set; } = string.Empty;
-    public string Password { get; set; }        // This password is always hashed
+    public string Password { get; set; } = string.Empty;
     public DateTime CreatedAt { get; set; }
 
 }

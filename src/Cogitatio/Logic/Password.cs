@@ -61,4 +61,45 @@ public static class Password
 
         return CryptographicOperations.FixedTimeEquals(actualHash, expectedHash);
     }    
+    
+    public static (int, string) EvaluatePasswordStrength(string password)
+    {
+        if (string.IsNullOrEmpty(password))
+            return (0, "Come on dude!");
+    
+        int score = 0;
+    
+        // Length check
+        if (password.Length >= 8)
+            score++;
+        if (password.Length >= 12)
+            score++;
+    
+        // Contains uppercase letters
+        if (password.Any(char.IsUpper))
+            score++;
+    
+        // Contains lowercase letters
+        if (password.Any(char.IsLower))
+            score++;
+    
+        // Contains digits
+        if (password.Any(char.IsDigit))
+            score++;
+    
+        // Contains special characters
+        if (password.Any(ch => !char.IsLetterOrDigit(ch)))
+            score++;
+    
+        // Evaluate score
+        string strengthWord = score switch
+        {
+            >= 6 => "Ft Knox Strong",
+            5 => "Solid password",
+            3 or 4 => "Script kiddy level",
+            _ => "Dude! That's weak..."
+        };
+        
+        return (score, strengthWord);
+    }
 }
