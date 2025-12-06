@@ -1,0 +1,15 @@
+﻿@page "/u/Login"
+<h3>Login</h3>
+
+@if (site.AllowLogin)
+{
+    <p>Hold your horses, we are getting to this</p>
+}
+else
+{
+    <p>
+        Login is currently disabled. Please check back later.  If you feel you are seeing this message in error, please contact support.
+    </p>
+}
+<NavLink href="/Contact">Support</NavLink>
+<NavLink href="/">Back to Start</NavLink>

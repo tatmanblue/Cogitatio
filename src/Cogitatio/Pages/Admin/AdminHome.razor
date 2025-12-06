@@ -10,17 +10,7 @@
                 <div class="mb-2">
                     <input id="accountId" @bind="accountId" placeholder="Enter your id" class="form-control"/>
                 </div>
-                <div class="mb-2">
-                    <div class="input-group">
-                        <input id="credential" @bind="credential"
-                               type="@passwordInputType"
-                               placeholder="Enter your credential"
-                               class="form-control"/>
-                        <button type="button" class="btn btn-outline-secondary" @onclick="TogglePasswordVisibility">
-                            <i class="@passwordToggleIcon"></i>
-                        </button>
-                    </div>
-                </div>
+                <PasswordEditor @bind-Password="credential" ShowStrengthMeter="false" />
                 @if (useTOTP)
                 {
                     <div class="mb-2">

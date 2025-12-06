@@ -36,6 +36,7 @@ public partial class AdminSettings : ComponentBase
     private int commentMaxLen = 500;
     private int maxCommentsPerPost = 100;
     private bool allowNewUsers = false;
+    private bool allowLogin = false;
     private string usersDBConnectionString = string.Empty;
     private string connectionStringNotice = string.Empty;
     private int minDisplayNameLen = 6;
@@ -142,6 +143,9 @@ public partial class AdminSettings : ComponentBase
                     break;
                 case BlogSettings.AllowNewUsers:
                     allowNewUsers = Convert.ToBoolean(setting.Value);
+                    break;
+                case BlogSettings.AllowLogin:
+                    allowLogin = Convert.ToBoolean(setting.Value);
                     break;
                 case BlogSettings.MinPasswordLength:
                     minPasswordLength = Convert.ToInt32(setting.Value);

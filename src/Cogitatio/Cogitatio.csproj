@@ -46,8 +46,6 @@
       <AdditionalFiles Include="Pages\Admin\AdminHome.razor" />
       <AdditionalFiles Include="Pages\Admin\AdminSettings.razor" />
       <AdditionalFiles Include="Pages\Admin\TagEditor.razor" />
-    </ItemGroup>
-    <ItemGroup>
-      <Folder Include="Pages\User\" />
+      <AdditionalFiles Include="Pages\User\SignUp.razor" />
     </ItemGroup>
 </Project>

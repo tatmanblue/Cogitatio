@@ -23,8 +23,6 @@ public partial class AdminHome : ComponentBase
     private string credential;
     private string toptId;
     private string errorMessage;
-    private string passwordInputType = "password";
-    private string passwordToggleIcon = "bi bi-eye-slash";
     
 #if DEBUG
     // this is a debugging helper, and should ever be exposed in production
@@ -104,18 +102,4 @@ public partial class AdminHome : ComponentBase
         
         AdminUserState.IsAdmin = true;
     }   
-    
-    private void TogglePasswordVisibility()
-    {
-        if (passwordInputType == "password")
-        {
-            passwordInputType = "text";
-            passwordToggleIcon = "bi bi-eye"; // Eye icon for visible password
-        }
-        else
-        {
-            passwordInputType = "password";
-            passwordToggleIcon = "bi bi-eye-slash"; // Eye-slash icon for hidden password
-        }
-    }    
 }

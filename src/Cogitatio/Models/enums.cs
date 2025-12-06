@@ -45,6 +45,8 @@ public enum BlogSettings
     UserDBConnectionString,
     [Description("Whether new user registrations are allowed")]
     AllowNewUsers,
+    [Description("Whether users are allowed to login")]
+    AllowLogin,
     [Description("The minimum length required for user passwords")]
     MinPasswordLength,
     [Description("The maximum length allowed for user passwords")]

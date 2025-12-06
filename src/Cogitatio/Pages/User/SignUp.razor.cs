@@ -8,7 +8,7 @@ using Cogitatio.Models;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 
-namespace Cogitatio.Pages;
+namespace Cogitatio.Pages.User;
 
 /// <summary>
 /// Sign up is a multi step process.
@@ -29,6 +29,7 @@ public partial class SignUp : ComponentBase
         public string Challenge { get; set; } = string.Empty;
     }
     
+    [Inject] SiteSettings site { get; set; }
     [Inject] IJSRuntime JS { get; set; } = null!;
     [Inject] private ILogger<SignUp> logger { get; set; } = null;
     [Inject] private IDatabase database { get; set; } = null;
@@ -68,8 +69,7 @@ public partial class SignUp : ComponentBase
     {
         var ip = HttpContextAccessor?.HttpContext?.Connection?.RemoteIpAddress?.ToString();
         userIp = string.IsNullOrEmpty(ip) ? "unknown" : ip;
-        var allowNewUsers = database.GetSettingAsBool(BlogSettings.AllowNewUsers);
-        if (false == allowNewUsers)
+        if (false == site.AllowNewUsers)
             signUpState = SignUpState.NotAllowed;
         
         minPasswordLength = database.GetSettingAsInt(BlogSettings.MinPasswordLength, 6);
@@ -111,6 +111,8 @@ public partial class SignUp : ComponentBase
         if (signUpState == SignUpState.Initial || signUpState == SignUpState.Error)
         {
             passwordMessage = string.Empty;
+            errorMessage = string.Empty;
+            
             if (confirmPassword != record.Password)
             {
                 passwordMessage = "Passwords don't match.";
@@ -119,6 +121,7 @@ public partial class SignUp : ComponentBase
                 return;
             }
 
+            // trying a little pattern matching switch statement for validation, seems a little wordy but easier to read
             switch (record.Password.Length)
             {
                 case var length when length < minPasswordLength || length > maxPasswordLength:
@@ -127,9 +130,17 @@ public partial class SignUp : ComponentBase
                     StateHasChanged();
                     return;
             }
+            
+            switch (record.DisplayName.Length)
+            {
+                case var length when length < minDisplayNameLen || length > maxDisplayNameLen:
+                    errorMessage = $"Display Name must be between {minDisplayNameLen} and {maxDisplayNameLen} characters.";
+                    signUpState = SignUpState.Error;
+                    StateHasChanged();
+                    return;
+            }
 
             signUpState = SignUpState.Confirm;
-            errorMessage = string.Empty;
             StateHasChanged();
             return;
         }
