@@ -23,6 +23,8 @@ public partial class PasswordEditor : ComponentBase
         }
     } = string.Empty;
 
+    [Parameter] public int MinLength { get; set; } = 6;
+    [Parameter] public int MaxLength { get; set; } = 30;
     [Parameter] public EventCallback<string> PasswordChanged { get; set; }
     [Parameter] public bool ShowStrengthMeter { get; set; } = true;
     
@@ -33,7 +35,14 @@ public partial class PasswordEditor : ComponentBase
 
     protected override void OnParametersSet()
     {
-        (passwordStrength, passwordStrengthLabel) = Logic.Password.EvaluatePasswordStrength(Password);
+        (passwordStrength, passwordStrengthLabel) = Logic.Password.EvaluatePasswordStrength(Password, MinLength, MaxLength);
+    }
+    
+    private async Task OnPasswordChangedInternal(ChangeEventArgs e)
+    {
+        Password = e.Value?.ToString() ?? string.Empty;
+        (passwordStrength, passwordStrengthLabel) = Logic.Password.EvaluatePasswordStrength(Password, MinLength, MaxLength);
+        await PasswordChanged.InvokeAsync(Password);
     }
     
     private void TogglePasswordVisibility()

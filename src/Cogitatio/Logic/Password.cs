@@ -62,11 +62,14 @@ public static class Password
         return CryptographicOperations.FixedTimeEquals(actualHash, expectedHash);
     }    
     
-    public static (int, string) EvaluatePasswordStrength(string password)
+    public static (int, string) EvaluatePasswordStrength(string password, int minLength = 6, int maxLength = 30)
     {
         if (string.IsNullOrEmpty(password))
             return (0, "Come on dude!");
     
+        if (password.Length < minLength)
+            return (0, $"Yikes! Try to get more than {minLength} characters.");
+        
         int score = 0;
     
         // Length check
@@ -96,7 +99,8 @@ public static class Password
         {
             >= 6 => "Ft Knox Strong",
             5 => "Solid password",
-            3 or 4 => "Script kiddy level",
+            4 => "It's ok I guess",
+            3 => "Script kiddy level",
             _ => "Dude! That's weak..."
         };
         

@@ -18,35 +18,41 @@
     case SignUpState.Initial:
     case SignUpState.Error:
         <div class="mb-3">
-            <div class="d-flex flex-column">
-                <div class="mb-2">
-                    <input id="email" @bind="record.Email" placeholder="Email address" class="form-control"/>
-                    <div class="invalid-feedback">
-                        Please enter a valid email address.
+            <EditForm Model="record" OnValidSubmit="Save" class="needs-validation" novalidate>
+                <div class="d-flex flex-column">
+                    <div class="mb-2">
+                        <input id="email" @bind="record.Email" placeholder="Email address" class="form-control"/>
+                        <div class="invalid-feedback">
+                            Please enter a valid email address.
+                        </div>
+                    </div>
+                    <div class="mb-2">
+                        <input 
+                            id="displayName" 
+                            @bind="record.DisplayName" 
+                            placeholder="Display Name"
+                            minlength="@minDisplayNameLen"
+                            maxlength="@maxDisplayNameLen"
+                            class="form-control"/>
+                        <div class="invalid-feedback">
+                            Please enter a valid email address.
+                        </div>
+                    </div>
+                    <PasswordEditor
+                        MinLength="@minPasswordLength"
+                        MaxLength="@maxPasswordLength"
+                        @bind-Password="record.Password" 
+                        ShowStrengthMeter="true" />
+                    <PasswordEditor Password="@confirmPassword" ShowStrengthMeter="false" PasswordChanged="OnConfirmPasswordChanged" />
+                    <div class="mb-2">
+                        <p class="text-danger">@passwordMessage</p>
                     </div>
                 </div>
                 <div class="mb-2">
-                    <input 
-                        id="displayName" 
-                        @bind="record.DisplayName" 
-                        placeholder="Display Name"
-                        minlength="@minDisplayNameLen"
-                        maxlength="@maxDisplayNameLen"
-                        class="form-control"/>
-                    <div class="invalid-feedback">
-                        Please enter a valid email address.
-                    </div>
+                    <p class="text-muted">@errorMessage</p>
                 </div>
-                <PasswordEditor @bind-Password="record.Password" ShowStrengthMeter="true" />
-                <PasswordEditor Password="@confirmPassword" ShowStrengthMeter="false" PasswordChanged="OnConfirmPasswordChanged" />
-                <div class="mb-2">
-                    <p class="text-danger">@passwordMessage</p>
-                </div>
-            </div>
-            <div class="mb-2">
-                <p class="text-muted">@errorMessage</p>
-            </div>
-            <button class="btn btn-primary mt-2" @onclick="Save">Save</button>
+                <button type="submit" class="btn btn-primary mt-2">Sign Up</button>
+            </EditForm>
             <div>
                 <NavLink href="/">Back to Start</NavLink>
             </div>

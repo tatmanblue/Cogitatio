@@ -29,3 +29,9 @@
 }
 
 @keyframes spin { to { transform: rotate(360deg); } }
+
+.was-validated .form-control:invalid,
+.form-control.is-invalid {
+    border-color: #ca4f5b;
+    background-image: none;
+}
