@@ -3,7 +3,24 @@
 
 @if (site.AllowLogin)
 {
-    <p>Hold your horses, we are getting to this</p>
+    <div class="login">
+        <h4>Credentials are required:</h4>
+        <div class="mb-3">
+            <div class="d-flex flex-column">
+                <div class="mb-2">
+                    <input id="accountId" @bind="accountId" placeholder="Enter your id" class="form-control"/>
+                </div>
+                <PasswordEditor @bind-Password="password" ShowStrengthMeter="false" />
+                @if (site.AllowSite2FA)
+                {
+                    <div class="mb-2">
+                        <input id="toptId" @bind="mfaId" placeholder="Enter the TOPT value" class="form-control"/>
+                    </div>
+                }
+            </div>
+        </div>        
+        <button class="btn btn-primary mt-2" @onclick=@DoLogin>Login</button>
+    </div>
 }
 else
 {

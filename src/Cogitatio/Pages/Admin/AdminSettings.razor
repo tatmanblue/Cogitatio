@@ -155,6 +155,13 @@
                 <input id="maxCommentsPerPost" @bind="maxCommentsPerPost" class="form-control" placeholder="100" />
             </div>
             <div class="mb-3">
+                <label for="allowLogins" class="form-label">Allow logins</label>
+                <InputCheckbox
+                    @bind-Value="@allowLogin"
+                    class="form-check-input"
+                    id="allowLogins"/>
+            </div>
+            <div class="mb-3">
                 <label for="allowNewUsers" class="form-label">Allow New Users to Sign up</label>
                 <InputCheckbox
                     @bind-Value="@allowNewUsers"

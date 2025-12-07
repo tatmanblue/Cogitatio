@@ -90,6 +90,8 @@ public partial class AdminSettings : ComponentBase
         if (!AdminUserState.IsAdmin)
             navigationManager.NavigateTo("/a/Admin");
         
+        // TODO probably refactor this into a type that holds all settings.  Could use an attribute-based approach
+        // TODO     to map settings to properties and simplify loading/saving.
         Dictionary<BlogSettings, string> settings = database.GetAllSettings();
         foreach (var setting in settings)
         {
@@ -219,6 +221,9 @@ public partial class AdminSettings : ComponentBase
             }
         }
         
+        // TODO do we need validation
+        // TODO probably refactor this into a type that holds all settings.  Could use an attribute-based approach
+        // TODO     to map settings to properties and simplify loading/saving.
         database.SaveSetting(BlogSettings.SiteTitle, siteTitle);
         database.SaveSetting(BlogSettings.About, about);
         database.SaveSetting(BlogSettings.Introduction, introduction);
@@ -232,6 +237,7 @@ public partial class AdminSettings : ComponentBase
         database.SaveSetting(BlogSettings.MaxCommentsPerPost, maxCommentsPerPost.ToString());
         database.SaveSetting(BlogSettings.UserDBConnectionString, usersDBConnectionString);
         database.SaveSetting(BlogSettings.AllowNewUsers, allowNewUsers.ToString());
+        database.SaveSetting(BlogSettings.AllowLogin, allowLogin.ToString());
         database.SaveSetting(BlogSettings.MinPasswordLength, minPasswordLength.ToString());
         database.SaveSetting(BlogSettings.MaxPasswordLength, maxPasswordLength.ToString());
         database.SaveSetting(BlogSettings.MinDisplayNameLength, minDisplayNameLen.ToString());

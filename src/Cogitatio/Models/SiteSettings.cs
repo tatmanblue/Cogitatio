@@ -17,6 +17,8 @@ public class SiteSettings
     public string Copyright { get; private set; } = string.Empty;
     public bool AllowNewUsers { get; private set; } = false;
     public bool AllowLogin { get; private set; } = true;
+    public bool AllowSite2FA { get; private set; } = true;
+    public string PasswordSalt { get; private set; } = string.Empty;
     
     public static SiteSettings Load(IDatabase database)
     {
@@ -50,6 +52,13 @@ public class SiteSettings
                 case BlogSettings.AllowLogin:
                     site.AllowLogin = Convert.ToBoolean(setting.Value);
                     break;
+                case BlogSettings.PasswordSalt:
+                    site.PasswordSalt = setting.Value;
+                    break;
+                case BlogSettings.AllowSite2FA:
+                    site.AllowSite2FA = Convert.ToBoolean(setting.Value);
+                    break;
+
             }
         }
         return site;

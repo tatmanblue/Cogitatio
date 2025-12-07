@@ -47,6 +47,8 @@ public enum BlogSettings
     AllowNewUsers,
     [Description("Whether users are allowed to login")]
     AllowLogin,
+    [Description("Whether to allow users to enable two factor authentication on their accounts")]
+    AllowSite2FA,
     [Description("The minimum length required for user passwords")]
     MinPasswordLength,
     [Description("The maximum length allowed for user passwords")]
