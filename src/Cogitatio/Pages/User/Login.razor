@@ -14,11 +14,14 @@
                 @if (site.AllowSite2FA)
                 {
                     <div class="mb-2">
-                        <input id="toptId" @bind="mfaId" placeholder="Enter the TOPT value" class="form-control"/>
+                        <input id="toptId" @bind="mfaId" placeholder="Enter the 2FA/MFA value" class="form-control"/>
                     </div>
                 }
             </div>
         </div>        
+        <div class="mb-2">
+            <p class="text-muted">@message</p>
+        </div>
         <button class="btn btn-primary mt-2" @onclick=@DoLogin>Login</button>
     </div>
 }

@@ -97,6 +97,37 @@ public class SqlServerUsers(ILogger<IUserDatabase> logger, string connectionStr,
         return Load(email) != null;
     }
     
+    public BlogUserRecord Load(string email, string displayName)
+    {
+        string sql = @"SELECT TOP 1 Id, DisplayName, Email, TwoFactorSecret, PasswordHash, AccountState
+                FROM Blog_Users
+                WHERE (Email = @email OR DisplayName = @displayName) AND TenantId = @TenantId";
+
+        BlogUserRecord? user = null;
+        ExecuteReader(sql, reader =>  
+        {
+            user = new BlogUserRecord
+            {
+                Id = reader.AsInt("Id"),
+                DisplayName = reader.AsString("DisplayName"),
+                Email = reader.AsString("Email"),
+                IpAddress = reader.AsString("IpAddress"),
+                TwoFactorSecret = reader.AsString("TwoFactorSecret"),
+                Password = reader.AsString("PasswordHash"),
+                AccountState = (UserAccountStates)reader.GetInt32(5),
+                CreatedAt = reader.AsDateTime("CreatedAt")
+            };
+            return false;
+        }, setup =>
+        {
+            setup.Parameters.AddWithValue("@email", email);
+            setup.Parameters.AddWithValue("@displayName", displayName);
+            setup.Parameters.AddWithValue("@TenantId", tenantId);
+        });
+
+        return user;
+    }
+    
     private void ExecuteReader(string sql, Func<SqlDataReader, bool> readRow, Action<SqlCommand>? cmdSetup = null)
     {
         Connect();

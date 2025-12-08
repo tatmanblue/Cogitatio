@@ -15,6 +15,11 @@ public class PostgresssqlUsers(ILogger<IUserDatabase> logger, string connectionS
         throw new NotImplementedException();
     }
     
+    public BlogUserRecord Load(string email, string displayName)
+    {
+        throw new NotImplementedException();
+    }
+    
     public bool DoesUserExist(string email)
     {
         if (null == Load(email))

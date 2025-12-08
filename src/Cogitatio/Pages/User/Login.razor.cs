@@ -1,23 +1,75 @@
-﻿using Cogitatio.Models;
+﻿using Cogitatio.General;
+using Cogitatio.Interfaces;
+using Cogitatio.Logic;
+using Cogitatio.Models;
 using Microsoft.AspNetCore.Components;
 
 namespace Cogitatio.Pages.User;
 
 public partial class Login : ComponentBase
 {
+    [Inject] ILogger<Login> logger { get; set; }
     [Inject] SiteSettings site { get; set; }
     [Inject] BlogUserState userState { get; set; }
-
-    protected override void OnInitialized()
-    {
-    }
+    [Inject] IUserDatabase userDB { get; set; }
+    [Inject] NavigationManager navigationManager { get; set; }
 
     private string accountId = string.Empty; // User's account ID (or email)
     private string password = string.Empty; // User's password
     private string mfaId = string.Empty; // User's TOTP code
+    private string message = string.Empty;
 
     private void DoLogin()
     {
-        throw new NotImplementedException();
+        message = string.Empty;
+        try
+        {
+            if (false == site.AllowLogin)
+                throw new BlogUserException("You are not allowed to access this page.");
+
+            // 1) find user by email or display
+            BlogUserRecord record = userDB.Load(accountId, password);
+            if (null == record)
+                throw new BlogUserException("User record not found");
+
+            // 2) hash inputted password and compare to stored hash
+            string saltedPassword = Password.HashPassword(site.PasswordSalt + password);
+            if (false == Password.VerifyPassword(saltedPassword, record.Password))
+                throw new BlogUserException("Password match failure.");
+
+            // 3) if user has 2FA enabled, verify TOTP code
+
+            // compare AccountState to determine if login is allowed
+            switch (record.AccountState)
+            {
+                case UserAccountStates.CommentWithApproval:
+                case UserAccountStates.CommentWithoutApproval:
+                case UserAccountStates.Moderator:
+                    // explicitly allowed
+                    break;
+                case UserAccountStates.AwaitingApproval:
+                    message = "You're account is awaiting approval.  Please contact the administrator.";
+                    break;
+                default:
+                    throw new BlogUserException("Account state does not allow login.");
+            }
+
+            userState.AccountState = record.AccountState;
+            userState.LastLogin = DateTime.UtcNow;
+            navigationManager.NavigateTo("/");
+        }
+        catch (BlogUserException ex)
+        {
+            logger.LogWarning($"Login error for account '{accountId}': {ex.Message}");
+            // this will be non empty only for user errors we want to bubble up to the user
+            if (!string.IsNullOrEmpty(ex.Message))
+                message = "Unable to login.  Please try again.";
+        }
+        finally
+        { 
+            accountId = string.Empty;
+            password = string.Empty;
+            mfaId = string.Empty;
+        }
     }
 }

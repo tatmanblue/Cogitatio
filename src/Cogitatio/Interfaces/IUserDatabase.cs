@@ -10,5 +10,6 @@ public interface IUserDatabase
 {
     void Save(BlogUserRecord user);    
     BlogUserRecord Load(string email);
+    BlogUserRecord Load(string email, string displayName);
     bool DoesUserExist(string email);
 }
