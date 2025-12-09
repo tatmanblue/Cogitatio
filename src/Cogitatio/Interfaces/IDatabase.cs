@@ -4,7 +4,6 @@ namespace Cogitatio.Interfaces;
 
 public interface IDatabase
 {
-    string ConnectionString { get; }
     BlogPost GetMostRecent();
     BlogPost GetBySlug(string slug);
     BlogPost GetById(int id);

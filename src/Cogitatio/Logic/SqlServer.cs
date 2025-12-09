@@ -10,7 +10,7 @@ namespace Cogitatio.Logic;
 /// TODO duplicity with Postgressql will be addressed in a future update
 /// TODO there is some commonality here with SqlServerUsers database access that could be refactored
 /// </summary>
-public class SqlServer : IDatabase, IDisposable
+public class SqlServer : AbstractDB<SqlConnection>, IDatabase, IDisposable
 {
     #region IDisposable
 
@@ -22,30 +22,16 @@ public class SqlServer : IDatabase, IDisposable
     }
 
     #endregion
-
-    public string ConnectionString
-    {
-        get { return connectionStr; }
-    }
-
+    
+    /*
     private ILogger<IDatabase> logger;
     private string connectionStr = string.Empty;
     private SqlConnection connection = null;
     private int tenantId = 0;
-
-    public SqlServer(ILogger<IDatabase> logger, string str, int tenantId)
+    */
+    
+    public SqlServer(ILogger<IDatabase> logger, string str, int tenantId) : base(logger, str, tenantId)
     {
-        this.logger = logger;
-        this.tenantId = tenantId;
-        connectionStr = str;
-    }
-
-    public void Connect()
-    {
-        if (null != connection) return;
-
-        connection = new SqlConnection(connectionStr);
-        connection.Open();
     }
 
     public BlogPost GetMostRecent()
@@ -53,7 +39,10 @@ public class SqlServer : IDatabase, IDisposable
         BlogPost result = null;
         string sql = $@"{GetPostStartSql()} AND 
                 t1.PostId = (SELECT TOP 1 PostId FROM Blog_Posts WHERE Status = 1 AND TenantId = @TenantId ORDER BY PublishedDate DESC);";
-        ExecuteReader(sql, rdr =>
+        ExecuteReader<SqlCommand, SqlDataReader>(sql, () =>
+        {
+            return new SqlCommand();
+        }, rdr =>
         {
             result = ReadPost(rdr);
             return false;
@@ -85,7 +74,10 @@ public class SqlServer : IDatabase, IDisposable
             WHERE
                 t1.Slug = @slug;";
 
-        ExecuteReader(sql, rdr =>
+        ExecuteReader<SqlCommand, SqlDataReader>(sql, () =>
+        {
+            return new SqlCommand();
+        },rdr =>
         {
             result = ReadPost(rdr);
             return false;
@@ -99,7 +91,10 @@ public class SqlServer : IDatabase, IDisposable
         BlogPost result = null;
         string sql = $"{GetPostStartSql()} AND t1.PostId = @PostId ;";
 
-        ExecuteReader(sql, rdr =>
+        ExecuteReader<SqlCommand, SqlDataReader>(sql, () =>
+        {
+            return new SqlCommand();
+        },rdr =>
         {
             result = ReadPost(rdr);
             return false;
@@ -119,7 +114,10 @@ public class SqlServer : IDatabase, IDisposable
         string sql =
             "SELECT STUFF((SELECT ',' + Tag FROM Blog_Tags WHERE PostId = @postId FOR XML PATH(''), TYPE).value('.', 'NVARCHAR(MAX)'),1,1,'') AS Tags";
 
-        ExecuteReader(sql, rdr =>
+        ExecuteReader<SqlCommand, SqlDataReader>(sql, () =>
+        {
+            return new SqlCommand();
+        },rdr =>
         {
             string tags = rdr.AsString("Tags");
             result.AddRange(tags.Split(","));
@@ -219,7 +217,10 @@ public class SqlServer : IDatabase, IDisposable
     {
         List<string> result = new();
         string sql = $"SELECT DISTINCT Tag FROM Blog_Tags WHERE tenantId = {tenantId};";
-        ExecuteReader(sql, rdr =>
+        ExecuteReader<SqlCommand, SqlDataReader>(sql, () =>
+        {
+            return new SqlCommand();
+        },rdr =>
         {
             result.Add(rdr.AsString("Tag"));
             return true;
@@ -231,7 +232,10 @@ public class SqlServer : IDatabase, IDisposable
     {
         List<string> result = new();
         string sql = $@"SELECT TOP 10 Tag, Count(Tag) AS Count FROM Blog_Tags WHERE tenantId = {tenantId} GROUP BY Tag ORDER BY Count DESC;";
-        ExecuteReader(sql,
+        ExecuteReader<SqlCommand, SqlDataReader>(sql, () =>
+            {
+                return new SqlCommand();
+            },
             (reader =>
             {
                 result.Add(reader.AsString("Tag"));
@@ -245,7 +249,10 @@ public class SqlServer : IDatabase, IDisposable
     {
         Dictionary<string, int> result = new();
         string sql = $@"SELECT Tag, Count(Tag) AS Count FROM Blog_Tags WHERE tenantId = {tenantId} GROUP BY Tag ORDER BY Count DESC;";
-        ExecuteReader(sql,
+        ExecuteReader<SqlCommand, SqlDataReader>(sql, () =>
+            {
+                return new SqlCommand();
+            },
             (reader =>
             {
                 result[reader.AsString("Tag")] = reader.AsInt("Count");
@@ -259,7 +266,7 @@ public class SqlServer : IDatabase, IDisposable
     {
         List<string> result = new();
         string sql = $"SELECT DISTINCT Slug FROM Blog_Posts WHERE tenantId = {tenantId};";
-        ExecuteReader(sql,
+        ExecuteReader<SqlCommand, SqlDataReader>(sql, () => new SqlCommand(),
             (reader =>
             {
                 result.Add(reader.AsString("Slug"));
@@ -276,7 +283,7 @@ public class SqlServer : IDatabase, IDisposable
                 t1.PostId IN (SELECT PostId FROM Blog_Tags WHERE Tag = @tag AND TenantId = @TenantId)
             ORDER BY PublishedDate DESC;";
 
-        ExecuteReader(sql, rdr =>
+        ExecuteReader<SqlCommand, SqlDataReader>(sql, () => new SqlCommand(),rdr =>
         {
             result.Add(ReadPost(rdr));
             return true;
@@ -298,7 +305,7 @@ public class SqlServer : IDatabase, IDisposable
                     SELECT PostId FROM Blog_Tags WHERE t1.PublishedDate BETWEEN @from AND @to AND TenantId = @tenantId
                 )
             ORDER BY PublishedDate DESC;";
-        ExecuteReader(sql, rdr =>
+        ExecuteReader<SqlCommand, SqlDataReader>(sql, () => new SqlCommand(),rdr =>
         {
             result.Add(ReadPost(rdr));
             return true;
@@ -317,7 +324,7 @@ public class SqlServer : IDatabase, IDisposable
         List<BlogPost> result = new();
         string sql = $@"{GetPostStartSql()} ORDER BY PublishedDate DESC;";
         int count = 0;
-        ExecuteReader(sql, rdr =>
+        ExecuteReader<SqlCommand, SqlDataReader>(sql, () => new SqlCommand(),rdr =>
         {
             count++;
             result.Add(ReadPost(rdr));
@@ -379,6 +386,8 @@ public class SqlServer : IDatabase, IDisposable
         cmd.CommandType = CommandType.Text;
         cmd.Connection = connection;
         cmd.CommandText = @"SELECT * FROM Blog_Request_Contact;";
+        
+        // TODO can use ExecuteReader helper method here
         using SqlDataReader reader = cmd.ExecuteReader();
         while (reader.Read())
         {
@@ -414,7 +423,7 @@ public class SqlServer : IDatabase, IDisposable
     {
         string sql = @"SELECT * FROM Blog_Settings WHERE TenantId = @TenantId;";
         Dictionary<BlogSettings, string> result = new();
-        ExecuteReader(sql, rdr =>
+        ExecuteReader<SqlCommand, SqlDataReader>(sql, () => new SqlCommand(),rdr =>
         {
             if (Enum.TryParse<BlogSettings>(rdr.AsString("SettingKey"), out var key))
             {
@@ -436,7 +445,7 @@ public class SqlServer : IDatabase, IDisposable
     {
         string result = defaultValue;
         string sql = @"SELECT SettingValue FROM Blog_Settings WHERE SettingKey = @key AND TenantId = @TenantId;";
-        ExecuteReader(sql, rdr =>
+        ExecuteReader<SqlCommand, SqlDataReader>(sql, () => new SqlCommand(), rdr =>
         {
             result = rdr.AsString("SettingValue");
             return false;
@@ -470,6 +479,14 @@ public class SqlServer : IDatabase, IDisposable
         logger.LogDebug($"Setting saved: {setting}, {rowsAffected}");
     }
     
+    protected override void Connect()
+    {
+        if (null != connection) return;
+
+        connection = new SqlConnection(connectionString);
+        connection.Open();
+    }
+   
     /// <summary>
     /// Gets all the common repeated functionality into a single method
     /// </summary>
@@ -515,32 +532,7 @@ public class SqlServer : IDatabase, IDisposable
             cmd.ExecuteNonQuery();
         }
     }
-
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="sql"></param>
-    /// <param name="readRow">if readRow impl returns false, the reading loop stops and reader is closed</param>
-    /// <param name="cmdSetup"></param>
-    private void ExecuteReader(string sql, Func<SqlDataReader, bool> readRow, Action<SqlCommand>? cmdSetup = null)
-    {
-        Connect();
-        using SqlCommand cmd = new SqlCommand();
-        cmd.CommandType = CommandType.Text;
-        cmd.Connection = connection;
-        cmd.Parameters.Clear();
-        cmd.CommandText = sql;
-        if (cmdSetup != null) cmdSetup(cmd);
-        
-        using SqlDataReader rdr = cmd.ExecuteReader();
-        while (rdr.Read())
-        {
-            if (false == readRow(rdr))
-                break;
-        }
-        rdr.Close();
-    }
-
+    
     /// <summary>
     /// returns a complete SQL statement to get all posts with previous/next links by tenant
     /// you can add your own WHERE clause to the end by appending to the returned string starting with " AND ..."
