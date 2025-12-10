@@ -111,6 +111,8 @@ builder.Services.AddScoped<IUserDatabase>(p =>
     // prior to the system trying to access the user database
     var defaultConnection = configuration["CogitatioSiteDB"];
     var connectionString = db.GetSetting(BlogSettings.UserDBConnectionString, defaultConnection);
+    if (string.IsNullOrEmpty(connectionString))
+        connectionString = defaultConnection;
     
     IUserDatabase userDB = dbType switch
     {

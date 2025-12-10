@@ -7,21 +7,22 @@ using Microsoft.Data.SqlClient;
 namespace Cogitatio.Logic;
 
 /// <summary>
-///
-/// TODO there is some commonality here with SqlServer database access that could be refactored
+/// MS SQL server version for user database operations.
 /// </summary>
-/// <param name="logger"></param>
-/// <param name="connectionStr"></param>
-/// <param name="tenantId"></param>
-public class SqlServerUsers(ILogger<IUserDatabase> logger, string connectionStr, int tenantId) : IUserDatabase
+public class SqlServerUsers : AbstractDB<SqlConnection>, IUserDatabase
 {
-    private SqlConnection connection = null;
+    private ILogger<IUserDatabase> logger;
 
-    public void Connect()
+    public SqlServerUsers(ILogger<IUserDatabase> logger, string connectionStr, int tenantId) : base(connectionStr, tenantId)
+    {
+        this.logger = logger;
+    }
+
+    protected override void Connect()
     {
         if (null != connection) return;
 
-        connection = new SqlConnection(connectionStr);
+        connection = new SqlConnection(connectionString);
         connection.Open();
     }
     
@@ -37,7 +38,7 @@ public class SqlServerUsers(ILogger<IUserDatabase> logger, string connectionStr,
         cmd.Connection = connection;
         cmd.Parameters.Clear();
         cmd.CommandText = @"INSERT INTO Blog_Users (DisplayName, Email, IpAddress, TwoFactorSecret, VerificationId, PasswordHash, AccountState, TenantId)
-                OUTPUT INSERTED.PostId 
+                OUTPUT INSERTED.Id 
                 VALUES
                 (
                     @displayName,
@@ -64,12 +65,15 @@ public class SqlServerUsers(ILogger<IUserDatabase> logger, string connectionStr,
     
     public BlogUserRecord Load(string email)
     {
-        string sql = @"SELECT TOP 1 Id, DisplayName, Email, TwoFactorSecret, PasswordHash, AccountState
+        string sql = @"SELECT TOP 1 Id, DisplayName, Email, IpAddress, TwoFactorSecret, PasswordHash, AccountState, CreatedAt
                 FROM Blog_Users
                 WHERE Email = @email AND TenantId = @TenantId";
 
         BlogUserRecord? user = null;
-        ExecuteReader(sql, reader =>  
+        ExecuteReader<SqlCommand, SqlDataReader>(sql, () =>
+        {
+            return new SqlCommand();
+        }, reader =>  
         {
             user = new BlogUserRecord
             {
@@ -99,12 +103,15 @@ public class SqlServerUsers(ILogger<IUserDatabase> logger, string connectionStr,
     
     public BlogUserRecord Load(string email, string displayName)
     {
-        string sql = @"SELECT TOP 1 Id, DisplayName, Email, TwoFactorSecret, PasswordHash, AccountState
+        string sql = @"SELECT TOP 1 Id, DisplayName, Email, IpAddress, TwoFactorSecret, PasswordHash, AccountState, CreatedAt
                 FROM Blog_Users
                 WHERE (Email = @email OR DisplayName = @displayName) AND TenantId = @TenantId";
 
         BlogUserRecord? user = null;
-        ExecuteReader(sql, reader =>  
+        ExecuteReader<SqlCommand, SqlDataReader>(sql, () =>
+        {
+            return new SqlCommand();
+        }, reader =>  
         {
             user = new BlogUserRecord
             {
@@ -114,7 +121,7 @@ public class SqlServerUsers(ILogger<IUserDatabase> logger, string connectionStr,
                 IpAddress = reader.AsString("IpAddress"),
                 TwoFactorSecret = reader.AsString("TwoFactorSecret"),
                 Password = reader.AsString("PasswordHash"),
-                AccountState = (UserAccountStates)reader.GetInt32(5),
+                AccountState = (UserAccountStates)reader.AsInt("AccountState"),
                 CreatedAt = reader.AsDateTime("CreatedAt")
             };
             return false;
@@ -126,24 +133,5 @@ public class SqlServerUsers(ILogger<IUserDatabase> logger, string connectionStr,
         });
 
         return user;
-    }
-    
-    private void ExecuteReader(string sql, Func<SqlDataReader, bool> readRow, Action<SqlCommand>? cmdSetup = null)
-    {
-        Connect();
-        using SqlCommand cmd = new SqlCommand();
-        cmd.CommandType = CommandType.Text;
-        cmd.Connection = connection;
-        cmd.Parameters.Clear();
-        cmd.CommandText = sql;
-        if (cmdSetup != null) cmdSetup(cmd);
-        
-        using SqlDataReader rdr = cmd.ExecuteReader();
-        while (rdr.Read())
-        {
-            if (false == readRow(rdr))
-                break;
-        }
-        rdr.Close();
     }
 }

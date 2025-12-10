@@ -69,3 +69,10 @@ public enum UserAccountStates
     Moderator = 5,                      // level three commenting, can approve comments
     Blocked = 6                         // user is blocked from commenting,
 }
+
+public enum EmailServices
+{
+    Mock = 1,                           // there will be no email sent
+    SendGrid = 2,                       // use SendGrid email service
+    Azure                               // use Azure Communication Service email service
+}

@@ -37,6 +37,7 @@ public partial class SignUp : ComponentBase
     [Inject] private NavigationManager navigationManager { get; set; } = null;
     [Inject] private BlogUserState userState { get; set; } = null;
     [Inject] private IHttpContextAccessor HttpContextAccessor { get; set; } = null!;
+    [Inject] private IEmailSender emailSender { get; set; } = null!;
     
     private enum SignUpState
     {
@@ -99,6 +100,9 @@ public partial class SignUp : ComponentBase
         userAgreed = false;
     }
 
+    /// <summary>
+    /// TODO: this method does a lot, consider breaking it up
+    /// </summary>
     private async Task Save()
     {
         // this should not happen
@@ -178,6 +182,14 @@ public partial class SignUp : ComponentBase
             
             userDB.Save(record);
             signUpState = SignUpState.Saved;
+
+            if (emailSender != null)
+            {
+                record.AccountState = UserAccountStates.AwaitingApproval;
+                var verifyUrl = navigationManager.BaseUri + "/u/Verify?vid=" + WebUtility.UrlEncode(record.VerificationId) + "&email=" + WebUtility.UrlEncode(record.Email);
+                var emailBody = EmailTemplates.GetVerificationEmailBody(record.DisplayName, verifyUrl, site.SiteName);
+                await emailSender.SendEmailAsync(record.Email, $"{site.SiteName} - Verify your email address", emailBody);
+            }
         }
         catch (BlogUserException ex)
         {

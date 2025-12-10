@@ -27,13 +27,13 @@ public partial class Login : ComponentBase
             if (false == site.AllowLogin)
                 throw new BlogUserException("You are not allowed to access this page.");
 
-            // 1) find user by email or display
-            BlogUserRecord record = userDB.Load(accountId, password);
+            // 1) find user by email or display.  Since we obscure what account id is (email or display name), we try both
+            BlogUserRecord record = userDB.Load(accountId, accountId);
             if (null == record)
                 throw new BlogUserException("User record not found");
 
             // 2) hash inputted password and compare to stored hash
-            string saltedPassword = Password.HashPassword(site.PasswordSalt + password);
+            string saltedPassword = site.PasswordSalt + password;
             if (false == Password.VerifyPassword(saltedPassword, record.Password))
                 throw new BlogUserException("Password match failure.");
 
@@ -48,7 +48,9 @@ public partial class Login : ComponentBase
                     // explicitly allowed
                     break;
                 case UserAccountStates.AwaitingApproval:
+                    // awaiting approval is a special case where we want to show a different message
                     message = "You're account is awaiting approval.  Please contact the administrator.";
+                    throw new BlogUserException("Account state does not allow login.");
                     break;
                 default:
                     throw new BlogUserException("Account state does not allow login.");
@@ -62,7 +64,7 @@ public partial class Login : ComponentBase
         {
             logger.LogWarning($"Login error for account '{accountId}': {ex.Message}");
             // this will be non empty only for user errors we want to bubble up to the user
-            if (!string.IsNullOrEmpty(ex.Message))
+            if (string.IsNullOrEmpty(message))
                 message = "Unable to login.  Please try again.";
         }
         finally

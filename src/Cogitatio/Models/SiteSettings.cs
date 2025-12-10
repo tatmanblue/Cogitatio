@@ -16,8 +16,8 @@ public class SiteSettings
     public string Introduction { get; private set; } = string.Empty;
     public string Copyright { get; private set; } = string.Empty;
     public bool AllowNewUsers { get; private set; } = false;
-    public bool AllowLogin { get; private set; } = true;
-    public bool AllowSite2FA { get; private set; } = true;
+    public bool AllowLogin { get; private set; } = false;
+    public bool AllowSite2FA { get; private set; } = false;
     public string PasswordSalt { get; private set; } = string.Empty;
     
     public static SiteSettings Load(IDatabase database)

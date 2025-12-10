@@ -11,13 +11,11 @@ namespace Cogitatio.Logic;
 public abstract class AbstractDB<T> : IDisposable where T : IDbConnection
 {
     protected T? connection = default(T);
-    protected ILogger<IDatabase> logger;
     protected readonly string connectionString;
     protected readonly int tenantId = 0;
 
-    public AbstractDB(ILogger<IDatabase> logger, string connectionString, int tenantId = 0)
+    public AbstractDB(string connectionString, int tenantId = 0)
     {
-        this.logger = logger;
         this.connectionString = connectionString;
         this.tenantId = tenantId;
     }

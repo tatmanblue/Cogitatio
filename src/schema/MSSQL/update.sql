@@ -20,5 +20,3 @@ CREATE TABLE Blog_Settings
     UNIQUE (TenantId, SettingKey)
 );
 
-
-SELECT * FROM Blog_Settings

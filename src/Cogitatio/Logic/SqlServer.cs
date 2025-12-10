@@ -7,8 +7,8 @@ using Microsoft.Data.SqlClient;
 namespace Cogitatio.Logic;
 
 /// <summary>
+/// MS SQL server version for blog database operations with blog posts.
 /// TODO duplicity with Postgressql will be addressed in a future update
-/// TODO there is some commonality here with SqlServerUsers database access that could be refactored
 /// </summary>
 public class SqlServer : AbstractDB<SqlConnection>, IDatabase, IDisposable
 {
@@ -23,15 +23,11 @@ public class SqlServer : AbstractDB<SqlConnection>, IDatabase, IDisposable
 
     #endregion
     
-    /*
     private ILogger<IDatabase> logger;
-    private string connectionStr = string.Empty;
-    private SqlConnection connection = null;
-    private int tenantId = 0;
-    */
     
-    public SqlServer(ILogger<IDatabase> logger, string str, int tenantId) : base(logger, str, tenantId)
+    public SqlServer(ILogger<IDatabase> logger, string str, int tenantId) : base(str, tenantId)
     {
+        this.logger = logger;
     }
 
     public BlogPost GetMostRecent()
