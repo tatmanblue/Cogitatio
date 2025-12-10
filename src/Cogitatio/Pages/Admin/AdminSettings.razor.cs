@@ -50,6 +50,12 @@ public partial class AdminSettings : ComponentBase
     private string adminPassword = "Cogitatio2024!";
     private string passwordInputType = "password";
     private string passwordToggleIcon = "bi bi-eye-slash";
+    
+    // -------------------------------------------------------------------------
+    // mail settings    
+    private EmailServices selectedEmailService = EmailServices.Mock;
+    private string fromEmail = string.Empty;
+    private string sendGridApiKey = string.Empty;
 
     
     // -------------------------------------------------------------------------
@@ -63,12 +69,16 @@ public partial class AdminSettings : ComponentBase
     private int secondsRemaining = 30;
     private Timer? timer;
     
+    // -------------------------------------------------------------------------
+    // TinyMCE configuration
     private string tinyMceKey = "no-api-key";
+    
+    
     
     // -------------------------------------------------------------------------
     // screen configuration 
     private int activeTab = 0;
-    private readonly string[] tabTitles = { "Security", "Site Info", "Introduction", "About", "Comments" };
+    private readonly string[] tabTitles = { "Security", "Site Info", "Introduction", "About", "Comments", "Mail" };
         
     private Dictionary<string, object> editorConfig = new Dictionary<string, object>{
         { "menubar", true },
@@ -139,9 +149,7 @@ public partial class AdminSettings : ComponentBase
                 case BlogSettings.UserDBConnectionString:
                     usersDBConnectionString = setting.Value;
                     if (string.IsNullOrEmpty(usersDBConnectionString))
-                    {
                         connectionStringNotice = "Using default database.";
-                    }
                     break;
                 case BlogSettings.AllowNewUsers:
                     allowNewUsers = Convert.ToBoolean(setting.Value);
@@ -160,6 +168,16 @@ public partial class AdminSettings : ComponentBase
                     break;
                 case BlogSettings.MaxDisplayNameLength:
                     maxDisplayNameLen = Convert.ToInt32(setting.Value);
+                    break;
+                case BlogSettings.SendGridApiKey:
+                    sendGridApiKey = setting.Value;
+                    break;
+                case BlogSettings.EmailService:
+                    if (System.Enum.TryParse<EmailServices>(setting.Value, out var service))
+                        selectedEmailService = service;
+                    break;
+                case BlogSettings.FromEmail:
+                    fromEmail = setting.Value;
                     break;
             }
         }
@@ -242,6 +260,9 @@ public partial class AdminSettings : ComponentBase
         database.SaveSetting(BlogSettings.MaxPasswordLength, maxPasswordLength.ToString());
         database.SaveSetting(BlogSettings.MinDisplayNameLength, minDisplayNameLen.ToString());
         database.SaveSetting(BlogSettings.MaxDisplayNameLength, maxDisplayNameLen.ToString());
+        database.SaveSetting(BlogSettings.EmailService, selectedEmailService.ToString());
+        database.SaveSetting(BlogSettings.SendGridApiKey, sendGridApiKey);
+        database.SaveSetting(BlogSettings.FromEmail, fromEmail);
         
         if (!string.IsNullOrEmpty(adminId))
             database.SaveSetting(BlogSettings.AdminId, adminId);

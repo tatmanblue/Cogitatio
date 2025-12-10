@@ -1,5 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity.UI.Services;
-using Microsoft.Extensions.Options;
+﻿using Cogitatio.Interfaces;
+using Cogitatio.Models;
 using SendGrid;
 using SendGrid.Helpers.Mail;
 
@@ -9,17 +9,17 @@ namespace Cogitatio.Logic;
 /// For using sendgrid to send email
 /// </summary>
 /// <param name="logger"></param>
-public class SendGridEmailSender(ILogger<SendGridEmailSender> logger, IOptions<SendGridSettings> settings) : IEmailSender
+public class SendGridEmailSender(ILogger<IEmailSender> logger, IDatabase db) : IEmailSender
 {
-    private readonly SendGridSettings settings;
-    
-    public async Task SendEmailAsync(string toEmail, string subject, string body)
+   public Task SendEmailAsync(string toEmail, string subject, string body, bool isHtml = true)
     {
-        bool isHtml = true;
-        var client = new SendGridClient(settings.ApiKey);
-        var from = new EmailAddress(settings.FromEmail);
+        var sendGridApiKey = db.GetSetting(BlogSettings.SendGridApiKey);
+        var fromEmail = db.GetSetting(BlogSettings.FromEmail);
+        
+        var client = new SendGridClient(sendGridApiKey);
+        var from = new EmailAddress(fromEmail);
         var to = new EmailAddress(toEmail);
         var msg = MailHelper.CreateSingleEmail(from, to, subject, isHtml ? null : body, isHtml ? body : null);
-        await client.SendEmailAsync(msg);
+        return client.SendEmailAsync(msg).WaitAsync(TimeSpan.FromSeconds(90));
     }
 }

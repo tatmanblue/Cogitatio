@@ -23,6 +23,56 @@ namespace Cogitatio.Pages.User;
 /// </summary>
 public partial class SignUp : ComponentBase
 {
+    #region email body html
+    private const string emailVerificationTemplate = """
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Verify Your Email</title>
+        </head>
+        <body style="margin: 0; padding: 0; background-color: #f4f4f4; font-family: Arial, Helvetica, sans-serif;">
+            <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
+                <tr>
+                    <td style="padding: 20px 0;">
+                        <table role="presentation" align="center" border="0" cellpadding="0" cellspacing="0" width="600" style="background-color: #ffffff; border: 1px solid #dddddd;">
+                            <tr>
+                                <td style="padding: 40px 30px 20px; text-align: center; font-size: 24px; font-weight: bold; color: #333333;">
+                                    Welcome to {site.ShortTitle}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 0 30px 30px; font-size: 16px; line-height: 24px; color: #333333;">
+                                    <p>Thank you for signing up to comment on posts at <strong>{site.ShortTitle}</strong>.</p>
+                                    <p>To complete your registration and activate your account, please verify your email address by clicking the button below:</p>
+                                    
+                                    <p style="text-align: center; margin: 30px 0;">
+                                        <a href="{verifyUrl}" style="background-color: #007bff; color: #ffffff; padding: 12px 24px; text-decoration: none; font-size: 16px; font-weight: bold; border-radius: 4px; display: inline-block;">Verify Email Address</a>
+                                    </p>
+                                    
+                                    <p>If the button doesn't work, you can copy and paste this link into your browser:<br>
+                                        <a href="{verifyUrl}" style="color: #007bff;">{verifyUrl}</a>
+                                    </p>
+                                    
+                                    <p>If you didn't create an account on {site.ShortTitle}, you can safely ignore this email.</p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 20px 30px; background-color: #f8f9fa; text-align: center; font-size: 12px; color: #666666;">
+                                    <p>&copy; {site.ShortTitle}. All rights reserved.</p>
+                                    <p>This is an automated message — please do not reply.</p>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </body>
+        </html>
+        """;    
+    #endregion
+    
     public class PoWResult
     {
         public long Nonce { get; set; }
@@ -187,8 +237,10 @@ public partial class SignUp : ComponentBase
             {
                 record.AccountState = UserAccountStates.AwaitingApproval;
                 var verifyUrl = navigationManager.BaseUri + "/u/Verify?vid=" + WebUtility.UrlEncode(record.VerificationId) + "&email=" + WebUtility.UrlEncode(record.Email);
-                var emailBody = EmailTemplates.GetVerificationEmailBody(record.DisplayName, verifyUrl, site.SiteName);
-                await emailSender.SendEmailAsync(record.Email, $"{site.SiteName} - Verify your email address", emailBody);
+                var htmlBody = emailVerificationTemplate
+                    .Replace("{site.ShortTitle}", site.ShortTitle)
+                    .Replace("{verifyUrl}", verifyUrl);
+                await emailSender.SendEmailAsync(record.Email, $"{site.ShortTitle} - Verify your email address", htmlBody);
             }
         }
         catch (BlogUserException ex)

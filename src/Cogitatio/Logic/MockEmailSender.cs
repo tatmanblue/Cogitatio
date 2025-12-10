@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity.UI.Services;
+﻿using Cogitatio.Interfaces;
 
 namespace Cogitatio.Logic;
 
@@ -6,11 +6,11 @@ namespace Cogitatio.Logic;
 /// For internal testing purposes only - logs email contents instead of sending them.
 /// </summary>
 /// <param name="logger"></param>
-public class MockEmailSender(ILogger<MockEmailSender> logger) : IEmailSender
+public class MockEmailSender(ILogger<IEmailSender> logger) : IEmailSender
 {
-    public Task SendEmailAsync(string to, string subject, string htmlMessage)
+    public Task SendEmailAsync(string toEmail, string subject, string body, bool isHtml = true)
     {
-        logger.LogInformation($"Mock email sent to {to}: {subject} - {htmlMessage}");
+        logger.LogInformation($"Mock email sent to {toEmail}: {subject} - {body}");
         return Task.CompletedTask;
     }
 }

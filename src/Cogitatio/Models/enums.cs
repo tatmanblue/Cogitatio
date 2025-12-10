@@ -56,7 +56,13 @@ public enum BlogSettings
     [Description("The minimum length required for usernames")]
     MinDisplayNameLength,
     [Description("The maximum length allowed for usernames")]
-    MaxDisplayNameLength
+    MaxDisplayNameLength,
+    [Description("The email address from which system emails are sent")]
+    FromEmail,
+    [Description("The email service to use for sending emails")]
+    EmailService,
+    [Description("The SendGrid API key for sending emails")]        
+    SendGridApiKey,
 }
 
 public enum UserAccountStates

@@ -135,6 +135,24 @@ builder.Services.AddScoped<IUserDatabase>(p =>
         throw new NotSupportedException($"Database type {type} is not supported.");
     }
 });
+// Email Sender
+builder.Services.AddTransient<IEmailSender>(p =>
+{
+    var logger = p.GetRequiredService<ILogger<IEmailSender>>();
+    var db = p.GetRequiredService<IDatabase>();
+    EmailServices services = EmailServices.Mock;
+    if (System.Enum.TryParse<EmailServices>(db.GetSetting(BlogSettings.EmailService), out var service))
+        services = service;
+
+    switch (services)
+    {
+        case EmailServices.SendGrid:
+            return new SendGridEmailSender(logger, db);
+        case EmailServices.Mock:
+        default:
+            return new MockEmailSender(logger);
+    }
+});
 
 
 var logFilePath = Path.Combine(AppContext.BaseDirectory, "Logs");
