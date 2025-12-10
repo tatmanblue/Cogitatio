@@ -65,7 +65,7 @@ public class SqlServerUsers : AbstractDB<SqlConnection>, IUserDatabase
     
     public BlogUserRecord Load(string email)
     {
-        string sql = @"SELECT TOP 1 Id, DisplayName, Email, IpAddress, TwoFactorSecret, PasswordHash, AccountState, CreatedAt
+        string sql = @"SELECT TOP 1 Id, DisplayName, Email, IpAddress, TwoFactorSecret, PasswordHash, VerificationId, AccountState, CreatedAt
                 FROM Blog_Users
                 WHERE Email = @email AND TenantId = @TenantId";
 
@@ -83,7 +83,8 @@ public class SqlServerUsers : AbstractDB<SqlConnection>, IUserDatabase
                 IpAddress = reader.AsString("IpAddress"),
                 TwoFactorSecret = reader.AsString("TwoFactorSecret"),
                 Password = reader.AsString("PasswordHash"),
-                AccountState = (UserAccountStates)reader.GetInt32(5),
+                VerificationId = reader.AsString("VerificationId"),
+                AccountState = (UserAccountStates)reader.AsInt("AccountState"),
                 CreatedAt = reader.AsDateTime("CreatedAt")
             };
             return false;

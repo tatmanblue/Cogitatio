@@ -236,7 +236,7 @@ public partial class SignUp : ComponentBase
             if (emailSender != null)
             {
                 record.AccountState = UserAccountStates.AwaitingApproval;
-                var verifyUrl = navigationManager.BaseUri + "/u/Verify?vid=" + WebUtility.UrlEncode(record.VerificationId) + "&email=" + WebUtility.UrlEncode(record.Email);
+                var verifyUrl = navigationManager.BaseUri + "u/Verify?vid=" + WebUtility.UrlEncode(record.VerificationId) + "&email=" + WebUtility.UrlEncode(record.Email);
                 var htmlBody = emailVerificationTemplate
                     .Replace("{site.ShortTitle}", site.ShortTitle)
                     .Replace("{verifyUrl}", verifyUrl);
