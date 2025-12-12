@@ -8,6 +8,8 @@ namespace Cogitatio.Pages.User;
 
 public partial class Login : ComponentBase
 {
+    [SupplyParameterFromQuery(Name = "redirect")]
+    public string? RedirectUrl { get; set; } = "/";
     [Inject] ILogger<Login> logger { get; set; }
     [Inject] SiteSettings site { get; set; }
     [Inject] BlogUserState userState { get; set; }
@@ -49,7 +51,7 @@ public partial class Login : ComponentBase
                     break;
                 case UserAccountStates.AwaitingApproval:
                     // awaiting approval is a special case where we want to show a different message
-                    message = "You're account is awaiting approval.  Please contact the administrator.";
+                    message = "You're account is awaiting approval.  Please contact the administrator if you believe this is an error.";
                     throw new BlogUserException("Account state does not allow login.");
                     break;
                 default:
@@ -58,7 +60,9 @@ public partial class Login : ComponentBase
 
             userState.AccountState = record.AccountState;
             userState.LastLogin = DateTime.UtcNow;
-            navigationManager.NavigateTo("/");
+            userState.AccountId = record.Id;
+            userState.DisplayName = record.DisplayName;
+            navigationManager.NavigateTo(RedirectUrl);
         }
         catch (BlogUserException ex)
         {

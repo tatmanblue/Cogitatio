@@ -75,18 +75,7 @@ public class SqlServerUsers : AbstractDB<SqlConnection>, IUserDatabase
             return new SqlCommand();
         }, reader =>  
         {
-            user = new BlogUserRecord
-            {
-                Id = reader.AsInt("Id"),
-                DisplayName = reader.AsString("DisplayName"),
-                Email = reader.AsString("Email"),
-                IpAddress = reader.AsString("IpAddress"),
-                TwoFactorSecret = reader.AsString("TwoFactorSecret"),
-                Password = reader.AsString("PasswordHash"),
-                VerificationId = reader.AsString("VerificationId"),
-                AccountState = (UserAccountStates)reader.AsInt("AccountState"),
-                CreatedAt = reader.AsDateTime("CreatedAt")
-            };
+            user = ReadUserRecord(reader);
             return false;
         }, setup =>
         {
@@ -97,9 +86,27 @@ public class SqlServerUsers : AbstractDB<SqlConnection>, IUserDatabase
         return user;
     }
     
-    public bool DoesUserExist(string email)
+    public BlogUserRecord Load(int id)
     {
-        return Load(email) != null;
+        string sql = @"SELECT TOP 1 Id, DisplayName, Email, IpAddress, TwoFactorSecret, PasswordHash, VerificationId, AccountState, CreatedAt
+                FROM Blog_Users
+                WHERE Id = @id AND TenantId = @TenantId";
+
+        BlogUserRecord? user = null;
+        ExecuteReader<SqlCommand, SqlDataReader>(sql, () =>
+        {
+            return new SqlCommand();
+        }, reader =>  
+        {
+            user = ReadUserRecord(reader);
+            return false;
+        }, setup =>
+        {
+            setup.Parameters.AddWithValue("@Id", id);
+            setup.Parameters.AddWithValue("@TenantId", tenantId);
+        });
+        
+        return user;
     }
     
     public BlogUserRecord Load(string email, string displayName)
@@ -112,19 +119,9 @@ public class SqlServerUsers : AbstractDB<SqlConnection>, IUserDatabase
         ExecuteReader<SqlCommand, SqlDataReader>(sql, () =>
         {
             return new SqlCommand();
-        }, reader =>  
+        }, reader =>
         {
-            user = new BlogUserRecord
-            {
-                Id = reader.AsInt("Id"),
-                DisplayName = reader.AsString("DisplayName"),
-                Email = reader.AsString("Email"),
-                IpAddress = reader.AsString("IpAddress"),
-                TwoFactorSecret = reader.AsString("TwoFactorSecret"),
-                Password = reader.AsString("PasswordHash"),
-                AccountState = (UserAccountStates)reader.AsInt("AccountState"),
-                CreatedAt = reader.AsDateTime("CreatedAt")
-            };
+            user = ReadUserRecord(reader);
             return false;
         }, setup =>
         {
@@ -135,4 +132,48 @@ public class SqlServerUsers : AbstractDB<SqlConnection>, IUserDatabase
 
         return user;
     }
+    
+    public bool DoesUserExist(string email)
+    {
+        return Load(email) != null;
+    }
+
+    public bool DoesUserExist(int id)
+    {
+        return Load(id) != null;
+    }
+    
+    public void UpdateStatus(BlogUserRecord user)
+    {
+        Connect();
+        using SqlCommand cmd = new SqlCommand();
+        cmd.CommandType = CommandType.Text;
+        cmd.Connection = connection;
+        cmd.Parameters.Clear();
+        cmd.CommandText = @"UPDATE Blog_Users
+                SET AccountState = @accountState
+                WHERE Id = @id AND TenantId = @TenantId";
+        cmd.Parameters.AddWithValue("@accountState", (int)user.AccountState);
+        cmd.Parameters.AddWithValue("@id", user.Id);
+        cmd.Parameters.AddWithValue("@TenantId", tenantId);
+        
+        cmd.ExecuteNonQuery();
+        logger.LogInformation($"Blog User Updated Successfully, id {user.Id}, new state {(int)user.AccountState}");
+    }
+
+    private BlogUserRecord ReadUserRecord(SqlDataReader reader)
+    {
+        return new BlogUserRecord
+        {
+            Id = reader.AsInt("Id"),
+            DisplayName = reader.AsString("DisplayName"),
+            Email = reader.AsString("Email"),
+            IpAddress = reader.AsString("IpAddress"),
+            TwoFactorSecret = reader.AsString("TwoFactorSecret"),
+            Password = reader.AsString("PasswordHash"),
+            AccountState = (UserAccountStates)reader.AsInt("AccountState"),
+            CreatedAt = reader.AsDateTime("CreatedAt")
+        };
+    }
+
 }

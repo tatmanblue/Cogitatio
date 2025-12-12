@@ -17,3 +17,15 @@ public class BlogUserRecord
     public DateTime CreatedAt { get; set; }
 
 }
+
+/// <summary>
+/// A pared down version of the user record for use in comments
+/// </summary>
+public class BlogCommentUserRecord
+{
+    public int Id { get; set; }
+    public int TenantId { get; set; }
+    public string DisplayName { get; set; } = string.Empty;
+    public UserAccountStates AccountState { get; set; } = UserAccountStates.Unknown;
+    public DateTime CachedDate { get; } = new DateTime();
+}

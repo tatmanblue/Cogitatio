@@ -1,39 +1,48 @@
 ﻿@using Cogitatio.Models
+@using TinyMCE.Blazor
 <h3>Comments</h3>
 
 <section class="comments">
+    <ul>
+        @foreach (var comment in PostContent.Comments)
+        {
+            <li>
+                <p><strong>@comment.Author</strong> says:</p>
+                <blockquote>@((MarkupString)comment.Text)</blockquote>
+                <p class="meta">@comment.PostedDate.ToString("MMMM dd, yyyy HH:mm")</p>
+            </li>
+        }
+    </ul>
+    
     @if (allowComments == true)
     {
-        @if (PostContent.Comments?.Any() == true)
-        {
-            <ul>
-                @foreach (var comment in PostContent.Comments)
-                {
-                    <li>
-                        <p><strong>@comment.Author</strong> says:</p>
-                        <blockquote>@comment.Text</blockquote>
-                        <p class="meta">@comment.PostedDate.ToString("MMMM dd, yyyy HH:mm")</p>
-                    </li>
-                }
-            </ul>
-        } 
-        else 
+        @if (PostContent.Comments.Count == 0)
         {
             <p>No comments yet. Be the first to comment!</p>
         }
-        @if(userState.AccountState == UserAccountStates.CommentWithoutApproval 
-            || userState.AccountState == UserAccountStates.CommentWithApproval
-            || userState.AccountState == UserAccountStates.Moderator)
+
+        @if (userState.AccountState == UserAccountStates.CommentWithoutApproval
+             || userState.AccountState == UserAccountStates.CommentWithApproval
+             || userState.AccountState == UserAccountStates.Moderator)
         {
-            <!--
-            <BlogCommentForm PostSlug="@PostContent.Slug" OnCommentSubmitted="HandleCommentSubmitted" />
-            -->
-            <span>This will be the place to add a comment</span>
+            <div class="mb-3">
+                <label for="commentEditor" class="form-label">Adding your comment as @userState.DisplayName:</label>
+                <Editor Id="commentEditor"
+                        Conf="@editorConfig"
+                        ApiKey="@tinyMceKey"
+                        @bind-Value="comment"/>
+            </div>
+            <div class="mb-2">
+                <p class="text-muted">@message</p>
+            </div>
+            <div class="mb-2">
+                <button class="btn btn-primary mt-2" @onclick=@PostComment>Share Comment</button>
+            </div>
         }
         else
         {
             <span style="text-align: center">To leave a comment,
-                <NavLink href="/u/Login" class="btn btn-link">
+                <NavLink href="@RedirectUrl" No.>
                     please log in.
                 </NavLink>
             </span>
@@ -43,8 +52,8 @@
     {
         <span style="text-align: center">If you'd like to comment on this post,
             <NavLink href='@($"/Contact/{PostContent.Slug}")' class="btn btn-link">
-            please reach out to me through the contact page.
+                please reach out to me through the contact page.
             </NavLink>
-            </span>
+        </span>
     }
 </section>

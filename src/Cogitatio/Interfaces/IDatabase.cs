@@ -10,6 +10,8 @@ public interface IDatabase
     List<string> GetPostTags(int postId);
     void CreatePost(BlogPost post);
     void UpdatePost(BlogPost post);
+    public List<Comment> GetComments(int postId);
+    public void SaveSingleComment(BlogPost post, Comment comment);
     List<string> GetAllTags();
     List<string> GetTopTags();
     Dictionary<string, int> GetAllTagsWithCount();

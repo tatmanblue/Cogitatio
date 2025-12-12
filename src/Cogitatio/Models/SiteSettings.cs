@@ -58,7 +58,6 @@ public class SiteSettings
                 case BlogSettings.AllowSite2FA:
                     site.AllowSite2FA = Convert.ToBoolean(setting.Value);
                     break;
-
             }
         }
         return site;

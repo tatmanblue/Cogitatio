@@ -45,7 +45,7 @@ public partial class Verify : ComponentBase
         }
         
         record.AccountState = UserAccountStates.AwaitingApproval;
-        userDatabase.Save(record);
+        userDatabase.UpdateStatus(record);
         message = "Email verified successfully. Your account is now awaiting approval.";
         
     }

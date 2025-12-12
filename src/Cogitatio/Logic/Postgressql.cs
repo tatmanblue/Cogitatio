@@ -210,6 +210,16 @@ public class Postgresssql : IDatabase, IDisposable
         }
 
     }
+    
+    public List<Comment> GetComments(int postId)
+    {
+        throw new NotImplementedException();
+    }
+    
+    public void SaveSingleComment(BlogPost post, Comment comment)
+    {
+        throw new NotImplementedException();
+    }
 
     public List<string> GetAllTags()
     {

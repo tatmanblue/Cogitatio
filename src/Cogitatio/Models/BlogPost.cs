@@ -53,6 +53,7 @@ public class BlogPost
 
 public class Comment
 {
+    public int AuthorId { get; set; } = 0;
     public string Author { get; set; } = string.Empty;
     public string Text { get; set; } = string.Empty;
     public DateTime PostedDate { get; set; }

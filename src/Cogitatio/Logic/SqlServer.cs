@@ -209,6 +209,47 @@ public class SqlServer : AbstractDB<SqlConnection>, IDatabase, IDisposable
 
     }
 
+    public List<Comment> GetComments(int postId)
+    {
+        List<Comment> comments = new();
+        string sql = @"SELECT UserId, Text, PostedDate FROM Blog_Comments WHERE PostId = @postId ORDER BY PostedDate ASC;";
+        ExecuteReader<SqlCommand, SqlDataReader>(sql, () => new SqlCommand(), rdr =>
+        {
+            Comment comment = new Comment()
+            {
+                AuthorId = rdr.AsInt("UserId"),
+                Text = rdr.AsString("Text"),
+                PostedDate = rdr.AsDateTime("PostedDate")
+            };
+            comments.Add(comment);
+            return true;
+        }, cmd =>
+        {
+            cmd.Parameters.AddWithValue("@postId", postId);
+        });
+
+        return comments;
+    }
+    
+    public void SaveSingleComment(BlogPost post, Comment comment)
+    {
+        Connect();
+        string sql =@"INSERT INTO Blog_Comments (PostId, UserId, Text, TenantId) 
+                      VALUES (@PostId, @UserId, @Text, @TenantId)";
+        using SqlCommand cmd = new SqlCommand();
+        cmd.CommandType = CommandType.Text;
+        cmd.Connection = connection;
+        cmd.Parameters.Clear();
+        cmd.CommandText = sql;
+        cmd.Parameters.AddWithValue("@PostId", post.Id);
+        cmd.Parameters.AddWithValue("@UserId", comment.AuthorId);
+        cmd.Parameters.AddWithValue("@Text", comment.Text);
+        cmd.Parameters.AddWithValue("@TenantId", tenantId);
+
+        int id = (int)cmd.ExecuteScalar();
+        logger.LogInformation($"Post Comment Created Successfully, id {id}");
+    }
+    
     public List<string> GetAllTags()
     {
         List<string> result = new();

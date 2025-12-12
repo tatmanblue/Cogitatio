@@ -8,8 +8,11 @@ namespace Cogitatio.Interfaces;
 /// </summary>
 public interface IUserDatabase
 {
-    void Save(BlogUserRecord user);    
+    void Save(BlogUserRecord user);   
+    BlogUserRecord Load(int id);
     BlogUserRecord Load(string email);
     BlogUserRecord Load(string email, string displayName);
+    void UpdateStatus(BlogUserRecord user);
     bool DoesUserExist(string email);
+    bool DoesUserExist(int id);
 }
