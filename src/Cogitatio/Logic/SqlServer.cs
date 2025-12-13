@@ -246,8 +246,8 @@ public class SqlServer : AbstractDB<SqlConnection>, IDatabase, IDisposable
         cmd.Parameters.AddWithValue("@Text", comment.Text);
         cmd.Parameters.AddWithValue("@TenantId", tenantId);
 
-        int id = (int)cmd.ExecuteScalar();
-        logger.LogInformation($"Post Comment Created Successfully, id {id}");
+        cmd.ExecuteNonQuery();
+        logger.LogInformation($"Post Comment Created Successfully");
     }
     
     public List<string> GetAllTags()

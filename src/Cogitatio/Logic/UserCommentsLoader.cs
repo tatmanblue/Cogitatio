@@ -6,17 +6,27 @@ namespace Cogitatio.Logic;
 
 /// <summary>
 /// Comments are special - they need user info from the user database
-/// This class handles loading comments with user info
+/// This class handles loading comments with user info.  The user info is pretty static
+/// so we cache some of this information to reduce DB hits
 /// </summary>
 /// <param name="db"></param>
 /// <param name="userDb"></param>
-public class UserCommentsLoader(IDatabase db, IUserDatabase userDb, IMemoryCache cache)
+public class UserCommentsLoader(IMemoryCache cache)
 {
     private static readonly TimeSpan CacheExpiry = TimeSpan.FromHours(4);
     private const string CacheKeyPrefix = "User_";
     private List<BlogCommentUserRecord> cachedUsers = new List<BlogCommentUserRecord>();
     
-public List<Comment> GetCommentsWithUserInfo(int postId)
+    /// <summary>
+    /// TODO do not feel consumers need to know about databases.  But making UserCommentsLoader type Singleton
+    /// TODO it creates some injection scope problems.  Need to think through this a bit
+    /// TODO probably separate cache from UserCommentsLoader
+    /// </summary>
+    /// <param name="db"></param>
+    /// <param name="userDb"></param>
+    /// <param name="postId"></param>
+    /// <returns></returns>
+    public List<Comment> GetCommentsWithUserInfo(IDatabase db, IUserDatabase userDb, int postId)
     {
         List<Comment> comments = db.GetComments(postId);
 

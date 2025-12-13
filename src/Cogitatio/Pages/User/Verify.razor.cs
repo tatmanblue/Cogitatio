@@ -22,25 +22,29 @@ public partial class Verify : ComponentBase
 
     protected override void OnParametersSet()
     {
+        message = "Invalid verification link."; 
+        if (string.IsNullOrEmpty(VerificationId) || string.IsNullOrEmpty(Email))
+        {
+            logger.LogError($"Verification failed: missing params");
+            return;
+        }
+        
         BlogUserRecord record = userDatabase.Load(Email);
         if (record == null) 
         {
             logger.LogError($"Verification failed: no user with email {Email} found.");
-            message = "Invalid verification link.";
             return;
         }
 
         if (record.AccountState != UserAccountStates.Created)
         {
             logger.LogError($"Verification failed: user with email {Email} is in state {record.AccountState}.");
-            message = "Invalid verification link.";
             return;
         }
         
         if (record.VerificationId != VerificationId)
         {
             logger.LogError($"Verification failed: verification ID mismatch for user with email {Email}.");
-            message = "Invalid verification link.";
             return;
         }
         

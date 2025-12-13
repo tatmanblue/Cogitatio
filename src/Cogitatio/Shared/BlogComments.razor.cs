@@ -9,6 +9,7 @@ public partial class BlogComments : ComponentBase
 {
     [Inject] private ILogger<BlogComments> logger { get; set; }
     [Inject] private IDatabase db { get; set; }
+    [Inject] private IUserDatabase userDB { get; set; }
     [Inject] private BlogUserState userState { get; set; }
     [Inject] private SiteSettings siteSettings { get; set; }
     [Inject] private IConfiguration configuration { get; set; }
@@ -57,7 +58,7 @@ public partial class BlogComments : ComponentBase
     {
         if (allowComments == false) return;
         
-        PostContent.Comments = commentsLoader.GetCommentsWithUserInfo(PostContent.Id);
+        PostContent.Comments = commentsLoader.GetCommentsWithUserInfo(db, userDB, PostContent.Id);
     }
 
     private void PostComment()
@@ -87,8 +88,11 @@ public partial class BlogComments : ComponentBase
         };
         
         db.SaveSingleComment(PostContent, cmt);
+        if (PostContent.Comments == null)
+            PostContent.Comments = new();
+        
         PostContent.Comments.Add(cmt);
-        if (maxCommentsAllowed >= PostContent.Comments.Count)
+        if (maxCommentsAllowed <= PostContent.Comments.Count)
             allowComments = false;
 
         message = string.Empty;

@@ -6,6 +6,7 @@ using Cogitatio.Interfaces;
 using Cogitatio.Logic;
 using Cogitatio.Models;
 using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.Extensions.Caching.Memory;
 using Serilog;
 using Serilog.Events;
 
@@ -47,6 +48,7 @@ builder.Services.AddRateLimiter(options =>
 });
 builder.Services.AddControllers();
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddMemoryCache();
 builder.Services.Configure<ForwardedHeadersOptions>(options =>
 {
     options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
@@ -154,7 +156,7 @@ builder.Services.AddTransient<IEmailSender>(p =>
     }
 });
 // so that comments load quicker, we have a resolver that helps match user db entries with comment authors
-builder.Services.AddSingleton<UserCommentsLoader>();
+builder.Services.AddScoped<UserCommentsLoader>();
 
 var logFilePath = Path.Combine(AppContext.BaseDirectory, "Logs");
 Directory.CreateDirectory(logFilePath); 
