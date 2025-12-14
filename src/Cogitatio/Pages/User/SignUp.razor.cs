@@ -73,14 +73,13 @@ public partial class SignUp : ComponentBase
         </html>
         """;    
     #endregion
-    
-    [Inject] SiteSettings site { get; set; }
-    [Inject] IJSRuntime JS { get; set; } = null!;
-    [Inject] private ILogger<SignUp> logger { get; set; } = null;
-    [Inject] private IDatabase database { get; set; } = null;
-    [Inject] private IUserDatabase userDB { get; set; } = null;
-    [Inject] private NavigationManager navigationManager { get; set; } = null;
-    [Inject] private BlogUserState userState { get; set; } = null;
+
+    [Inject] private SiteSettings site { get; set; } = null!;
+    [Inject] private ILogger<SignUp> logger { get; set; } = null!;
+    [Inject] private IDatabase database { get; set; } = null!;
+    [Inject] private IUserDatabase userDB { get; set; } = null!;
+    [Inject] private NavigationManager navigationManager { get; set; } = null!;
+    [Inject] private BlogUserState userState { get; set; } = null!;
     [Inject] private IHttpContextAccessor HttpContextAccessor { get; set; } = null!;
     [Inject] private IEmailSender emailSender { get; set; } = null!;
     
@@ -96,8 +95,8 @@ public partial class SignUp : ComponentBase
 
     // -----------------------------------------------------------------------------------------------------------
     // Proof of Work
-    private ProofOfWork proofOfWorkComponent;
-    private PoWResult powResult = null;
+    private ProofOfWork proofOfWorkComponent = null!;
+    private PoWResult powResult = null!;
 
     
     private string userIp = string.Empty;
@@ -130,15 +129,24 @@ public partial class SignUp : ComponentBase
     
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        logger.LogDebug("OnAfterRenderAsync");
+        logger.LogDebug("Signup OnAfterRenderAsync: start");
         if (signUpState == SignUpState.VerifyingHuman)
         {
-            powResult = await proofOfWorkComponent.Start();
-            if (!string.IsNullOrEmpty(userState.SignInChallenge)) powResult.Challenge = userState.SignInChallenge;
-            
-            signUpState = SignUpState.Initial;
-            logger.LogDebug("OnAfterRenderAsync: verified human with nonce {Nonce} & challenge {Challange}", powResult.Nonce, powResult.Challenge);
-            StateHasChanged();
+            try
+            {
+                powResult = await proofOfWorkComponent.Start();
+                // TODO not sure why I have this statement????
+                if (!string.IsNullOrEmpty(userState.SignInChallenge)) powResult.Challenge = userState.SignInChallenge;
+
+                signUpState = SignUpState.Initial;
+                logger.LogDebug("Signup OnAfterRenderAsync: verified human with nonce {Nonce} & challenge {Challange}",
+                    powResult.Nonce, powResult.Challenge);
+                StateHasChanged();
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Signup OnAfterRenderAsync");
+            }
         }
     }
 

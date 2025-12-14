@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using Cogitatio.General;
+using Microsoft.AspNetCore.Components;
 using Cogitatio.Interfaces;
 using Cogitatio.Logic;
 using Cogitatio.Models;
@@ -20,6 +21,7 @@ public partial class BlogComments : ComponentBase
     // -------------------------------------------------------------------
     // for comment handling
     private bool allowComments = false;
+    private int maxRawCommentLength = 2000;                     // TODO: make this configurable
     private int maxCommentLength = 500;
     private int maxCommentsAllowed = 25;
     private string comment = string.Empty;
@@ -69,12 +71,22 @@ public partial class BlogComments : ComponentBase
             message = "Unable to post comment: no blog post specified.";
             return;
         }
-        if (comment.Length > maxCommentLength)
+
+        // TODO some day optimize this with tag counts or something along those lines and
+        // TODO allowing for more plain text with less embedded html tags
+        if (comment.Length > maxRawCommentLength + maxCommentLength)
+        {
+            message = $"Comment exceeds maximum length allowed.";
+            return;
+        }
+
+        int commentLength = comment.PlainTextLength();
+        if (commentLength > maxCommentLength)
         {
             message = $"Comment exceeds maximum length of {maxCommentLength} characters.";
             return;
         }
-        if (comment.Length < 25)
+        if (commentLength < 25)
         {
             message = "Comment is too short. Please provide more detail.";
             return;

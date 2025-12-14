@@ -7,9 +7,13 @@
         @foreach (var comment in PostContent.Comments)
         {
             <li>
-                <p><strong>@comment.Author</strong> says:</p>
-                <blockquote>@((MarkupString)comment.Text)</blockquote>
-                <p class="meta">@comment.PostedDate.ToString("MMMM dd, yyyy HH:mm")</p>
+                <p>
+                    <strong>@comment.Author</strong> says:<br/>
+                    <span class="meta">@comment.PostedDate.ToString("MMMM dd, yyyy HH:mm")</span>
+                </p>
+                <blockquote>
+                    @((MarkupString)comment.Text)
+                </blockquote>
             </li>
         }
     </ul>

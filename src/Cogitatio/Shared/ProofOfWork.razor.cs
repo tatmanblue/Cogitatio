@@ -28,6 +28,8 @@ public partial class ProofOfWork : ComponentBase
     public async Task<PoWResult> Start()
     {
         powResult = await JS.InvokeAsync<PoWResult>("startProofOfWork", powDifficulty, challengeUrl);
+        // TODO:  handle: catch (Microsoft.JSInterop.JSException ex)
+
         return powResult;
     }
 

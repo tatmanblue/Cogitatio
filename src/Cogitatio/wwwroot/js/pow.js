@@ -3,6 +3,7 @@ window.startProofOfWork = async (difficulty, challengeUri) => {
     // console.log("Difficulty received in JS:", difficulty, "→ target =", 1 << (32 - difficulty));
     if (!challengeUri) {
         console.error("ProofOfWork failed: challengeUri is missing or empty.");
+        throw new Error("Missing 'challengeUri'. Cannot start Proof of Work.");
     }
     const response = await fetch(challengeUri);
     const data = await response.json();               // { challenge: "base64string", salt: "xyz" }

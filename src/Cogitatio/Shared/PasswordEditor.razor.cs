@@ -28,11 +28,17 @@ public partial class PasswordEditor : ComponentBase
     [Parameter] public EventCallback<string> PasswordChanged { get; set; }
     [Parameter] public bool ShowStrengthMeter { get; set; } = true;
     
+    private string uniqueId = "credential";
     private string passwordInputType = "password";
     private string passwordToggleIcon = "bi bi-eye-slash";
     private int passwordStrength = 0;
     private string passwordStrengthLabel = "";
 
+    protected override void OnInitialized()
+    {
+        uniqueId = $"credential_{Guid.NewGuid().ToString("N").Substring(0, 8)}"; 
+    }
+    
     protected override void OnParametersSet()
     {
         (passwordStrength, passwordStrengthLabel) = Logic.Password.EvaluatePasswordStrength(Password, MinLength, MaxLength);

@@ -12,3 +12,10 @@
     padding-bottom: 1rem;
     border-bottom: 1px solid #eee;
 }
+
+.meta {
+    font-size: 0.8em; 
+    color: #999; 
+    font-style: italic;
+    vertical-align: top;
+}

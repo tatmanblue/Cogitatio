@@ -42,13 +42,22 @@ public partial class Login : ComponentBase
         logger.LogDebug("Login: OnAfterRenderAsync");
         if (loginState == LoginStates.VerifyingHuman)
         {
-            powResult = await proofOfWorkComponent.Start();
-            
-            if (false == proofOfWorkComponent.Verify(powResult))
+            try
+            {
+                powResult = await proofOfWorkComponent.Start();
+
+                logger.LogDebug($"POW result {powResult.Challenge} {powResult.Nonce}");
+                if (false == proofOfWorkComponent.Verify(powResult))
+                    loginState = LoginStates.Error;
+                else
+                    loginState = LoginStates.Login;
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Login failed");
                 loginState = LoginStates.Error;
-            else 
-                loginState = LoginStates.Login;
-            
+            }
+
             StateHasChanged();
         }
     }
