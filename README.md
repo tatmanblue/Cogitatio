@@ -77,6 +77,5 @@ You will probably want to setup a robots.txt file to help with search engine dis
 If you have any questions about the content of the repository, please email [matt.raffel@gmail.com](mailto:matt.raffel@gmail.com). I can assure you all content is either open source or has been purchased and licensed to me. Proof will be made available on request. Repeated DCMA counterfit and harassment claims will result in counter suits per Section 512(f) of the DMCA penalties for _misrepresentation can include actual damages and attorney’s fees_.
 
 ## Status
-Functional, continuing to add features.
-
+This is a backup branch and will not accept changes
 2025.11.15
