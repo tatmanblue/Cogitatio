@@ -5,15 +5,7 @@
 @switch (signUpState)
 {
     case SignUpState.VerifyingHuman:
-        <div class="d-flex flex-column">
-            <div class="pow-box">
-                <p class="pow-message">@waitMessage</p>
-                <p class="pow-progress">(@progress • usually 5 seconds)</p>
-                <div class="spinner"></div>
-            </div>
-            <NavLink href="/Contact">Support</NavLink>
-            <NavLink href="/">Back to Start</NavLink>
-        </div>
+        <ProofOfWork @ref="proofOfWorkComponent"/>
         break;
     case SignUpState.Initial:
     case SignUpState.Error:

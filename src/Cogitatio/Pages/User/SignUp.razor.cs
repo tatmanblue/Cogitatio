@@ -5,6 +5,7 @@ using Cogitatio.General;
 using Cogitatio.Interfaces;
 using Cogitatio.Logic;
 using Cogitatio.Models;
+using Cogitatio.Shared;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 
@@ -73,12 +74,6 @@ public partial class SignUp : ComponentBase
         """;    
     #endregion
     
-    public class PoWResult
-    {
-        public long Nonce { get; set; }
-        public string Challenge { get; set; } = string.Empty;
-    }
-    
     [Inject] SiteSettings site { get; set; }
     [Inject] IJSRuntime JS { get; set; } = null!;
     [Inject] private ILogger<SignUp> logger { get; set; } = null;
@@ -99,12 +94,16 @@ public partial class SignUp : ComponentBase
         NotAllowed
     }
 
+    // -----------------------------------------------------------------------------------------------------------
+    // Proof of Work
+    private ProofOfWork proofOfWorkComponent;
+    private PoWResult powResult = null;
+
+    
     private string userIp = string.Empty;
     private SignUpState signUpState = SignUpState.VerifyingHuman;
     private string waitMessage = "Getting all the bits in a row...";        // TODO again like to make this configurable
     private string progress = "starting…";
-    private PoWResult powResult = null;
-    private int powDifficulty = 21;                                         // TODO: make configurable
     private int minPasswordLength = 6;
     private int maxPasswordLength = 30;
     private int minDisplayNameLen = 6;
@@ -134,7 +133,7 @@ public partial class SignUp : ComponentBase
         logger.LogDebug("OnAfterRenderAsync");
         if (signUpState == SignUpState.VerifyingHuman)
         {
-            powResult = await JS.InvokeAsync<PoWResult>("startProofOfWork", powDifficulty);
+            powResult = await proofOfWorkComponent.Start();
             if (!string.IsNullOrEmpty(userState.SignInChallenge)) powResult.Challenge = userState.SignInChallenge;
             
             signUpState = SignUpState.Initial;
@@ -209,7 +208,7 @@ public partial class SignUp : ComponentBase
         }
         
         // Verify Proof of Work
-        if (!VerifyProofOfWork(powResult.Challenge, powResult.Nonce))
+        if (!proofOfWorkComponent.Verify(powResult))
         {
             signUpState = SignUpState.Error;
             logger.LogWarning("Failed PoW verification from IP {UserIp}", userIp);
@@ -251,31 +250,6 @@ public partial class SignUp : ComponentBase
         }
         
         StateHasChanged();
-    }
-    
-    private bool VerifyProofOfWork(string challenge, long nonce)
-    {
-        /*
-        // Prevent replay attacks
-        if (!challenge.StartsWith(DateTime.UtcNow.ToString("yyyyMMddHH")))
-            return false;
-        */
-        
-        using var sha256 = SHA256.Create();
-        var input = challenge + nonce;
-        var bytes = Encoding.UTF8.GetBytes(input);
-        var hashBytes = sha256.ComputeHash(bytes);
-    
-        // Convert first 4 bytes to int (big-endian)
-        uint hashValue = (uint)(
-            (hashBytes[0] << 24) |
-            (hashBytes[1] << 16) |
-            (hashBytes[2] << 8)  |
-            hashBytes[3]);
-
-        // Difficulty 22 = need first 22 bits to be zero → hash < 2^(32-22) = 2^10 = 1024
-        uint target = 1u << (32 - powDifficulty); // 1 << 10 = 1024
-        return hashValue < target;
     }
 
     private void OnConfirmPasswordChanged(string newValue)

@@ -2,12 +2,20 @@
 using Cogitatio.Interfaces;
 using Cogitatio.Logic;
 using Cogitatio.Models;
+using Cogitatio.Shared;
 using Microsoft.AspNetCore.Components;
 
 namespace Cogitatio.Pages.User;
 
 public partial class Login : ComponentBase
 {
+    private enum LoginStates
+    {
+        VerifyingHuman,
+        Login,
+        Error
+    }
+    
     [SupplyParameterFromQuery(Name = "redirect")]
     public string? RedirectUrl { get; set; } = "/";
     [Inject] ILogger<Login> logger { get; set; }
@@ -16,10 +24,34 @@ public partial class Login : ComponentBase
     [Inject] IUserDatabase userDB { get; set; }
     [Inject] NavigationManager navigationManager { get; set; }
 
+    // --------------------------------------------------------------------------------------------
+    // login data
     private string accountId = string.Empty; // User's account ID (or email)
     private string password = string.Empty; // User's password
     private string mfaId = string.Empty; // User's TOTP code
     private string message = string.Empty;
+    
+    // ---------------------------------------------------------------------------------------------------
+    // ProofOfWork 
+    private ProofOfWork proofOfWorkComponent;
+    private LoginStates loginState = LoginStates.VerifyingHuman;
+    private PoWResult powResult;
+    
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        logger.LogDebug("Login: OnAfterRenderAsync");
+        if (loginState == LoginStates.VerifyingHuman)
+        {
+            powResult = await proofOfWorkComponent.Start();
+            
+            if (false == proofOfWorkComponent.Verify(powResult))
+                loginState = LoginStates.Error;
+            else 
+                loginState = LoginStates.Login;
+            
+            StateHasChanged();
+        }
+    }
 
     private void DoLogin()
     {
