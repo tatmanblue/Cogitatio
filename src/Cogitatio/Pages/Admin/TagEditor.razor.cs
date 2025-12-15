@@ -20,7 +20,7 @@ public partial class TagEditor : ComponentBase
     protected override void OnParametersSet()
     {
         if (!AdminUserState.IsAdmin)
-            navigationManager.NavigateTo("/Admin");
+            navigationManager.NavigateTo("/a/Admin");
     }
     
     protected override void OnInitialized()

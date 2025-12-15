@@ -14,7 +14,7 @@ public partial class BlogComments : ComponentBase
     [Inject] private BlogUserState userState { get; set; }
     [Inject] private SiteSettings siteSettings { get; set; }
     [Inject] private IConfiguration configuration { get; set; }
-    [Inject] private UserCommentsLoader commentsLoader { get; set; }
+    [Inject] private UserCommentsResolver resolver { get; set; }
     
     [Parameter] public BlogPost? PostContent { get; set; }
 
@@ -24,6 +24,7 @@ public partial class BlogComments : ComponentBase
     private int maxRawCommentLength = 2000;                     // TODO: make this configurable
     private int maxCommentLength = 500;
     private int maxCommentsAllowed = 25;
+    private bool showCommentInputField = true;
     private string comment = string.Empty;
     private string message = string.Empty;
     private string tinyMceKey = "no-api-key";
@@ -58,11 +59,18 @@ public partial class BlogComments : ComponentBase
 
     protected override void OnParametersSet()
     {
-        if (allowComments == false) return;
-        
-        PostContent.Comments = commentsLoader.GetCommentsWithUserInfo(db, userDB, PostContent.Id);
+        LoadComments();
     }
 
+    private void LoadComments()
+    {
+        List<Comment> comments = db.GetComments(PostContent.Id);
+        PostContent.Comments = resolver.ResolveCommentsWithUserInfo(userDB, comments);
+        
+        if (maxCommentsAllowed <= PostContent.Comments.Count)
+            allowComments = false;
+    }
+    
     private void PostComment()
     {
         if (PostContent == null)
@@ -92,22 +100,33 @@ public partial class BlogComments : ComponentBase
             return;
         }
 
+        CommentStatuses status = CommentStatuses.Hide;
+        switch (userState.AccountState)
+        {
+            case UserAccountStates.Moderator:
+            case UserAccountStates.CommentWithoutApproval:
+                status = CommentStatuses.Approved;
+                break;
+            case UserAccountStates.CommentWithApproval:
+                status = CommentStatuses.AwaitingApproval;
+                break;
+        }
+        
         Comment cmt = new Comment()
         {
             AuthorId = userState.AccountId,
             Author = userState.DisplayName,
             Text = comment,
+            Status = status
         };
         
         db.SaveSingleComment(PostContent, cmt);
-        if (PostContent.Comments == null)
-            PostContent.Comments = new();
         
-        PostContent.Comments.Add(cmt);
-        if (maxCommentsAllowed <= PostContent.Comments.Count)
-            allowComments = false;
-
         message = string.Empty;
+        showCommentInputField = false;
+        comment = string.Empty;
+        
+        LoadComments();
     }
     
 }

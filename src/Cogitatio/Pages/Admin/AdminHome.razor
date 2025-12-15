@@ -54,14 +54,23 @@
                     <span class="action-description">Edit a post</span>
                 </div>
                 <div class="action-item">
-                    <NavLink href="/a/TagEditor" class="btn btn-outline-primary">Edit Tags</NavLink>
-                    <span class="action-description">Quickly edit tags for multiple posts</span>
-                </div>
-                <div class="action-item">
                     <button class="btn btn-primary" @onclick=@Logout>Logout</button>
                 </div>
             </div>
         </div>
+        <div class="card-body">
+            <h5 class="card-title text-center">Moderator Actions</h5>
+            <div class="d-flex flex-wrap justify-content-center">
+                <div class="action-item">
+                    <NavLink href="/a/TagEditor" class="btn btn-outline-primary">Edit Tags</NavLink>
+                    <span class="action-description">Quickly edit tags for multiple posts</span>
+                </div>
+                <div class="action-item">
+                    <NavLink href="/a/CommentReviewer" class="btn btn-outline-primary">Comments</NavLink>
+                    <span class="action-description">Review comments</span>
+                </div>
+            </div>
+        </div>        
     </div>
 }
 

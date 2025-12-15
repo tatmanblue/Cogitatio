@@ -11,7 +11,7 @@ namespace Cogitatio.Logic;
 /// </summary>
 /// <param name="db"></param>
 /// <param name="userDb"></param>
-public class UserCommentsLoader(IMemoryCache cache)
+public class UserCommentsResolver(IMemoryCache cache)
 {
     private static readonly TimeSpan CacheExpiry = TimeSpan.FromHours(4);
     private const string CacheKeyPrefix = "User_";
@@ -22,15 +22,12 @@ public class UserCommentsLoader(IMemoryCache cache)
     /// TODO it creates some injection scope problems.  Need to think through this a bit
     /// TODO probably separate cache from UserCommentsLoader
     /// </summary>
-    /// <param name="db"></param>
-    /// <param name="userDb"></param>
-    /// <param name="postId"></param>
+    /// <param name="userDb">IUserDatabase</param>
+    /// <param name="comments"></param>
     /// <returns></returns>
-    public List<Comment> GetCommentsWithUserInfo(IDatabase db, IUserDatabase userDb, int postId)
+    public List<Comment> ResolveCommentsWithUserInfo(IUserDatabase userDb, List<Comment> comments)
     {
-        List<Comment> comments = db.GetComments(postId);
-
-        // 2. Identify all unique Author IDs
+                // 2. Identify all unique Author IDs
         HashSet<int> allUniqueAuthorIds = comments
             .Where(c => c.AuthorId > 0)
             .Select(c => c.AuthorId)
@@ -45,7 +42,6 @@ public class UserCommentsLoader(IMemoryCache cache)
         var cacheOptions = new MemoryCacheEntryOptions()
             .SetAbsoluteExpiration(CacheExpiry);
         var userLookup = new Dictionary<int, BlogCommentUserRecord>();
-        // var missingAuthorIds = new HashSet<int>();
 
         foreach (int authorId in allUniqueAuthorIds)
         {
@@ -59,7 +55,6 @@ public class UserCommentsLoader(IMemoryCache cache)
             {
                 // it would be more efficient to load all user records at once but for now,
                 // we will do it one at a time.
-                // missingAuthorIds.Add(authorId);
                 BlogUserRecord userFound = userDb.Load(authorId);
                 BlogCommentUserRecord newUserRecord = new BlogCommentUserRecord()
                 {
@@ -73,34 +68,6 @@ public class UserCommentsLoader(IMemoryCache cache)
             }
         }
         
-        // C. Batch Load any missing users (1 Query max)
-        /*
-        if (missingAuthorIds.Count > 0)
-        {
-            // The efficient batch load call to the database
-            // Assumes LoadBatch returns IEnumerable<BlogCommentUserRecord>
-            var dbUsers = userDb.LoadBatch(missingAuthorIds);
-
-            // D. Add batch-loaded users to the cache and the lookup dictionary
-            var cacheOptions = new MemoryCacheEntryOptions()
-                .SetAbsoluteExpiration(CacheExpiry);
-
-            foreach (var user in dbUsers)
-            {
-                string cacheKey = CacheKeyPrefix + user.Id;
-                
-                // Add to IMemoryCache with expiry
-                cache.Set(cacheKey, user, cacheOptions);
-                
-                // Add to our local lookup for immediate use
-                userLookup[user.Id] = user;
-            }
-        }
-        */
-
-        // --- End of Core Logic ---
-
-        // 3. Enrich the comments with user data from the consolidated lookup
         foreach (Comment comment in comments)
         {
             if (userLookup.TryGetValue(comment.AuthorId, out BlogCommentUserRecord user))

@@ -8,13 +8,16 @@ public static class GeneralExtensions
     {
         public int PlainTextLength()
         {
+            return s.PlainText().Length;
+        }
+
+        public string PlainText()
+        {
             // The pattern </?.*?> matches any opening tag (<tag>) or closing tag (</tag>).
             const string HtmlTagPattern = "</?.*?>";
         
             string plainText = Regex.Replace(s, HtmlTagPattern, string.Empty);
-            plainText = plainText.Trim();
-            
-            return plainText.Length;
+            return plainText.Trim();
         }
     }
 }

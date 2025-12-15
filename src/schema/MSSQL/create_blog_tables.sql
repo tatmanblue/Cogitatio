@@ -56,12 +56,13 @@ CREATE TABLE Blog_Settings
 
 -- Table to store comments associated with blog posts
 CREATE TABLE Blog_Comments (
-    CommentId INT IDENTITY(1,1) PRIMARY KEY, 
+    Id INT IDENTITY(1,1) PRIMARY KEY, 
     PostId INT NOT NULL,
     UserId INT NOT NULL,
     Text NVARCHAR(MAX) NOT NULL,             
     TenantId INT NOT NULL DEFAULT 0,
+    Status INT NOT NULL DEFAULT 0,
     PostedDate DATETIME NOT NULL DEFAULT GETDATE(),
     FOREIGN KEY (PostId) REFERENCES Blog_Posts(PostId),
-    UNIQUE (TenantId, PostId, UserId, CommentId)
+    UNIQUE (TenantId, PostId, UserId, Id)
 );

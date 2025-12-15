@@ -27,7 +27,7 @@ public partial class EditPost : ComponentBase
     protected override void OnParametersSet()
     {
         if (!AdminUserState.IsAdmin)
-            navigationManager.NavigateTo("/Admin");
+            navigationManager.NavigateTo("/a/Admin");
         
         if (string.IsNullOrEmpty(Slug))
             navigationManager.NavigateTo("/search/ret=admineditpost");

@@ -212,7 +212,17 @@ public class Postgresssql : IDatabase, IDisposable
 
     }
     
-    public List<Comment> GetComments(int postId)
+    public List<Comment> GetAllAwaitingApprovalComments()
+    {
+        throw new NotImplementedException();
+    }
+    
+    public List<Comment> GetComments(int postId, CommentStatuses status = CommentStatuses.Approved)
+    {
+        throw new NotImplementedException();
+    }
+    
+    public void UpdateComment(Comment comment)
     {
         throw new NotImplementedException();
     }

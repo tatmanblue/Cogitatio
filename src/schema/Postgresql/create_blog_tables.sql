@@ -47,11 +47,12 @@ CREATE TABLE blog_settings (
 
 -- Table to store comments associated with blog posts
 CREATE TABLE Blog_Comments (
-       comment_id SERIAL PRIMARY KEY,
+       id SERIAL PRIMARY KEY,
        post_id INT NOT NULL,                     -- Foreign key to BlogPosts table
        user_id INT NOT NULL,
        text VARCHAR(256) NOT NULL,             -- Comment text
        tenant_id INT NOT NULL DEFAULT 0,
+       status INT NOT NULL DEFAULT 0,
        posted_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, -- Comment posted date
-       CONSTRAINT unique_comment_per_post UNIQUE (tenant_id, comment_id, author)
+       CONSTRAINT unique_comment_per_post UNIQUE (tenant_id, id, user_id)
 );

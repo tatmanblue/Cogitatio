@@ -209,33 +209,84 @@ public class SqlServer : AbstractDB<SqlConnection>, IDatabase, IDisposable
 
     }
 
-    public List<Comment> GetComments(int postId)
+    public List<Comment> GetAllAwaitingApprovalComments()
     {
         List<Comment> comments = new();
-        string sql = @"SELECT UserId, Text, PostedDate FROM Blog_Comments WHERE PostId = @postId ORDER BY PostedDate ASC;";
+        string sql = @"SELECT Id, PostId, UserId, Text, PostedDate, Status FROM Blog_Comments 
+                            WHERE Status = @status
+                            AND TenantId = @tennantId
+                            ORDER BY PostedDate ASC;";
         ExecuteReader<SqlCommand, SqlDataReader>(sql, () => new SqlCommand(), rdr =>
         {
             Comment comment = new Comment()
             {
+                Id = rdr.AsInt("Id"),
+                PostId = rdr.AsInt("PostId"),
                 AuthorId = rdr.AsInt("UserId"),
                 Text = rdr.AsString("Text"),
-                PostedDate = rdr.AsDateTime("PostedDate")
+                PostedDate = rdr.AsDateTime("PostedDate"),
+                Status = (CommentStatuses) rdr.AsInt("Status"),
+            };
+            comments.Add(comment);
+            return true;
+        }, cmd =>
+        {
+            cmd.Parameters.AddWithValue("@status", CommentStatuses.AwaitingApproval);
+            cmd.Parameters.AddWithValue("@tennantId", tenantId);
+        });
+
+        return comments;
+    }
+
+    public List<Comment> GetComments(int postId, CommentStatuses status = CommentStatuses.Approved)
+    {
+        List<Comment> comments = new();
+        string sql = @"SELECT Id, PostId, UserId, Text, PostedDate, Status FROM Blog_Comments 
+                                WHERE PostId = @postId 
+                                  AND Status = @status 
+                                ORDER BY PostedDate ASC;";
+        ExecuteReader<SqlCommand, SqlDataReader>(sql, () => new SqlCommand(), rdr =>
+        {
+            Comment comment = new Comment()
+            {
+                Id = rdr.AsInt("Id"),
+                PostId = rdr.AsInt("PostId"),
+                AuthorId = rdr.AsInt("UserId"),
+                Text = rdr.AsString("Text"),
+                PostedDate = rdr.AsDateTime("PostedDate"),
+                Status = (CommentStatuses) rdr.AsInt("Status"),
             };
             comments.Add(comment);
             return true;
         }, cmd =>
         {
             cmd.Parameters.AddWithValue("@postId", postId);
+            cmd.Parameters.AddWithValue("@status", (int)status);
         });
 
         return comments;
+    }
+
+    public void UpdateComment(Comment comment)
+    {
+        Connect();
+        string sql = @"UPDATE Blog_Comments SET Status = @Status WHERE id = @Id";
+        using SqlCommand cmd = new SqlCommand();
+        cmd.Connection = connection;
+        cmd.Parameters.Clear();
+        cmd.CommandText = sql;
+        cmd.Parameters.AddWithValue("@Status", comment.Status);
+        cmd.Parameters.AddWithValue("@Id", comment.Id);
+        
+        cmd.ExecuteNonQuery();
+        logger.LogInformation($"Post Comment ({comment.Id}) Updated Successfully");
     }
     
     public void SaveSingleComment(BlogPost post, Comment comment)
     {
         Connect();
-        string sql =@"INSERT INTO Blog_Comments (PostId, UserId, Text, TenantId) 
-                      VALUES (@PostId, @UserId, @Text, @TenantId)";
+        string sql =@"INSERT INTO Blog_Comments (PostId, UserId, Text, Status, TenantId) 
+                      VALUES (@PostId, @UserId, @Text, @Status, @TenantId)";
         using SqlCommand cmd = new SqlCommand();
         cmd.CommandType = CommandType.Text;
         cmd.Connection = connection;
@@ -244,6 +295,7 @@ public class SqlServer : AbstractDB<SqlConnection>, IDatabase, IDisposable
         cmd.Parameters.AddWithValue("@PostId", post.Id);
         cmd.Parameters.AddWithValue("@UserId", comment.AuthorId);
         cmd.Parameters.AddWithValue("@Text", comment.Text);
+        cmd.Parameters.AddWithValue("@Status", comment.Status);
         cmd.Parameters.AddWithValue("@TenantId", tenantId);
 
         cmd.ExecuteNonQuery();

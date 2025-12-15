@@ -26,7 +26,7 @@ public partial class AddPost : ComponentBase
     protected override void OnParametersSet()
     {
         if (!AdminUserState.IsAdmin)
-            navigationManager.NavigateTo("/Admin");
+            navigationManager.NavigateTo("/a/Admin");
     }
     
     private async Task Publish()

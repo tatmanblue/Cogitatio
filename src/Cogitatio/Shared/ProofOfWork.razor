@@ -7,3 +7,32 @@
 </div>
 
 <script src="js/pow.js"></script>
+
+<!-- this doesnt work
+<script src="js/pow.js"></script>
+
+to make this independent, the solution is something along these lines
+private IJSObjectReference? _module;
+
+protected override async Task OnAfterRenderAsync(bool firstRender)
+{
+    if (firstRender)
+    {
+        // Path is relative to the app root; adjust based on where pow.js is placed
+        _module = await JS.InvokeAsync<IJSObjectReference>(
+            "import", "./js/pow.js");  // or "./Components/YourComponent.razor.js" for collocated
+
+        // Call initialization functions from pow.js here if needed
+        // await _module.InvokeVoidAsync("initPow", someElementReference);
+    }
+}
+
+public async ValueTask DisposeAsync()
+{
+    if (_module is not null)
+    {
+        await _module.DisposeAsync();
+    }
+}
+
+-->

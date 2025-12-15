@@ -156,7 +156,7 @@ builder.Services.AddTransient<IEmailSender>(p =>
     }
 });
 // so that comments load quicker, we have a resolver that helps match user db entries with comment authors
-builder.Services.AddScoped<UserCommentsLoader>();
+builder.Services.AddScoped<UserCommentsResolver>();
 
 var logFilePath = Path.Combine(AppContext.BaseDirectory, "Logs");
 Directory.CreateDirectory(logFilePath); 

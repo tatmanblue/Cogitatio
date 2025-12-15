@@ -82,3 +82,10 @@ public enum EmailServices
     SendGrid = 2,                       // use SendGrid email service
     Azure                               // use Azure Communication Service email service
 }
+
+public enum CommentStatuses
+{
+    Hide,
+    AwaitingApproval,
+    Approved,
+}
