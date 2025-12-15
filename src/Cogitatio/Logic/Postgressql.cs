@@ -8,7 +8,8 @@ using Npgsql;
 namespace Cogitatio.Logic;
 
 /// <summary>
-/// TODO duplicity with SqlServer will be addressed in a future update 
+/// TODO duplicity with SqlServer will be addressed in a future update
+/// TODO     AbstractDB already exists and is used in SqlServer* impls
 /// </summary>
 public class Postgresssql : IDatabase, IDisposable
 {
@@ -522,7 +523,7 @@ public class Postgresssql : IDatabase, IDisposable
     }
 
     /// <summary>
-    /// TODO: candidate for base class implementation or extension method
+    /// TODO: This will be replaced once duplicity is addressed via inheritance from AbstractDB
     /// </summary>
     /// <param name="sql"></param>
     /// <param name="readRow">if readRow impl returns false, the reading loop stops and reader is closed</param>

@@ -4,54 +4,39 @@ using Microsoft.AspNetCore.Components;
 
 namespace Cogitatio.Pages.Admin;
 
-public partial class AdminEditPost : ComponentBase
+public partial class AddPost : ComponentBase
 {
-    [Inject] private ILogger<AdminEditPost> logger { get; set; }
+    [Inject] private ILogger<AddPost> logger { get; set; }
+    [Inject] private IConfiguration configuration { get; set; }
     [Inject] private NavigationManager navigationManager { get; set; }
     [Inject] private IDatabase database { get; set; }
     [Inject] private AdminUserState AdminUserState { get; set; }
-    [Parameter] public string Slug { get; set; }
-    
+
     private string title = string.Empty;
     private string tags = string.Empty;
     private string content = "<b>New blog Post</b>";
-    private BlogPost post = null;
+    
     
     private Dictionary<string, object> editorConfig = new Dictionary<string, object>{
         { "menubar", true },
         { "plugins", "link image code" },
         { "toolbar", "undo redo | styleselect | forecolor | bold italic | alignleft aligncenter alignright alignjustify | outdent indent | link image | code" }
     };
-    
-    
+
     protected override void OnParametersSet()
     {
         if (!AdminUserState.IsAdmin)
             navigationManager.NavigateTo("/Admin");
-        
-        if (string.IsNullOrEmpty(Slug))
-            navigationManager.NavigateTo("/search/ret=admineditpost");
-
-        if (string.IsNullOrEmpty(Slug)) return;
-        
-        post = database.GetBySlug(Slug);
-        title = post.Title;
-        content = post.Content;
-        
-        // if Tags.Count == 0, aggregate fails. It should never be 0 though
-        post.Tags = database.GetPostTags(post.Id);
-        tags = post.Tags.Aggregate((a, b) => a + ", " + b);
     }
     
-    private async Task Update()
+    private async Task Publish()
     {
-        logger.LogInformation("Updating blog post");
-        post.Title = title;
-        post.Content = content;
-        post.Tags.Clear();
+        logger.LogInformation("Publishing blog post");
+        var tenantId = Convert.ToInt32(configuration["CogitatioTenantId"] ?? "0");
+        BlogPost post = BlogPost.Create(tenantId, title, content);
         post.Tags.AddRange(tags.Split(','));
-        database.UpdatePost(post);
-        
-        navigationManager.NavigateTo("/Admin");
+        database.CreatePost(post);
+        navigationManager.NavigateTo("/", forceLoad: true);
     }
+    
 }

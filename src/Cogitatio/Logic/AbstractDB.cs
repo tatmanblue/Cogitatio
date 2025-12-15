@@ -29,6 +29,16 @@ public abstract class AbstractDB<T> : IDisposable where T : IDbConnection
 
     protected abstract void Connect();
     
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="sql"></param>
+    /// <param name="getCommand"></param>
+    /// <param name="readRow">return true to continue, false stops</param>
+    /// <param name="cmdSetup"></param>
+    /// <param name="readerConverter"></param>
+    /// <typeparam name="TCommand"></typeparam>
+    /// <typeparam name="TReader"></typeparam>
     protected void ExecuteReader<TCommand, TReader>(
         string sql,
         Func<TCommand> getCommand,

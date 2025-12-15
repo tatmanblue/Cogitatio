@@ -8,10 +8,10 @@ namespace Cogitatio.Pages.Admin;
 /// <summary>
 /// Gonna keep this around for a bit in case I need it again for debugging something
 /// </summary>
-public partial class AdminDiag : ComponentBase
+public partial class Diagnostics : ComponentBase
 {
     [Inject] IConfiguration configuration { get; set; }
-    [Inject] ILogger<AdminDiag> logger { get; set; }
+    [Inject] ILogger<Diagnostics> logger { get; set; }
     [Inject] NavigationManager navigationManager { get; set; }
     [Inject] AdminUserState AdminUserState { get; set; }
     [Inject] IDatabase database { get; set; }

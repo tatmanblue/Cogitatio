@@ -7,9 +7,9 @@ namespace Cogitatio.Pages.Admin;
 /// <summary>
 /// Lists contact entries submitted via the contact form and saved in the database
 /// </summary>
-public partial class AdminContact : ComponentBase
+public partial class ReviewContacts : ComponentBase
 {
-    [Inject] private ILogger<AdminContact> logger { get; set; }
+    [Inject] private ILogger<ReviewContacts> logger { get; set; }
     [Inject] private IDatabase database { get; set; }
     [Inject] AdminUserState AdminUserState { get; set; }
     [Inject] private NavigationManager navigationManager { get; set; }

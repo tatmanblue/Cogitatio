@@ -15,9 +15,9 @@ namespace Cogitatio.Pages.Admin;
 ///
 /// The data model could use some refactoring to make it cleaner by separating it out from the UI.
 /// </summary>
-public partial class AdminSettings : ComponentBase
+public partial class Settings : ComponentBase
 {
-    [Inject] private ILogger<AdminSettings> logger { get; set; }
+    [Inject] private ILogger<Settings> logger { get; set; }
     [Inject] private IConfiguration configuration { get; set; }
     [Inject] private IDatabase database { get; set; }
     [Inject] private NavigationManager navigationManager { get; set; }

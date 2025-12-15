@@ -418,28 +418,25 @@ public class SqlServer : AbstractDB<SqlConnection>, IDatabase, IDisposable
     public List<ContactRecord> GetContacts()
     {
         Connect();
+        string sql = @"SELECT * FROM Blog_Request_Contact;";
         List<ContactRecord> result = new();
-        using SqlCommand cmd = new SqlCommand();
-        cmd.CommandType = CommandType.Text;
-        cmd.Connection = connection;
-        cmd.CommandText = @"SELECT * FROM Blog_Request_Contact;";
-        
-        // TODO can use ExecuteReader helper method here
-        using SqlDataReader reader = cmd.ExecuteReader();
-        while (reader.Read())
+
+        ExecuteReader<SqlCommand, SqlDataReader>(sql, () => new SqlCommand(), rdr =>
         {
             var contact = new ContactRecord()
             {
-                Id = reader.AsInt("Id"),
-                Name = reader.AsString("Name"),
-                Email = reader.AsString("Email"),
-                Slug = reader.AsString("Slug"),
-                Message = reader.AsString("Message"),
-                DateAdded = reader.AsDateTime("RequestDate")
+                Id = rdr.AsInt("Id"),
+                Name = rdr.AsString("Name"),
+                Email = rdr.AsString("Email"),
+                Slug = rdr.AsString("Slug"),
+                Message = rdr.AsString("Message"),
+                DateAdded = rdr.AsDateTime("RequestDate")
             };
             result.Add(contact);
-        }
+            return true;
+        }, null);
         
+
         return result;
     }
 
