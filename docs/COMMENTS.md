@@ -14,13 +14,14 @@ There's a bit more setup here:
 1. Create the user tables.  See `create_blog_users_table.sql`
 2. Provide a connection string to the user table in admin settings.
 
-Highly recommended, even though its not required, you put the users table in a separate db.
+Highly recommended, even though it's not required, you put the users table in a separate db.
 
+Yes, postgres sql will be updated to allow for commenting/users.
 
 ## Users
 
 Account creation is a toggle in admin settings.  Turning this one allows 
-viewers to create an account.   Users must provide an email.  A verification
+users to create an account.   Users must provide an email.  A verification
 link is sent to the email.  Emails are sent through only [SendGrid](sendgrid.com/).
 
 Yes, support for azure/AWS, STMP servers will be created a some point.
@@ -34,10 +35,14 @@ Yes, admin screens will be created at some point.
 
 Account login is a toggle in admin settings.  Turning this on allows users to login. 
 
-Once a viewer is logged in, they can comment on posts.
+Once a users is logged in, they can comment on posts.
 
 ## Comments
 Behaviors for comments are configured in admin settings.  Settings allow for max # comments per post, max length of a comment, etc...
+
+User permissions are tied to commenting.  Comments made by users with the `CommentWithApproval` account state will have to approved before they will appear on the blog.
+
+There is a tool, available in the admin portal, built to help with moderation.  I'm sure this could be extended to be more functional.
 
 ## Doc version
 

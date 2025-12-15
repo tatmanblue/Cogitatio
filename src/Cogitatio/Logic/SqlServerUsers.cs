@@ -13,6 +13,10 @@ public class SqlServerUsers : AbstractDB<SqlConnection>, IUserDatabase
 {
     private ILogger<IUserDatabase> logger;
 
+    private readonly string SELECT_FROM =
+        @"SELECT TOP 1 Id, DisplayName, Email, IpAddress, TwoFactorSecret, PasswordHash, VerificationId, AccountState, CreatedAt
+                FROM Blog_Users ";
+
     public SqlServerUsers(ILogger<IUserDatabase> logger, string connectionStr, int tenantId) : base(connectionStr, tenantId)
     {
         this.logger = logger;
@@ -65,9 +69,7 @@ public class SqlServerUsers : AbstractDB<SqlConnection>, IUserDatabase
     
     public BlogUserRecord Load(string email)
     {
-        string sql = @"SELECT TOP 1 Id, DisplayName, Email, IpAddress, TwoFactorSecret, PasswordHash, VerificationId, AccountState, CreatedAt
-                FROM Blog_Users
-                WHERE Email = @email AND TenantId = @TenantId";
+        string sql = SELECT_FROM + @"WHERE Email = @email AND TenantId = @TenantId";
 
         BlogUserRecord? user = null;
         ExecuteReader<SqlCommand, SqlDataReader>(sql, () =>
@@ -88,9 +90,7 @@ public class SqlServerUsers : AbstractDB<SqlConnection>, IUserDatabase
     
     public BlogUserRecord Load(int id)
     {
-        string sql = @"SELECT TOP 1 Id, DisplayName, Email, IpAddress, TwoFactorSecret, PasswordHash, VerificationId, AccountState, CreatedAt
-                FROM Blog_Users
-                WHERE Id = @id AND TenantId = @TenantId";
+        string sql = SELECT_FROM + @"WHERE Id = @id AND TenantId = @TenantId";
 
         BlogUserRecord? user = null;
         ExecuteReader<SqlCommand, SqlDataReader>(sql, () =>
@@ -111,9 +111,7 @@ public class SqlServerUsers : AbstractDB<SqlConnection>, IUserDatabase
     
     public BlogUserRecord Load(string email, string displayName)
     {
-        string sql = @"SELECT TOP 1 Id, DisplayName, Email, IpAddress, TwoFactorSecret, PasswordHash, AccountState, CreatedAt
-                FROM Blog_Users
-                WHERE (Email = @email OR DisplayName = @displayName) AND TenantId = @TenantId";
+        string sql = SELECT_FROM + @"WHERE (Email = @email OR DisplayName = @displayName) AND TenantId = @TenantId";
 
         BlogUserRecord? user = null;
         ExecuteReader<SqlCommand, SqlDataReader>(sql, () =>
@@ -168,6 +166,7 @@ public class SqlServerUsers : AbstractDB<SqlConnection>, IUserDatabase
             Id = reader.AsInt("Id"),
             DisplayName = reader.AsString("DisplayName"),
             Email = reader.AsString("Email"),
+            VerificationId = reader.AsString("VerificationId"),
             IpAddress = reader.AsString("IpAddress"),
             TwoFactorSecret = reader.AsString("TwoFactorSecret"),
             Password = reader.AsString("PasswordHash"),
