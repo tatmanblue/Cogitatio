@@ -1,4 +1,4 @@
-﻿@page "/a/CommentReviewer"
+﻿@page "/a/ReviewComments"
 <h3>Comment Reviewer</h3>
 
 @if (HasRights())
@@ -46,7 +46,11 @@
                                     <span><b>@comment.PostTitle</b> -- @comment.PostText ...</span>
                                     <br/>
                                     <label for="statusSelect">Select Status:</label>
-                                    <InputSelect id="statusSelect" @bind-Value="@comment.Status">
+                                    <InputSelect id="statusSelect" 
+                                                 TValue="CommentStatuses"
+                                                 Value="@comment.Status"
+                                                 ValueExpression="@(() => comment.Status)" 
+                                                 ValueChanged="@( (CommentStatuses newState) => MarkAsChanged(comment.Id, newState) )">
                                         @foreach (var cmtStatus in Enum.GetValues<CommentStatuses>())
                                         {
                                             <option value="@cmtStatus">@cmtStatus.ToString()</option>

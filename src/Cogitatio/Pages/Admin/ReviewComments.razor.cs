@@ -6,9 +6,9 @@ using Microsoft.AspNetCore.Components;
 
 namespace Cogitatio.Pages.Admin;
 
-public partial class CommentReviewer : ComponentBase
+public partial class ReviewComments : ComponentBase
 {
-    [Inject] private ILogger<CommentReviewer> logger { get; set; }
+    [Inject] private ILogger<ReviewComments> logger { get; set; }
     [Inject] private IDatabase db { get; set; }
     [Inject] private IUserDatabase userDb { get; set; }
     [Inject] private AdminUserState AdminUserState { get; set; }
@@ -22,7 +22,7 @@ public partial class CommentReviewer : ComponentBase
 
     protected override void OnParametersSet()
     {
-        if (!AdminUserState.IsAdmin)
+        if (!HasRights())
             navigationManager.NavigateTo("/a/Admin");
     }
 
@@ -71,26 +71,26 @@ public partial class CommentReviewer : ComponentBase
     
     private void ShowMessage(int id)
     {
-        if (selectedCommentId != -1 && hasChanges)
+        if (selectedCommentId == -1 || false == hasChanges)
             return;
         
         if (selectedCommentId != -1)
             HideMessage(selectedCommentId);
         
-        var post = comments.FirstOrDefault(c => c.Id == id);
-        if (post != null)
+        var comment = comments.FirstOrDefault(c => c.Id == id);
+        if (comment != null)
         {
-            if (string.IsNullOrEmpty(post.PostTitle))
+            if (string.IsNullOrEmpty(comment.PostTitle))
             {
-                BlogPost bp = db.GetById(post.PostId);
-                post.PostTitle = bp.Title;
-                post.PostText = bp.Content.PlainText().Substring(0, 25);
+                BlogPost bp = db.GetById(comment.PostId);
+                comment.PostTitle = bp.Title;
+                comment.PostText = bp.Content.PlainText().Substring(0, 25);
             }
             
-            
-            post.ShowDetails = true;
+            comment.ShowDetails = true;
             selectedCommentId = id;
             hasChanges = false;
+            HideMessage(selectedCommentId);
         }
         
         StateHasChanged();
@@ -98,19 +98,24 @@ public partial class CommentReviewer : ComponentBase
 
     private void HideMessage(int id)
     {
-        var post = comments.FirstOrDefault(c => c.Id == id);
-        if (post != null)
+        var comment = comments.FirstOrDefault(c => c.Id == id);
+        if (comment != null)
         {
-            post.ShowDetails = false;
+            comment.ShowDetails = false;
             selectedCommentId = -1;
             hasChanges = false;
         }
     }
 
-    private void MarkAsChanged(int id)
+    private void MarkAsChanged(int id, CommentStatuses status)
     {
         selectedCommentId = id;
         hasChanges = true;
+        var comment = comments.FirstOrDefault(c => c.Id == id);
+        if (comment != null)
+        {
+            comment.Status = status;
+        }
     }
 
     private class BlogCommentModel : Comment

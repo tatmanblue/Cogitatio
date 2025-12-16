@@ -131,6 +131,46 @@ public class SqlServerUsers : AbstractDB<SqlConnection>, IUserDatabase
         return user;
     }
     
+    public BlogUserRecord LoadByVerificationId(string id)
+    {
+        BlogUserRecord? user = null;
+        string sql = SELECT_FROM + @"WHERE VerificationId = @verificationId AND TenantId = @TenantId";
+        ExecuteReader<SqlCommand, SqlDataReader>(sql, () =>
+        {
+            return new SqlCommand();
+        }, reader =>
+        {
+            user = ReadUserRecord(reader);
+            return false;
+        }, setup =>
+        {
+            setup.Parameters.AddWithValue("@verificationId", id);
+            setup.Parameters.AddWithValue("@TenantId", tenantId);
+        });
+        return user;
+    }
+    
+    public List<BlogUserRecord> LoadAll()
+    {
+        Connect();
+        List<BlogUserRecord> users = new();
+        string sql = @"SELECT Id, DisplayName, Email, IpAddress, TwoFactorSecret, PasswordHash, VerificationId, AccountState, CreatedAt
+            FROM Blog_Users WHERE TenantId = @TenantId ORDER BY AccountState";
+        ExecuteReader<SqlCommand, SqlDataReader>(sql, () =>
+        {
+            return new SqlCommand();
+        }, reader =>  
+        {
+            BlogUserRecord user = ReadUserRecord(reader);
+            users.Add(user);
+            return true;
+        }, setup =>
+        {
+            setup.Parameters.AddWithValue("@TenantId", tenantId);
+        });
+        return users;
+    }
+    
     public bool DoesUserExist(string email)
     {
         return Load(email) != null;
@@ -157,6 +197,42 @@ public class SqlServerUsers : AbstractDB<SqlConnection>, IUserDatabase
         
         cmd.ExecuteNonQuery();
         logger.LogInformation($"Blog User Updated Successfully, id {user.Id}, new state {(int)user.AccountState}");
+    }
+
+    public void UpdateVerificationId(BlogUserRecord user)
+    {
+        Connect();
+        string sql = @"UPDATE Blog_Users SET VerificationId = @verificationId WHERE Id = @id AND TenantId = @TenantId";
+        using SqlCommand cmd = new SqlCommand();
+        cmd.CommandType = CommandType.Text;
+        cmd.Connection = connection;
+        cmd.CommandText = sql;
+        cmd.Parameters.Clear();
+        cmd.Parameters.AddWithValue("@verificationId", user.VerificationId);
+        cmd.Parameters.AddWithValue("@id", user.Id);
+        cmd.Parameters.AddWithValue("@TenantId", tenantId);
+
+        cmd.ExecuteNonQuery();
+        logger.LogInformation($"Blog User Updated Successfully, id {user.Id}, new verification Id {user.VerificationId}");
+    }
+    
+    public void UpdatePassword(BlogUserRecord user)
+    {
+        Connect();
+        string sql = @"UPDATE Blog_Users SET PasswordHash = @password, IpAddress = @ip WHERE Id = @id AND TenantId = @TenantId";
+        using SqlCommand cmd = new SqlCommand();
+        cmd.CommandType = CommandType.Text;
+        cmd.Connection = connection;
+        cmd.CommandText = sql;
+        cmd.Parameters.Clear();
+        cmd.Parameters.AddWithValue("@password", user.Password);
+        cmd.Parameters.AddWithValue("@ip", user.IpAddress);
+        cmd.Parameters.AddWithValue("@id", user.Id);
+        cmd.Parameters.AddWithValue("@TenantId", tenantId);
+
+        cmd.ExecuteNonQuery();
+        logger.LogInformation($"Blog User Updated Successfully, id {user.Id}, new verification Id {user.VerificationId}");
+
     }
 
     private BlogUserRecord ReadUserRecord(SqlDataReader reader)

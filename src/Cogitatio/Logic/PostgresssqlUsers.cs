@@ -5,11 +5,6 @@ namespace Cogitatio.Logic;
 
 public class PostgresssqlUsers(ILogger<IUserDatabase> logger, string connectionString, int tenantId) : IUserDatabase
 {
-    public void Save(BlogUserRecord user)
-    {
-        throw new NotImplementedException();
-    }
-
     public BlogUserRecord Load(string email)
     {
         throw new NotImplementedException();
@@ -24,6 +19,36 @@ public class PostgresssqlUsers(ILogger<IUserDatabase> logger, string connectionS
     {
         throw new NotImplementedException();
     }
+
+    public List<BlogUserRecord> LoadAll()
+    {
+        throw new NotImplementedException();
+    }
+
+    public BlogUserRecord LoadByVerificationId(string id)
+    {
+        throw new NotImplementedException();
+    }
+    
+    public void Save(BlogUserRecord user)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void UpdatePassword(BlogUserRecord record)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void UpdateStatus(BlogUserRecord user)
+    {
+        throw new NotImplementedException();
+    }
+    
+    public void UpdateVerificationId(BlogUserRecord user)
+    {
+        throw new NotImplementedException();
+    }
     
     public bool DoesUserExist(string email)
     {
@@ -31,11 +56,6 @@ public class PostgresssqlUsers(ILogger<IUserDatabase> logger, string connectionS
             return true;
 
         return false;
-    }
-
-    public void UpdateStatus(BlogUserRecord user)
-    {
-        throw new NotImplementedException();
     }
     
     public bool DoesUserExist(int id)

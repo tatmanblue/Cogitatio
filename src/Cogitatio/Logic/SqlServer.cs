@@ -10,19 +10,8 @@ namespace Cogitatio.Logic;
 /// MS SQL server version for blog database operations with blog posts.
 /// TODO duplicity with Postgressql will be addressed in a future update
 /// </summary>
-public class SqlServer : AbstractDB<SqlConnection>, IDatabase, IDisposable
+public class SqlServer : AbstractDB<SqlConnection>, IDatabase
 {
-    #region IDisposable
-
-    public void Dispose()
-    {
-        if (null == connection) return;
-
-        connection.Close();
-    }
-
-    #endregion
-    
     private ILogger<IDatabase> logger;
     
     public SqlServer(ILogger<IDatabase> logger, string str, int tenantId) : base(str, tenantId)

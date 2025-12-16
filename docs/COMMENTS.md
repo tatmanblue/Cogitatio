@@ -20,16 +20,16 @@ Yes, postgres sql will be updated to allow for commenting/users.
 
 ## Users
 
-Account creation is a toggle in admin settings.  Turning this one allows 
+Account creation is a turned on via a toggle in admin settings.  Turning this on allows 
 users to create an account.   Users must provide an email.  A verification
 link is sent to the email.  Emails are sent through only [SendGrid](sendgrid.com/).
 
 Yes, support for azure/AWS, STMP servers will be created a some point.
 
 ### After the users verify their email
-Admins have to manually set the user account to one of CommentWithApproval, CommentWithoutApproval statuses.
+Admins have to manually set the user account to one of CommentWithApproval, CommentWithoutApproval statuses to allow users to create comments.
 
-Yes, admin screens will be created at some point.
+There is a tool, available in the admin portal, for updating user statuses.
 
 ## Login
 
@@ -40,9 +40,11 @@ Once a users is logged in, they can comment on posts.
 ## Comments
 Behaviors for comments are configured in admin settings.  Settings allow for max # comments per post, max length of a comment, etc...
 
+Currently comments can only be created.  There is no edit functionality--which is probably something that needs to be implemented sooner than later.
+
 User permissions are tied to commenting.  Comments made by users with the `CommentWithApproval` account state will have to approved before they will appear on the blog.
 
-There is a tool, available in the admin portal, built to help with moderation.  I'm sure this could be extended to be more functional.
+There is a tool, available in the admin portal, to help with moderation.  I'm sure this could be extended to be more functional.
 
 ## Doc version
 

@@ -11,7 +11,6 @@ public class SiteSettings
     public string SiteTitle { get; private set; } = string.Empty;
     public string ShortTitle { get; private set; } = string.Empty;
     public string LongTitle { get; private set; } = string.Empty;
-    public string Author { get; private set; } = string.Empty;
     public string About { get; private set; } = string.Empty;
     public string Introduction { get; private set; } = string.Empty;
     public string Copyright { get; private set; } = string.Empty;

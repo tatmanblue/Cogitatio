@@ -36,10 +36,21 @@ public partial class Verify : ComponentBase
             return;
         }
 
-        if (record.AccountState != UserAccountStates.Created)
+        switch (record.AccountState)
         {
-            logger.LogError($"Verification failed: user with email {Email} is in state {record.AccountState}.");
-            return;
+            case UserAccountStates.AwaitingApproval:
+                message = "Email verified successfully. Your account is now awaiting approval.";
+                return;
+            case UserAccountStates.Created:
+                break;
+            case UserAccountStates.CommentWithApproval:
+            case UserAccountStates.CommentWithoutApproval:
+            case UserAccountStates.Moderator:
+                message = "Email verified successfully. ";
+                return;
+            default:
+                logger.LogError($"Verification failed: user with email {Email} is in state {record.AccountState}.");
+                return;
         }
         
         if (record.VerificationId != VerificationId)

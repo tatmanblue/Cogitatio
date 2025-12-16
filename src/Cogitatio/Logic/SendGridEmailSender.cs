@@ -20,6 +20,12 @@ public class SendGridEmailSender(ILogger<IEmailSender> logger, IDatabase db) : I
         var from = new EmailAddress(fromEmail);
         var to = new EmailAddress(toEmail);
         var msg = MailHelper.CreateSingleEmail(from, to, subject, isHtml ? null : body, isHtml ? body : null);
+        
+        // 
+        msg.SetClickTracking(false, false);
+        msg.SetOpenTracking(false);
+        msg.SetReplyTo(from);
+        
         var response = await client.SendEmailAsync(msg).ConfigureAwait(false);
 
         if (response.IsSuccessStatusCode)

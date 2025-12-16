@@ -231,8 +231,7 @@ public partial class SignUp : ComponentBase
         errorMessage = string.Empty;
         try
         {
-            var passwordSalt = database.GetSetting(BlogSettings.PasswordSalt);
-            record.Password = Password.HashPassword(passwordSalt + record.Password);
+            record.Password = Password.HashPassword(site.PasswordSalt + record.Password);
             record.AccountState = UserAccountStates.Created;
             record.IpAddress = userIp;
             record.VerificationId = Guid.NewGuid().ToString("N").Substring(0, 12).ToUpperInvariant();

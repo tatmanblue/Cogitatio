@@ -12,7 +12,15 @@ public interface IUserDatabase
     BlogUserRecord Load(int id);
     BlogUserRecord Load(string email);
     BlogUserRecord Load(string email, string displayName);
+    BlogUserRecord LoadByVerificationId(string id);
+    List<BlogUserRecord> LoadAll();
+    // ------------------------------------------------------------------
+    // forcing updates to be explicit....to update status, call the UpdateStatus method etc...
+    // this is intended to protect user data from accidently changes
+    // -------------------------------------------------------------------------
+    void UpdatePassword(BlogUserRecord record);
     void UpdateStatus(BlogUserRecord user);
+    void UpdateVerificationId(BlogUserRecord user);
     bool DoesUserExist(string email);
     bool DoesUserExist(int id);
 }
