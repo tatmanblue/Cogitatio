@@ -35,25 +35,48 @@
                     </tr>
                     <tr class="bg-light" style="display: @(user.ShowDetails ? "table-row" : "none");">
                         <td colspan="4" class="p-2">
-                            <div class="d-flex gap-2 align-items-center"></div>
-                            <div class="flex-grow-1">
-                                <span>for <b>@user.DisplayName</b> change status:</span>
-                                <br/>
-                                <label for="statusSelect">Select Status:</label>
-                                <InputSelect id="statusSelect" 
-                                             TValue="UserAccountStates"
-                                             Value="@user.AccountState"
-                                             ValueExpression="@(() => user.AccountState)" 
-                                             ValueChanged="@( (UserAccountStates newState) => MarkAsChanged(user.Id, newState) )">
-                                    @foreach (var states in Enum.GetValues<UserAccountStates>())
-                                    {
-                                        <option value="@states">@states.ToString()</option>
-                                    }
-                                </InputSelect>
-                            </div>
-                            <div class="flex-shrink-0 mt-3">
-                                <button class="btn btn-primary btn-sm" @onclick="() => Save(user.Id)">Save</button>
-                                <button class="btn btn-secondary btn-sm ms-2" @onclick="() => HideMessage(user.Id)">Cancel</button>
+                            <div class="d-flex gap-3 align-items-start">  
+                                <div class="flex-grow-1">
+                                    <!-- Status section -->
+                                    <div class="mb-3">
+                                        for <b>@user.DisplayName</b> change status:
+                                    </div>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <label for="statusSelect" class="fw-bold nowrap">Status:</label>
+                                        <InputSelect id="statusSelect" 
+                                                     class="form-select" 
+                                                     TValue="UserAccountStates"
+                                                     Value="@user.AccountState"
+                                                     ValueExpression="@(() => user.AccountState)" 
+                                                     ValueChanged="@( (UserAccountStates newState) => MarkAsChanged(user.Id, newState) )">
+                                            @foreach (var states in Enum.GetValues<UserAccountStates>())
+                                            {
+                                                <option value="@states">@states.ToString()</option>
+                                            }
+                                        </InputSelect>
+                                    </div>
+                                </div>
+
+                                <div class="flex-grow-1">
+                                    <!-- Password section -->
+                                    <div class="mb-3">
+                                        <strong>New Password</strong>
+                                    </div>
+                                    <div class="d-flex flex-column gap-2">
+                                        <input type="text"
+                                               @bind="@user.UpdatedPassword"
+                                               @oninput="() => MarkAsChanged(user.Id, user.AccountState)"
+                                               class="form-control"
+                                               placeholder="enter a password" />
+                                        <small class="text-muted">Please note this is a brute force change and doesn't enforce password rules</small>
+                                    </div>
+                                </div>
+
+                                <div class="flex-shrink-0 gap-2">
+                                    <div class="mb-3">&nbsp;</div>
+                                    <button class="btn btn-primary btn-sm" @onclick="() => Save(user.Id)">Save</button>
+                                    <button class="btn btn-secondary btn-sm" @onclick="() => HideMessage(user.Id)">Cancel</button>
+                                </div>
                             </div>
                         </td>
                     </tr>

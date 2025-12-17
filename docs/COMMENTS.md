@@ -14,7 +14,7 @@ There's a bit more setup here:
 1. Create the user tables.  See `create_blog_users_table.sql`
 2. Provide a connection string to the user table in admin settings.
 
-Highly recommended, even though it's not required, you put the users table in a separate db.
+Highly recommended (optional) you put the users table in a separate db.
 
 Yes, postgres sql will be updated to allow for commenting/users.
 
@@ -29,7 +29,7 @@ Yes, support for azure/AWS, STMP servers will be created a some point.
 ### After the users verify their email
 Admins have to manually set the user account to one of CommentWithApproval, CommentWithoutApproval statuses to allow users to create comments.
 
-There is a tool, available in the admin portal, for updating user statuses.
+There is a tool, available in the admin portal, for updating user statuses and passwords.
 
 ## Login
 

@@ -1,4 +1,5 @@
 ﻿using Cogitatio.Interfaces;
+using Cogitatio.Logic;
 using Cogitatio.Models;
 using Microsoft.AspNetCore.Components;
 
@@ -13,6 +14,7 @@ public partial class UserManager : ComponentBase
     [Inject] private ILogger<TagEditor> logger { get; set; }
     [Inject] private IUserDatabase userDB { get; set; }
     [Inject] AdminUserState AdminUserState { get; set; }
+    [Inject] private SiteSettings site { get; set; }
     [Inject] private NavigationManager navigationManager { get; set; }
 
     private List<AdminUserRecord> records = new();
@@ -85,6 +87,13 @@ public partial class UserManager : ComponentBase
         if (user != null)
         {
             userDB.UpdateStatus(user);
+            logger.LogInformation($"User {id} status has been changed");
+            if (!string.IsNullOrEmpty(user.UpdatedPassword))
+            {
+                user.Password = Password.HashPassword(site.PasswordSalt + user.UpdatedPassword);
+                userDB.UpdatePassword(user);
+                logger.LogInformation($"User {id} password has been changed");
+            }
         }
 
         HideMessage(selectedUser);
@@ -107,6 +116,7 @@ public partial class UserManager : ComponentBase
     class AdminUserRecord : BlogUserRecord
     {
         public bool ShowDetails { get; set; } = false;
+        public string UpdatedPassword { get; set; } = string.Empty;
     }
     
 }
