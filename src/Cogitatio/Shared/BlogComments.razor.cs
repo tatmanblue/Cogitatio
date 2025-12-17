@@ -88,7 +88,7 @@ public partial class BlogComments : ComponentBase
             return;
         }
 
-        int commentLength = comment.PlainTextLength();
+        int commentLength = comment.PlainText().Length;
         if (commentLength > maxCommentLength)
         {
             message = $"Comment exceeds maximum length of {maxCommentLength} characters.";

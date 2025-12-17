@@ -3,6 +3,14 @@ using Cogitatio.Models;
 
 namespace Cogitatio.Logic;
 
+/// <summary>
+/// For the user database in Postgres SQL
+///
+/// TODO: not implemented!
+/// </summary>
+/// <param name="logger"></param>
+/// <param name="connectionString"></param>
+/// <param name="tenantId"></param>
 public class PostgresssqlUsers(ILogger<IUserDatabase> logger, string connectionString, int tenantId) : IUserDatabase
 {
     public BlogUserRecord Load(string email)

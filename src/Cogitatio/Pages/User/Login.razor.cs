@@ -30,6 +30,7 @@ public partial class Login : ComponentBase
     private string password = string.Empty; // User's password
     private string mfaId = string.Empty; // User's TOTP code
     private string message = string.Empty;
+    private int retryCount = 0;
     
     // ---------------------------------------------------------------------------------------------------
     // ProofOfWork 
@@ -107,10 +108,15 @@ public partial class Login : ComponentBase
         }
         catch (BlogUserException ex)
         {
+            retryCount++;
             logger.LogWarning($"Login error for account '{accountId}': {ex.Message}");
             // this will be non empty only for user errors we want to bubble up to the user
             if (string.IsNullOrEmpty(message))
                 message = "Unable to login.  Please try again.";
+            
+            // TODO I can see this being configurable
+            if (retryCount > 3)
+                loginState = LoginStates.Error;
         }
         finally
         { 

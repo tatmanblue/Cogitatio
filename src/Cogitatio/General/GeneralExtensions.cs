@@ -4,19 +4,24 @@ namespace Cogitatio.General;
 
 public static class GeneralExtensions
 {
-    extension(string s)
+    extension(string str)
     {
-        public int PlainTextLength()
+        public T ParseEnum<T>() where T : struct, Enum
         {
-            return s.PlainText().Length;
+            return (T) Enum.Parse(typeof(T), str, true);
         }
 
+        
+        /// <summary>
+        /// removes html elements from text
+        /// </summary>
+        /// <returns></returns>
         public string PlainText()
         {
             // The pattern </?.*?> matches any opening tag (<tag>) or closing tag (</tag>).
             const string HtmlTagPattern = "</?.*?>";
         
-            string plainText = Regex.Replace(s, HtmlTagPattern, string.Empty);
+            string plainText = Regex.Replace(str, HtmlTagPattern, string.Empty);
             return plainText.Trim();
         }
     }

@@ -10,11 +10,6 @@ namespace Cogitatio.Logic;
 /// </summary>
 public static class DatabaseExtensions
 {
-    public static T ParseEnum<T>(string value)
-    {
-        return (T) Enum.Parse(typeof(T), value, true);
-    }
-
     extension(DbDataReader rdr)
     {
         public int AsInt(string field)

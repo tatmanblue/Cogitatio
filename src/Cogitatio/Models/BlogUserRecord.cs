@@ -1,7 +1,7 @@
 ﻿namespace Cogitatio.Models;
 
 /// <summary>
-/// Basically the DAO for the user data
+/// Basically the DAO for the user account data
 /// </summary>
 public class BlogUserRecord
 {

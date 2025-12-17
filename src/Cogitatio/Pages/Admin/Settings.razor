@@ -137,7 +137,7 @@
             </div>
         </div>
 
-        <!-- ────── Comments/Users Settings Tab ────── -->
+        <!-- ────── Comments Settings Tab ────── -->
         <div class="tab-pane fade @(activeTab == 4 ? "show active" : "")">
             <div class="mb-3">
                 <label for="allowComments" class="form-label">Allow Comments</label>
@@ -154,6 +154,10 @@
                 <label for="maxCommentsPerPost" class="form-label">Max number of comments per post</label>
                 <input id="maxCommentsPerPost" @bind="maxCommentsPerPost" class="form-control" placeholder="100" />
             </div>
+        </div>
+        
+        <!-- ────── Users Settings Tab ────── -->
+        <div class="tab-pane fade @(activeTab == 5 ? "show active" : "")">
             <div class="mb-3">
                 <label for="allowLogins" class="form-label">Allow logins</label>
                 <InputCheckbox
@@ -169,6 +173,10 @@
                     id="allowNewUsers"/>
             </div>
             <div class="mb-3">
+                <label for="passwordSalt" class="form-label">Password Salt</label>
+                <input id="passwordSalt" @bind="passwordSalt" class="form-control" placeholder="" />
+            </div>            
+            <div class="mb-3">
                 <label for="minPasswordLength" class="form-label">Min Password Length</label>
                 <input id="minPasswordLength" @bind="minPasswordLength" class="form-control" placeholder="100" />
             </div>
@@ -182,9 +190,9 @@
                 <p class="text-muted">@connectionStringNotice</p>
             </div>
         </div>
-        
+
         <!-- ────── Mail Settings Tab ────── -->
-        <div class="tab-pane fade @(activeTab == 5 ? "show active" : "")">
+        <div class="tab-pane fade @(activeTab == 6 ? "show active" : "")">
             <div class="mb-3">
                 <label for="fromEmailAddr">From Email Address:</label>
                 <input id="fromEmailAddr" @bind="fromEmail" class="form-control" placeholder="Email address"/>
@@ -203,12 +211,19 @@
             {
                 case EmailServices.SendGrid:
                     <div class="mb-3">
-                        <label for="sendGridAPI">Select Status:</label>
+                        <label for="sendGridAPI">Send Grid API Key:</label>
                         <input id="sendGridAPI" @bind="sendGridApiKey" class="form-control" placeholder="Api Key"/>
                     </div>
                     break;
                 case EmailServices.Azure:
-                    <span>Azure not available yet</span>
+                    <div class="mb-3">
+                        <label for="azureResourceId">Resource Id:</label>
+                        <input id="azureResourceId" @bind="azureResourceId" class="form-control" placeholder="Api Key"/>
+                    </div>
+                    <div class="mb-3">
+                        <label for="azureAccessKey">Access Key:</label>
+                        <input id="azureAccessKey" @bind="azureAccessKey" class="form-control" placeholder="Api Key"/>
+                    </div>
                     break;
                 default:
                     break;

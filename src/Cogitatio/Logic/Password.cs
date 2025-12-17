@@ -3,6 +3,9 @@ using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 
 namespace Cogitatio.Logic;
 
+/// <summary>
+/// Password hashing and verification functions
+/// </summary>
 public static class Password
 {
     // Use PBKDF2 with HMAC-SHA256 (or SHA512), 600,000+ iterations recommended in 2025
@@ -62,6 +65,13 @@ public static class Password
         return CryptographicOperations.FixedTimeEquals(actualHash, expectedHash);
     }    
     
+    /// <summary>
+    /// compares password with static rules as to what makes a good password and returns strength indicators.
+    /// </summary>
+    /// <param name="password"></param>
+    /// <param name="minLength"></param>
+    /// <param name="maxLength"></param>
+    /// <returns></returns>
     public static (int, string) EvaluatePasswordStrength(string password, int minLength = 6, int maxLength = 30)
     {
         if (string.IsNullOrEmpty(password))

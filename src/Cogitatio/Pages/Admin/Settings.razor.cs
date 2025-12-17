@@ -39,6 +39,7 @@ public partial class Settings : ComponentBase
     private bool allowLogin = false;
     private string usersDBConnectionString = string.Empty;
     private string connectionStringNotice = string.Empty;
+    private string passwordSalt = string.Empty;
     private int minDisplayNameLen = 6;
     private int maxDisplayNameLen = 30;
     private int minPasswordLength = 6;
@@ -56,6 +57,8 @@ public partial class Settings : ComponentBase
     private EmailServices selectedEmailService = EmailServices.Mock;
     private string fromEmail = string.Empty;
     private string sendGridApiKey = string.Empty;
+    private string azureAccessKey = string.Empty;
+    private string azureResourceId = string.Empty;
 
     
     // -------------------------------------------------------------------------
@@ -78,7 +81,7 @@ public partial class Settings : ComponentBase
     // -------------------------------------------------------------------------
     // screen configuration 
     private int activeTab = 0;
-    private readonly string[] tabTitles = { "Security", "Site Info", "Introduction", "About", "Comments", "Mail" };
+    private readonly string[] tabTitles = { "Security", "Site Info", "Introduction", "About", "Comments", "Users", "Mail" };
         
     private Dictionary<string, object> editorConfig = new Dictionary<string, object>{
         { "menubar", true },
@@ -169,6 +172,9 @@ public partial class Settings : ComponentBase
                 case BlogSettings.MaxDisplayNameLength:
                     maxDisplayNameLen = Convert.ToInt32(setting.Value);
                     break;
+                case BlogSettings.PasswordSalt:
+                    passwordSalt = setting.Value;
+                    break;
                 case BlogSettings.SendGridApiKey:
                     sendGridApiKey = setting.Value;
                     break;
@@ -178,6 +184,12 @@ public partial class Settings : ComponentBase
                     break;
                 case BlogSettings.FromEmail:
                     fromEmail = setting.Value;
+                    break;
+                case BlogSettings.AzureCommunicationsAccessKey:
+                    azureAccessKey = setting.Value;
+                    break;
+                case BlogSettings.AzureCommunicationsResourceId:
+                    azureResourceId = setting.Value;
                     break;
             }
         }
@@ -256,13 +268,18 @@ public partial class Settings : ComponentBase
         database.SaveSetting(BlogSettings.UserDBConnectionString, usersDBConnectionString);
         database.SaveSetting(BlogSettings.AllowNewUsers, allowNewUsers.ToString());
         database.SaveSetting(BlogSettings.AllowLogin, allowLogin.ToString());
+        database.SaveSetting(BlogSettings.PasswordSalt, passwordSalt);
         database.SaveSetting(BlogSettings.MinPasswordLength, minPasswordLength.ToString());
         database.SaveSetting(BlogSettings.MaxPasswordLength, maxPasswordLength.ToString());
         database.SaveSetting(BlogSettings.MinDisplayNameLength, minDisplayNameLen.ToString());
         database.SaveSetting(BlogSettings.MaxDisplayNameLength, maxDisplayNameLen.ToString());
         database.SaveSetting(BlogSettings.EmailService, selectedEmailService.ToString());
-        database.SaveSetting(BlogSettings.SendGridApiKey, sendGridApiKey);
         database.SaveSetting(BlogSettings.FromEmail, fromEmail);
+        
+        // TODO, we could probably smarten this up by only saving what is selected
+        database.SaveSetting(BlogSettings.SendGridApiKey, sendGridApiKey);
+        database.SaveSetting(BlogSettings.AzureCommunicationsAccessKey, azureAccessKey);
+        database.SaveSetting(BlogSettings.AzureCommunicationsResourceId, azureResourceId);
         
         if (!string.IsNullOrEmpty(adminId))
             database.SaveSetting(BlogSettings.AdminId, adminId);

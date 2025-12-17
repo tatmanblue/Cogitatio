@@ -148,6 +148,9 @@ builder.Services.AddTransient<IEmailSender>(p =>
 
     switch (services)
     {
+        case EmailServices.Azure:
+            return new AzureCommunications(logger, db);
+            break;
         case EmailServices.SendGrid:
             return new SendGridEmailSender(logger, db);
         case EmailServices.Mock:

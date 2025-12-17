@@ -63,6 +63,10 @@ public enum BlogSettings
     EmailService,
     [Description("The SendGrid API key for sending emails")]        
     SendGridApiKey,
+    [Description("The Azure Communications Connection string sending emails")]
+    AzureCommunicationsAccessKey,
+    [Description("Azure resource id for sending emails")]
+    AzureCommunicationsResourceId
 }
 
 public enum UserAccountStates

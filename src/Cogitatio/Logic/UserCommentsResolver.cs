@@ -6,7 +6,7 @@ namespace Cogitatio.Logic;
 
 /// <summary>
 /// Comments are special - they need user info from the user database
-/// This class handles loading comments with user info.  The user info is pretty static
+/// This class handles resolving the user information with comments.  The user info is pretty static
 /// so we cache some of this information to reduce DB hits
 /// </summary>
 /// <param name="db"></param>
