@@ -22,7 +22,10 @@ Yes, postgres sql will be updated to allow for commenting/users.
 
 Account creation is a turned on via a toggle in admin settings.  Turning this on allows 
 users to create an account.   Users must provide an email.  A verification
-link is sent to the email.  Emails can be sent through [SendGrid](http://www.sendgrid.com/) or Azure.
+link is sent to the email.  
+
+Emails verification can be sent through [SendGrid](http://www.sendgrid.com/) or [Azure Communication Services Email](https://azure.microsoft.com/en-us/products/communication-services).  Options for both 
+are available in admin settings.
 
 Yes, support for AWS, STMP servers will be created a some point.
 
