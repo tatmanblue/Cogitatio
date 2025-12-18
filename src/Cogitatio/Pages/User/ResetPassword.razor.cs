@@ -137,6 +137,9 @@ public partial class ResetPassword : ComponentBase
 
     protected override void OnParametersSet()
     {
+        // a hardcoded delay to help mitigate brute force attacks
+        Task.Delay(1000);
+        
         if (!string.IsNullOrEmpty(ResetId))
         {
             BlogUserRecord verification = userDB.LoadByVerificationId(ResetId);
@@ -146,10 +149,19 @@ public partial class ResetPassword : ComponentBase
                 // just ignore this start with Request state
                 return;
             }
-            
+
+            if (record.VerificationExpiry < DateTime.Now)
+            {
+                state = ResetPasswordStates.Error;
+                errorMessage = "The password reset link has expired.  Please request a new link.";
+                return;
+            }
+
             state = ResetPasswordStates.Change;
             minPasswordLength = database.GetSettingAsInt(BlogSettings.MinPasswordLength, 6);
             maxPasswordLength = database.GetSettingAsInt(BlogSettings.MaxPasswordLength, 30);
+            
+            
         }
     }
 
@@ -180,7 +192,8 @@ public partial class ResetPassword : ComponentBase
                     BlogUserRecord verification = userDB.Load(requestId, requestId);
                     if (null != verification)
                     {
-                        verification.VerificationId = Guid.NewGuid().ToString("N").Substring(0, 12).ToUpperInvariant();
+                        verification.VerificationId = Guid.NewGuid().ToSecureToken();
+                        verification.VerificationExpiry = DateTime.Now.AddHours(12);
                         userDB.UpdateVerificationId(verification);
                         var verifyUrl = navigationManager.BaseUri + "u/ResetPassword?rid=" +
                                         WebUtility.UrlEncode(verification.VerificationId);
@@ -219,6 +232,10 @@ public partial class ResetPassword : ComponentBase
                     
                     // salt and hash new password
                     record.Password = Password.HashPassword(site.PasswordSalt + newPassword);
+                    // make a new verification id to prevent reuse of this link
+                    record.VerificationId = Guid.NewGuid().ToSecureToken();
+                    // set verification expiry to past date to invalidate
+                    record.VerificationExpiry = DateTime.Now.AddDays(-1);
                     record.IpAddress = userIp;
             
                     userDB.UpdatePassword(record);

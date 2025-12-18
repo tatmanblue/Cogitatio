@@ -14,7 +14,7 @@ public class SqlServerUsers : AbstractDB<SqlConnection>, IUserDatabase
     private ILogger<IUserDatabase> logger;
 
     private readonly string SELECT_FROM =
-        @"SELECT TOP 1 Id, DisplayName, Email, IpAddress, TwoFactorSecret, PasswordHash, VerificationId, AccountState, CreatedAt
+        @"SELECT TOP 1 Id, DisplayName, Email, IpAddress, TwoFactorSecret, PasswordHash, VerificationId, VerificationExpiry, AccountState, CreatedAt
                 FROM Blog_Users ";
 
     public SqlServerUsers(ILogger<IUserDatabase> logger, string connectionStr, int tenantId) : base(connectionStr, tenantId)
@@ -32,7 +32,6 @@ public class SqlServerUsers : AbstractDB<SqlConnection>, IUserDatabase
     
     public void Save(BlogUserRecord user)
     {
-        // TODO: replace with a proper exception type
         if (DoesUserExist(user.Email))
             throw new BlogUserException($"User with email {user.Email} already exists");
         
@@ -41,7 +40,7 @@ public class SqlServerUsers : AbstractDB<SqlConnection>, IUserDatabase
         cmd.CommandType = CommandType.Text;
         cmd.Connection = connection;
         cmd.Parameters.Clear();
-        cmd.CommandText = @"INSERT INTO Blog_Users (DisplayName, Email, IpAddress, TwoFactorSecret, VerificationId, PasswordHash, AccountState, TenantId)
+        cmd.CommandText = @"INSERT INTO Blog_Users (DisplayName, Email, IpAddress, TwoFactorSecret, VerificationId, VerificationExpiry, PasswordHash, AccountState, TenantId)
                 OUTPUT INSERTED.Id 
                 VALUES
                 (
@@ -50,6 +49,7 @@ public class SqlServerUsers : AbstractDB<SqlConnection>, IUserDatabase
                     @IpAddress,
                     @twoFactorSecret,
                     @verificationId,
+                    @verificationExpiry,
                     @passwordHash,
                     @accountState,
                     @TenantId
@@ -59,6 +59,7 @@ public class SqlServerUsers : AbstractDB<SqlConnection>, IUserDatabase
         cmd.Parameters.AddWithValue("@IpAddress", user.IpAddress);
         cmd.Parameters.AddWithValue("@twoFactorSecret", user.TwoFactorSecret);
         cmd.Parameters.AddWithValue("@verificationId", user.VerificationId);
+        cmd.Parameters.AddWithValue("@verificationExpiry", user.VerificationExpiry);
         cmd.Parameters.AddWithValue("@passwordHash", user.Password);
         cmd.Parameters.AddWithValue("@accountState", (int)user.AccountState);
         cmd.Parameters.AddWithValue("@TenantId", tenantId);
@@ -202,13 +203,14 @@ public class SqlServerUsers : AbstractDB<SqlConnection>, IUserDatabase
     public void UpdateVerificationId(BlogUserRecord user)
     {
         Connect();
-        string sql = @"UPDATE Blog_Users SET VerificationId = @verificationId WHERE Id = @id AND TenantId = @TenantId";
+        string sql = @"UPDATE Blog_Users SET VerificationId = @verificationId, VerificationExpiry = @verificationExpiry WHERE Id = @id AND TenantId = @TenantId";
         using SqlCommand cmd = new SqlCommand();
         cmd.CommandType = CommandType.Text;
         cmd.Connection = connection;
         cmd.CommandText = sql;
         cmd.Parameters.Clear();
         cmd.Parameters.AddWithValue("@verificationId", user.VerificationId);
+        cmd.Parameters.AddWithValue("@verificationExpiry", user.VerificationExpiry);
         cmd.Parameters.AddWithValue("@id", user.Id);
         cmd.Parameters.AddWithValue("@TenantId", tenantId);
 
@@ -243,6 +245,7 @@ public class SqlServerUsers : AbstractDB<SqlConnection>, IUserDatabase
             DisplayName = reader.AsString("DisplayName"),
             Email = reader.AsString("Email"),
             VerificationId = reader.AsString("VerificationId"),
+            VerificationExpiry = reader.AsDateTime("VerificationExpiry"),
             IpAddress = reader.AsString("IpAddress"),
             TwoFactorSecret = reader.AsString("TwoFactorSecret"),
             Password = reader.AsString("PasswordHash"),

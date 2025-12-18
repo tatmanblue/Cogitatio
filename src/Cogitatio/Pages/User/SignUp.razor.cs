@@ -234,8 +234,8 @@ public partial class SignUp : ComponentBase
             record.Password = Password.HashPassword(site.PasswordSalt + record.Password);
             record.AccountState = UserAccountStates.Created;
             record.IpAddress = userIp;
-            record.VerificationId = Guid.NewGuid().ToString("N").Substring(0, 12).ToUpperInvariant();
-            
+            record.VerificationId = Guid.NewGuid().ToSecureToken();
+            record.VerificationExpiry = DateTime.Now.AddHours(12);
             userDB.Save(record);
             signUpState = SignUpState.Saved;
 

@@ -77,7 +77,9 @@ public enum UserAccountStates
     CommentWithApproval = 3,            // level one commenting, each comment must be approved
     CommentWithoutApproval = 4,         // level two commenting, can comment without approval
     Moderator = 5,                      // level three commenting, can approve comments
-    Blocked = 6                         // user is blocked from commenting,
+    Blocked = 6,                        // user is blocked from commenting,
+    LoginLocked = 7,                    // too many failed login attempts
+    AdminLocked = 8                     // admin has locked the account
 }
 
 public enum EmailServices
@@ -91,5 +93,5 @@ public enum CommentStatuses
 {
     Hide,
     AwaitingApproval,
-    Approved,
+    Approved,                           // only approved comments are visible
 }

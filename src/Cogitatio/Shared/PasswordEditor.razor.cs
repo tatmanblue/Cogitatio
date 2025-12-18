@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using Cogitatio.General;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 
 namespace Cogitatio.Shared;
@@ -36,7 +37,7 @@ public partial class PasswordEditor : ComponentBase
 
     protected override void OnInitialized()
     {
-        uniqueId = $"credential_{Guid.NewGuid().ToString("N").Substring(0, 8)}"; 
+        uniqueId = $"credential_{Guid.NewGuid().VerificationId()}"; 
     }
     
     protected override void OnParametersSet()

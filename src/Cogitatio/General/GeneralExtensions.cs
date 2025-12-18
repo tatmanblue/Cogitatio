@@ -25,4 +25,25 @@ public static class GeneralExtensions
             return plainText.Trim();
         }
     }
+
+    extension(Guid guid)
+    {
+        /// <summary>
+        /// 1/3 of a guid for verification codes
+        /// </summary>
+        /// <returns></returns>
+        public string VerificationId()
+        {
+            return guid.ToString("N").Substring(0, 12).ToUpperInvariant();
+        }
+        
+        /// <summary>
+        /// A full guid without dashes
+        /// </summary>
+        /// <returns></returns>
+        public string ToSecureToken()
+        {
+            return guid.ToString("N"); 
+        }
+    }
 }
