@@ -174,6 +174,14 @@ public partial class SignUp : ComponentBase
             passwordMessage = string.Empty;
             errorMessage = string.Empty;
             
+            if (false == record.Email.IsValidEmail())
+            {
+                errorMessage = "Please enter a valid email address.";
+                signUpState = SignUpState.Error;
+                StateHasChanged();
+                return;
+            }
+            
             if (confirmPassword != record.Password)
             {
                 passwordMessage = "Passwords don't match.";

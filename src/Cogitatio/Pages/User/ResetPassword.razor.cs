@@ -134,6 +134,7 @@ public partial class ResetPassword : ComponentBase
     private string confirmPassword = string.Empty;
     private string passwordMessage = string.Empty;
     private string userIp = string.Empty;
+    private bool isProcessing = false;
 
     protected override void OnParametersSet()
     {
@@ -146,6 +147,8 @@ public partial class ResetPassword : ComponentBase
             record = verification;
             if (null == record)
             {
+                // needed for model binding
+                record = new();
                 // give a message that the link is invalid/expired but don't say which to avoid info leak
                 errorMessage = "The password reset link has expired.  Please request a new link.";
                 return;
@@ -183,6 +186,9 @@ public partial class ResetPassword : ComponentBase
 
     private async Task Save()
     {
+        if (isProcessing)
+            return;
+        isProcessing = true;
         try
         {
             errorMessage = string.Empty;
@@ -194,14 +200,15 @@ public partial class ResetPassword : ComponentBase
                     if (null != verification)
                     {
                         verification.VerificationId = Guid.NewGuid().ToSecureToken();
-                        verification.VerificationExpiry = DateTime.Now.AddHours(12);
+                        verification.VerificationExpiry = DateTime.Now.AddHours(2);
                         userDB.UpdateVerificationId(verification);
                         var verifyUrl = navigationManager.BaseUri + "u/ResetPassword?rid=" +
                                         WebUtility.UrlEncode(verification.VerificationId);
                         var htmlBody = emailResetTemplate
                             .Replace("{site.ShortTitle}", site.ShortTitle)
                             .Replace("{verifyUrl}", verifyUrl);
-                        await emailSender.SendEmailAsync(verification.Email, $"{site.ShortTitle} - Change your password",
+                        await emailSender.SendEmailAsync(verification.Email,
+                            $"{site.ShortTitle} - Change your password",
                             htmlBody);
 
                     }
@@ -212,7 +219,7 @@ public partial class ResetPassword : ComponentBase
                     // verify the email matches.  We reuse requestId as email input during this state
                     if (requestId != record.Email)
                         throw new BlogUserException("Email match failure.");
-                    
+
                     // verify old password matches inputted existing password
                     string saltedPassword = site.PasswordSalt + oldPassword;
                     if (false == Password.VerifyPassword(saltedPassword, record.Password))
@@ -224,13 +231,15 @@ public partial class ResetPassword : ComponentBase
                         errorMessage = "New password did not match confirmation password.";
                         return;
                     }
+
                     switch (newPassword.Length)
                     {
                         case var length when length < minPasswordLength || length > maxPasswordLength:
-                            errorMessage = $"Password must be between {minPasswordLength} and {maxPasswordLength} characters long.";
+                            errorMessage =
+                                $"Password must be between {minPasswordLength} and {maxPasswordLength} characters long.";
                             return;
                     }
-                    
+
                     // salt and hash new password
                     record.Password = Password.HashPassword(site.PasswordSalt + newPassword);
                     // make a new verification id to prevent reuse of this link
@@ -238,7 +247,7 @@ public partial class ResetPassword : ComponentBase
                     // set verification expiry to past date to invalidate
                     record.VerificationExpiry = DateTime.Now.AddDays(-1);
                     record.IpAddress = userIp;
-            
+
                     userDB.UpdatePassword(record);
 
                     if (emailSender != null)
@@ -246,8 +255,10 @@ public partial class ResetPassword : ComponentBase
                         record.AccountState = UserAccountStates.AwaitingApproval;
                         var htmlBody = emailPwdChangedTemplate
                             .Replace("{site.ShortTitle}", site.ShortTitle);
-                        await emailSender.SendEmailAsync(record.Email, $"{site.ShortTitle} - Password Changed", htmlBody);
+                        await emailSender.SendEmailAsync(record.Email, $"{site.ShortTitle} - Password Changed",
+                            htmlBody);
                     }
+
                     state = ResetPasswordStates.Results;
                     break;
                 default:
@@ -264,7 +275,11 @@ public partial class ResetPassword : ComponentBase
         catch (Exception ex)
         {
             state = ResetPasswordStates.Error;
-            logger.LogError(ex, "Reset Password Error");           
+            logger.LogError(ex, "Reset Password Error");
+        }
+        finally
+        {
+            isProcessing = false;
         }
 
         StateHasChanged();

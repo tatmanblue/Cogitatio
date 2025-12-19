@@ -24,6 +24,17 @@ public static class GeneralExtensions
             string plainText = Regex.Replace(str, HtmlTagPattern, string.Empty);
             return plainText.Trim();
         }
+        
+        public bool IsValidEmail()
+        {
+            if (string.IsNullOrWhiteSpace(str))
+                return false;
+
+            // Standard pattern for: name@domain.extension
+            string pattern = @"^[^@\s]+@[^@\s]+\.[^@\s]+$";
+    
+            return Regex.IsMatch(str, pattern, RegexOptions.IgnoreCase);
+        }
     }
 
     extension(Guid guid)
