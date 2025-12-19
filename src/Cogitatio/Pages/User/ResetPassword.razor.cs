@@ -146,7 +146,8 @@ public partial class ResetPassword : ComponentBase
             record = verification;
             if (null == record)
             {
-                // just ignore this start with Request state
+                // give a message that the link is invalid/expired but don't say which to avoid info leak
+                errorMessage = "The password reset link has expired.  Please request a new link.";
                 return;
             }
 
