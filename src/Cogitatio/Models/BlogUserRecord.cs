@@ -1,0 +1,32 @@
+﻿namespace Cogitatio.Models;
+
+/// <summary>
+/// Basically the DAO for the user account data
+/// </summary>
+public class BlogUserRecord
+{
+    public int Id { get; set; }
+    public int TenantId { get; set; }
+    public string Email { get; set; } = string.Empty;
+    public string IpAddress { get; set; } = string.Empty;
+    public string DisplayName { get; set; } = string.Empty;
+    public UserAccountStates AccountState { get; set; } = UserAccountStates.Unknown;
+    public string TwoFactorSecret { get; set; } = string.Empty;
+    public string VerificationId { get; set; } = string.Empty;
+    public DateTime VerificationExpiry { get; set; } = DateTime.Now.AddDays(-1);
+    public string Password { get; set; } = string.Empty;
+    public DateTime CreatedAt { get; set; }
+
+}
+
+/// <summary>
+/// A pared down version of the user record for use in comments
+/// </summary>
+public class BlogCommentUserRecord
+{
+    public int Id { get; set; }
+    public int TenantId { get; set; }
+    public string DisplayName { get; set; } = string.Empty;
+    public UserAccountStates AccountState { get; set; } = UserAccountStates.Unknown;
+    public DateTime CachedDate { get; } = new DateTime();
+}

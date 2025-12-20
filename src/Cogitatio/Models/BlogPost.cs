@@ -53,7 +53,11 @@ public class BlogPost
 
 public class Comment
 {
-    public string Author { get; set; } = string.Empty;
+    public int Id { get; set; } = 0;
+    public int AuthorId { get; set; } = 0;
+    public int PostId { get; set; } = 0;
+    public string Author { get; set; } = string.Empty;              // this is a display only field, is resolved through UserCommentsLoader
     public string Text { get; set; } = string.Empty;
     public DateTime PostedDate { get; set; }
+    public CommentStatuses Status { get; set; } = CommentStatuses.Hide;
 }

@@ -53,15 +53,16 @@ CREATE TABLE Blog_Settings
     UNIQUE (TenantId, SettingKey)
 );
 
-/*
-Since comments are not supported right now, this table is not required
+
 -- Table to store comments associated with blog posts
 CREATE TABLE Blog_Comments (
-    CommentId INT IDENTITY(1,1) PRIMARY KEY, -- Auto-incrementing ID
-    PostId INT NOT NULL,                     -- Foreign key to BlogPosts table
-    Author NVARCHAR(100) NOT NULL,           -- Comment author's name
-    Text NVARCHAR(MAX) NOT NULL,             -- Comment text
-    PostedDate DATETIME NOT NULL DEFAULT GETDATE(), -- Comment posted date
-    FOREIGN KEY (PostId) REFERENCES Blog_Posts(PostId) -- Foreign key constraint
+    Id INT IDENTITY(1,1) PRIMARY KEY, 
+    PostId INT NOT NULL,
+    UserId INT NOT NULL,
+    Text NVARCHAR(MAX) NOT NULL,             
+    TenantId INT NOT NULL DEFAULT 0,
+    Status INT NOT NULL DEFAULT 0,
+    PostedDate DATETIME NOT NULL DEFAULT GETDATE(),
+    FOREIGN KEY (PostId) REFERENCES Blog_Posts(PostId),
+    UNIQUE (TenantId, PostId, UserId, Id)
 );
-*/

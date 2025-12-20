@@ -1,4 +1,4 @@
-<Project Sdk="Aspire.AppHost.Sdk/13.0.0">
+<Project Sdk="Aspire.AppHost.Sdk/13.0.2">
 
     <PropertyGroup>
         <OutputType>Exe</OutputType>
@@ -17,6 +17,14 @@
     <ItemGroup>
       <ProjectReference Include="..\Cogitatio\Cogitatio.csproj" />
       <ProjectReference Include="..\ServiceDefaults\Cogitatio.ServiceDefaults.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="LaunchSettings.json">
+        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+        <CopyToPublishDirectory>Never</CopyToPublishDirectory>
+        <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      </None>
     </ItemGroup>
 
 </Project>

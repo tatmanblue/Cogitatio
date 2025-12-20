@@ -1,0 +1,96 @@
+﻿<label class="form-label">User Agreement</label>
+<div class="border p-3 bg-light small" style="max-height:@MaxHeight; overflow:auto;" aria-readonly="true">
+    <h6 class="fw-bold mb-2">Terms of Service & User Agreement & Privacy Policy</h6>
+    <!-- TODO at some point I would like the admin to be able to edit this without code changes -->
+    <p class="mb-2"><small>Last updated: December 4, 2025</small></p>
+    <ol class="mb-0 small">
+        <li><strong>Acceptance of Terms</strong><br>
+            By accessing or using this website (the “Service”), you agree to be bound by these Terms of Service (“Terms”). 
+            If you do not agree, you may not use the Service.</li>
+
+        <li><strong>Eligibility</strong><br>
+            You represent and warrant that you are at least 18 years of age and have the legal capacity to enter into these Terms. 
+            You agree to provide true, accurate, current, and complete information during registration and 
+            to maintain the accuracy of such information.</li>
+
+        <li><strong>Account Responsibilities</strong><br>
+            You are solely responsible for maintaining the confidentiality of your account credentials and for all 
+            activities that occur under your account. You agree to notify us immediately of any unauthorized use of your account.
+            We will immediately terminate, without notice, any account with suspicious behaviors, with or without your notification.</li>
+
+        <li><strong>Prohibited Conduct</strong><br>
+            You agree not to use the Service for any purpose that is unlawful or prohibited by these Terms. 
+            Prohibited activities include, but are not limited to:<br>
+            • Any illegal activity under applicable local, state, national, or international law<br>
+            • Harassment, abuse, stalking, threats, intimidation, defamation, or hate speech<br>
+            • General political campaigning, advocacy, or off-topic political debate unrelated to technology.  
+            This site is focused on technology and related policy discussions; purely partisan or off-topic political content is not permitted.  
+            We reserve the sole right to determine what constitutes a violation.<br>
+            • Impersonation of any person or entity<br>
+            • Posting or transmitting spam, unsolicited messages, advertisements, chain letters, or any content that is off-topic or 
+            falls outside the scope of technology-focused discussion (examples of prohibited off-topic content include, 
+            without limitation, personal stories, non-technology questions, casual chit-chat, 
+            announcements about pets, weather, health, relationships, or daily life)<br>
+            • Posting or uploading copyrighted material without permission<br>
+            • Uploading or transmitting viruses or any other malicious code<br>
+            • Any activity that interferes with or disrupts the Service or servers<br>
+            We reserve the right to determine, in our sole discretion, whether any conduct violates these Terms.</li>
+
+        <li><strong>Enforcement & Termination</strong><br>
+            We may investigate and take appropriate action against any violation, including immediate termination 
+            or suspension of your account without prior notice or liability. No warnings are required. 
+            All decisions regarding violations and enforcement are final and at the sole discretion of the site administrators.</li>
+
+        <li><strong>Intellectual Property</strong><br>
+            The Service and its original content (excluding user-submitted content) are owned by us and 
+            protected by copyright, trademark, and other laws. You are granted a limited, non-transferable, 
+            non-sublicensable license to access and use the Service for personal, non-commercial purposes.</li>
+            
+        <li><strong>Compliance with Law & Legal Process</strong><br>
+            We will comply with all applicable laws and valid legal process. This includes, but is not limited to, 
+            preserving and disclosing user data (including display name, email address, IP addresses,
+            timestamps, and posted content) when required by law, court order, subpoena, or other lawful government 
+            or law-enforcement request. We may also disclose information when we believe, in good faith, 
+            that disclosure is reasonably necessary to protect the rights, property, or safety of the Service, 
+            its users, or the public.</li>
+
+        <li><strong>User Content</strong><br>
+            By posting content to this Service, you grant us an irrevocable, perpetual, 
+            worldwide, royalty-free license to use, modify, delete, display, and distribute it in 
+            connection with operating and promoting the Service. You are solely responsible for your content and 
+            represent that it does not infringe third-party rights.</li>
+
+        <li><strong>Privacy & Data Collection</strong><br>
+            Your display name will be publicly visible wherever you post or comment. We collect and store your 
+            email address, IP address(es), and other metadata necessary for operation and security. 
+            Use of the Service constitutes consent to such collection and use in accordance with our Privacy Policy.</li>
+
+        <li><strong>Disclaimer of Warranties</strong><br>
+            The Service is provided “AS IS” and “AS AVAILABLE” without warranties of any kind, express or implied, 
+            including but not limited to warranties of merchantability, fitness for a particular purpose, or non-infringement.</li>
+
+        <li><strong>Limitation of Liability</strong><br>
+            To the fullest extent permitted by law, we shall not be liable for any indirect, incidental, special, 
+            consequential, or punitive damages, or any loss of profits or data, arising out of or in 
+            connection with your use of the Service, even if advised of the possibility of such damages.</li>
+
+        <li><strong>Modifications to Terms</strong><br>
+            We reserve the right to modify these Terms at any time. Changes will be posted here with an updated 
+            “Last updated” date. Your continued use of the Service after any modification constitutes acceptance of the revised Terms.</li>
+
+        <li><strong>Governing Law</strong><br>
+            These Terms shall be governed by and construed in accordance with the laws of 
+            [Colorado, USA], without regard to conflict of law principles. 
+            Any dispute arising under these Terms shall be resolved exclusively in the courts located in [Broomfield, Colorado, USA].</li>
+
+        <li><strong>Severability</strong><br>
+            If any provision of these Terms is held invalid or unenforceable, the remaining provisions will continue in full force and effect.</li>
+    </ol>
+    <p class="mt-2 mb-0"><small>By creating an account or using the Service, you acknowledge that you have read, 
+        understood, and agree to be bound by these Terms of Service.</small></p>
+</div>
+
+@code {
+    [Parameter]
+    public string MaxHeight { get; set; } = "220px";
+}

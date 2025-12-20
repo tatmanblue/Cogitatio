@@ -1,0 +1,21 @@
+﻿.comments h2 {
+    margin-top: 2rem;
+}
+
+.comments ul {
+    list-style: none;
+    padding: 0;
+}
+
+.comments ul li {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #eee;
+}
+
+.meta {
+    font-size: 0.8em; 
+    color: #999; 
+    font-style: italic;
+    vertical-align: top;
+}

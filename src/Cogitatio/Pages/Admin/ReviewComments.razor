@@ -1,0 +1,79 @@
+﻿@page "/a/ReviewComments"
+<h3>Comment Reviewer</h3>
+
+@if (HasRights())
+{
+    @if (!comments.Any())
+    {
+        <p>No unapproved comments found found.</p>
+    }
+    else
+    {
+        <div>
+            There are @comments.Count comments needing review. Please look these over carefully and approve or hide these comments.
+            <br/>
+            For comments you wish to no longer see, chose <i>Hide</i>.
+        </div> 
+    }
+
+    <div>
+        <table class="table table-striped table-hover">
+            <thead class="table-dark">
+            <tr>
+                <th></th>
+                <th>Author</th>
+                <th>Date</th>
+                <th>Comment</th>
+            </tr>
+            </thead>
+            <tbody>
+                @foreach (var comment in comments)
+                {
+                    <tr @onmouseover="() => ShowMessage(comment.Id)">
+                        <td></td>
+                        <td>@comment.Author (@comment.AuthorId)</td>
+                        <td>@comment.PostedDate.ToShortDateString()</td>
+                        <td>
+                            <blockquote>
+                                @((MarkupString)comment.Text)
+                            </blockquote>
+                        </td>
+                    </tr>
+                    <tr class="bg-light" style="display: @(comment.ShowDetails ? "table-row" : "none");">
+                        <td colspan="4" class="p-2">
+                            <div class="d-flex gap-2 align-items-center">
+                                <div class="flex-grow-1">
+                                    <span><b>@comment.PostTitle</b> -- @comment.PostText ...</span>
+                                    <br/>
+                                    <label for="statusSelect">Select Status:</label>
+                                    <InputSelect id="statusSelect" 
+                                                 TValue="CommentStatuses"
+                                                 Value="@comment.Status"
+                                                 ValueExpression="@(() => comment.Status)" 
+                                                 ValueChanged="@( (CommentStatuses newState) => MarkAsChanged(comment.Id, newState) )">
+                                        @foreach (var cmtStatus in Enum.GetValues<CommentStatuses>())
+                                        {
+                                            <option value="@cmtStatus">@cmtStatus.ToString()</option>
+                                        }
+                                    </InputSelect>
+                                </div>
+                                <div class="flex-shrink-0 mt-3">  
+                                    <button class="btn btn-primary btn-sm" @onclick="() => SaveCommentStatus(comment.Id)">Save</button>
+                                    <button class="btn btn-secondary btn-sm ms-2" @onclick="() => HideMessage(comment.Id)">Cancel</button>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>  
+                }
+            </tbody>
+        </table>
+    </div>
+    
+    <div>
+        <NavLink href="/a/Admin">Admin</NavLink>
+    </div>
+}
+else
+{
+    <div>Redirecting to Admin Login</div>
+}

@@ -33,4 +33,65 @@ public enum BlogSettings
     AdminId,
     [Description("The admin user password in plain text, default is 'Cogitatio2024!'")]
     AdminPassword,
+    [Description("Turns on or off comments on blog posts")]
+    AllowComments,
+    [Description("The maximum length of a comment allowed")]
+    CommentMaxLength,
+    [Description("The maximum number of comments allowed per blog post")]
+    MaxCommentsPerPost,
+    [Description("Salt value used when hashing user passwords")]
+    PasswordSalt,
+    [Description("The connection string for the user database")]
+    UserDBConnectionString,
+    [Description("Whether new user registrations are allowed")]
+    AllowNewUsers,
+    [Description("Whether users are allowed to login")]
+    AllowLogin,
+    [Description("Whether to allow users to enable two factor authentication on their accounts")]
+    AllowSite2FA,
+    [Description("The minimum length required for user passwords")]
+    MinPasswordLength,
+    [Description("The maximum length allowed for user passwords")]
+    MaxPasswordLength,
+    [Description("The minimum length required for usernames")]
+    MinDisplayNameLength,
+    [Description("The maximum length allowed for usernames")]
+    MaxDisplayNameLength,
+    [Description("The email address from which system emails are sent")]
+    FromEmail,
+    [Description("The email service to use for sending emails")]
+    EmailService,
+    [Description("The SendGrid API key for sending emails")]        
+    SendGridApiKey,
+    [Description("The Azure Communications Connection string sending emails")]
+    AzureCommunicationsAccessKey,
+    [Description("Azure resource id for sending emails")]
+    AzureCommunicationsResourceId
+}
+
+public enum UserAccountStates
+{
+    Unknown = 0,
+    Created = 1,                        // user entered account information, need to verify email
+    AwaitingApproval = 2,               // user email verified, awaiting admin approval
+    CommentWithApproval = 3,            // level one commenting, each comment must be approved
+    CommentWithoutApproval = 4,         // level two commenting, can comment without approval
+    Moderator = 5,                      // level three commenting, can approve comments
+    Blocked = 6,                        // user is blocked from commenting,
+    LoginLocked = 7,                    // too many failed login attempts
+    AdminLocked = 8                     // admin has locked the account
+}
+
+public enum EmailServices
+{
+    Mock = 1,                           // there will be no email sent
+    SendGrid = 2,                       // use SendGrid email service
+    Azure                               // use Azure Communication Service email service
+}
+
+public enum CommentStatuses
+{
+    Hide,
+    AwaitingApproval,
+    Approved,                           // only approved comments are visible
 }

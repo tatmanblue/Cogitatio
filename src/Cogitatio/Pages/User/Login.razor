@@ -1,0 +1,51 @@
+﻿@page "/u/Login"
+@using Microsoft.AspNetCore.RateLimiting
+@attribute [EnableRateLimiting("user-access-policy")]
+<h3>Login</h3>
+
+@if (site.AllowLogin)
+{
+    @switch (loginState)
+    {
+        case LoginStates.VerifyingHuman:
+            <ProofOfWork @ref="proofOfWorkComponent"/>
+            break;
+        default:    
+        case LoginStates.Error:
+            <p>An error is preventing logins at this time.</p>
+            break;
+        case LoginStates.Login:    
+            <div class="login">
+                <h4>Credentials are required:</h4>
+                <div class="mb-3">
+                    <div class="d-flex flex-column">
+                        <div class="mb-2">
+                            <input id="accountId" @bind="accountId" placeholder="Enter your id" class="form-control"/>
+                        </div>
+                        <PasswordEditor @bind-Password="password" ShowStrengthMeter="false"/>
+                        @if (site.AllowSite2FA)
+                        {
+                            <div class="mb-2">
+                                <input id="toptId" @bind="mfaId" placeholder="Enter the 2FA/MFA value" class="form-control"/>
+                            </div>
+                        }
+                    </div>
+                </div>
+                <div class="mb-2">
+                    <p class="text-muted">@message</p>
+                </div>
+                <button class="btn btn-primary mt-2" @onclick=@DoLogin>Login</button>
+            </div>
+            break;
+    }
+} 
+else
+{
+<p>
+    Login is currently disabled. Please check back later.  If you feel you are seeing this message in error, please contact support.
+</p>
+}
+<NavLink href="/Contact">Support</NavLink>
+<NavLink href="/">Back to Start</NavLink>
+
+<script src="js/pow.js"></script>

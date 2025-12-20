@@ -1,0 +1,81 @@
+﻿@page "/a/Admin"
+<h3>Admin Panel</h3>
+
+@if (!AdminUserState.IsAdmin)
+{
+    <div class="login">
+        <h4>Credentials are required:</h4>
+        <div class="mb-3">
+            <div class="d-flex flex-column">
+                <div class="mb-2">
+                    <input id="accountId" @bind="accountId" placeholder="Enter your id" class="form-control"/>
+                </div>
+                <PasswordEditor @bind-Password="credential" ShowStrengthMeter="false" />
+                @if (useTOTP)
+                {
+                    <div class="mb-2">
+                        <input id="toptId" @bind="toptId" placeholder="Enter the MFA value" class="form-control"/>
+                    </div>
+                }
+            </div>
+        </div>        
+        <button class="btn btn-primary mt-2" @onclick=@Login>Login</button>
+        @if (false == string.IsNullOrEmpty(errorMessage))
+        {
+            <p class="text-danger">@errorMessage</p>
+        }
+    </div>
+}
+
+@if (AdminUserState.IsAdmin)
+{
+    <div class="card shadow-sm mb-3">
+        <div class="card-body">
+            <h5 class="card-title text-center">Admin Actions</h5>
+            <div class="d-flex flex-wrap justify-content-center">
+                <div class="action-item">
+                    <NavLink href="/a/Diagnostics" class="btn btn-outline-primary">Diag</NavLink>
+                    <span class="action-description">View diagnostic information</span>
+                </div>
+                <div class="action-item">
+                    <NavLink href="/a/Settings" class="btn btn-outline-primary">Settings</NavLink>
+                    <span class="action-description">Site Configuration</span>
+                </div>
+                <div class="action-item">
+                    <NavLink href="/a/ReviewContacts" class="btn btn-outline-primary">Contacts</NavLink>
+                    <span class="action-description">View contacts</span>
+                </div>
+                <div class="action-item">
+                    <NavLink href="/a/AddPost" class="btn btn-outline-primary">Add New Post</NavLink>
+                    <span class="action-description">Create a new post</span>
+                </div>
+                <div class="action-item">
+                    <NavLink href="/a/EditPost" class="btn btn-outline-primary">Edit Post</NavLink>
+                    <span class="action-description">Edit a post</span>
+                </div>
+                <div class="action-item">
+                    <button class="btn btn-primary" @onclick=@Logout>Logout</button>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <h5 class="card-title text-center">Moderator Actions</h5>
+            <div class="d-flex flex-wrap justify-content-center">
+                <div class="action-item">
+                    <NavLink href="/a/TagEditor" class="btn btn-outline-primary">Edit Tags</NavLink>
+                    <span class="action-description">Quickly edit tags for multiple posts</span>
+                </div>
+                <div class="action-item">
+                    <NavLink href="/a/ReviewComments" class="btn btn-outline-primary">Comments</NavLink>
+                    <span class="action-description">Review comments</span>
+                </div>
+                <div class="action-item">
+                    <NavLink href="/a/UserManager" class="btn btn-outline-primary">Users</NavLink>
+                    <span class="action-description">Manage Users</span>
+                </div>
+            </div>
+        </div>        
+    </div>
+}
+
+<p style="margin-top: 2em; font-size: x-small">@AdminUserState.InstanceId</p>

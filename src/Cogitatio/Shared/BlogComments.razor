@@ -1,0 +1,79 @@
+﻿@using Cogitatio.Models
+@using TinyMCE.Blazor
+@using Microsoft.AspNetCore.Components.Web
+
+<h3>Comments</h3>
+
+<section class="comments">
+    <ul>
+        @foreach (var comment in PostContent.Comments)
+        {
+            <li>
+                <p>
+                    <strong>@comment.Author</strong> says:<br/>
+                    <span class="meta">@comment.PostedDate.ToString("MMMM dd, yyyy HH:mm")</span>
+                </p>
+                <blockquote>
+                    @((MarkupString)comment.Text)
+                </blockquote>
+            </li>
+        }
+    </ul>
+    
+    @if (allowComments == true)
+    {
+        @if (PostContent.Comments.Count == 0)
+        {
+            <p>No comments yet. Be the first to comment!</p>
+        }
+
+        @if (userState.AccountState == UserAccountStates.CommentWithoutApproval
+             || userState.AccountState == UserAccountStates.CommentWithApproval
+             || userState.AccountState == UserAccountStates.Moderator)
+        {
+            <!-- first pass, the input field is visible, and not visible after posting a comment -->
+            if (showCommentInputField == true)
+            {
+                <div class="mb-3">
+                    <label for="commentEditor" class="form-label">Adding your comment as @userState.DisplayName:</label>
+                    <Editor Id="commentEditor"
+                            Conf="@editorConfig"
+                            ApiKey="@tinyMceKey"
+                            @bind-Value="comment"/>
+                </div>
+                <div class="mb-2">
+                    <p class="text-muted">@message</p>
+                </div>
+                <div class="mb-2">
+                    <button class="btn btn-primary mt-2" @onclick=@PostComment>Share Comment</button>
+                </div>
+            } 
+            else
+            {
+                <div>
+                    Thank you for your post.
+                    @if (userState.AccountState == UserAccountStates.CommentWithApproval)
+                    {
+                        <span>It will be available once approved by an administrator.</span>
+                    }
+                </div>
+            }
+        }
+        else
+        {
+            <span style="text-align: center">To leave a comment,
+                <NavLink href="@RedirectUrl">
+                    please log in.
+                </NavLink>
+            </span>
+        }
+    }
+    else
+    {
+        <span style="text-align: center">Comments have reached system limits.  If you'd like to comment on this post,
+            <NavLink href='@($"/Contact/{PostContent.Slug}")' class="btn btn-link">
+                please reach out to me through the contact page.
+            </NavLink>
+        </span>
+    }
+</section>

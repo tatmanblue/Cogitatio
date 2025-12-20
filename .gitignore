@@ -8,3 +8,4 @@ riderModule.iml
 *.user
 LaunchSettings.json
 .env
+.aspire/

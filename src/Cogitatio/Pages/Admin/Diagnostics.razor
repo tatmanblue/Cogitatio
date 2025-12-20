@@ -1,0 +1,41 @@
+﻿@page "/a/Diagnostics"
+
+<h3>Cogitatio Configuration</h3>
+
+@if (AdminUserState.IsAdmin)
+{
+    <div style="background-color: #ffcccc; color: #a94442; padding: 10px; border: 1px solid #a94442; margin-bottom: 16px; font-weight: bold;">
+        Warning: You are viewing sensitive information!
+    </div>
+    <div>
+        <p>UserState InstanceId: @AdminUserState.InstanceId</p>
+    </div>
+    <div>
+        DB Access = '@cogitatioSiteDB'
+    </div>
+    <div>
+        DB Type = '@dbType'
+    </div>
+    <div>
+        Google Analytics ID = '@analyticsId'
+    </div>
+    <div>
+        Working Dir = '@workingDir'
+    </div>
+    <div>
+        App Dir = '@appDir'
+    </div>
+    <div>
+        Tenant ID = '@tenantId'
+    </div>
+    <div>
+        Count of contacts in DB = '@contactCount'
+    </div>    
+    <div>
+        <NavLink href="/a/Admin">Admin</NavLink>
+    </div>
+}
+else
+{
+    <div>Redirecting to Admin Login</div>
+}

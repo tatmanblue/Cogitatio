@@ -1,0 +1,59 @@
+﻿@page "/a/ReviewContacts"
+<h3>Contact Admin</h3>
+
+@if (AdminUserState.IsAdmin == true)
+{
+    @if (contacts == null)
+    {
+        <p>Loading...</p>
+    }
+    else if (!contacts.Any())
+    {
+        <p>No contact records found.</p>
+    }
+    else
+    {
+
+        <table class="table table-striped table-hover">
+            <thead class="table-dark">
+            <tr>
+                <th><input type="checkbox" @onchange="ToggleSelectAll"/></th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Date Added</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var contact in contacts)
+            {
+                <tr @onmouseover="() => ShowMessage(contact.Id)" @onmouseout="() => HideMessage(contact.Id)">
+                    <td><input type="checkbox" @bind="contact.IsSelected"/></td>
+                    <td>@contact.Name</td>
+                    <td>@contact.Email</td>
+                    <td>@contact.DateAdded.ToShortDateString()</td>
+                </tr>
+                <tr class="bg-light" style="display: @(contact.ShowMessage ? "table-row" : "none");">
+                    <td colspan="4" class="p-2">
+                        <strong>Message:</strong> @contact.Message
+                        @if (!string.IsNullOrEmpty(contact.Slug))
+                        {
+                            <span>
+                                (<NavLink href=@("/Post/" + @contact.Slug) class="btn btn-link">Post &rarr;</NavLink>)
+                            </span>
+                        }
+                    </td>
+                </tr>                
+            }
+            </tbody>
+        </table>
+
+        <button class="btn btn-danger" @onclick="DeleteSelected">Delete Selected</button>
+    }
+    <div>
+        <NavLink href="/a/Admin">Admin</NavLink>
+    </div>    
+}
+else
+{
+    <div>Redirecting to Admin Login</div>
+}

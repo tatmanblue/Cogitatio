@@ -1,0 +1,244 @@
+﻿@page "/a/Settings"
+@using TinyMCE.Blazor
+
+<h3>Admin Settings</h3>
+
+<p>This is the Admin Settings page. Only users with admin privileges can access this page.</p>
+
+@if (AdminUserState.IsAdmin)
+{
+    <!-- ==================== TABS ==================== -->
+    <ul class="nav nav-tabs mb-3">
+        @for (int i = 0; i < tabTitles.Length; i++)
+        {
+            int idx = i;   // <-- capture the loop variable
+            <li class="nav-item">
+                <button type="button"
+                        class="nav-link @(activeTab == idx ? "active" : "")"
+                        @onclick="() => activeTab = idx">
+                    @tabTitles[idx]
+                </button>
+            </li>
+        }
+    </ul>
+
+    <!-- ==================== TAB CONTENT ==================== -->
+    <div class="tab-content">
+
+        <!-- ────── Security Tab ────── -->
+        <div class="tab-pane fade @(activeTab == 0 ? "show active" : "")">
+            <div class="@(use2FA ? "p-4 rounded border-2fa" : "")"
+                 style="padding:0;margin:0">
+
+                <div class="mb-3">
+                    <div class="d-flex flex-column">
+                        <div class="mb-2">
+                            <input id="accountId" @bind="adminId" placeholder="Enter your id" class="form-control"/>
+                        </div>
+                        <PasswordEditor Password="@adminPassword" ShowStrengthMeter="true" />
+                    </div>
+                    <label for="use2FA" class="form-label">Use 2FA</label>
+                    <InputCheckbox
+                        Value="@use2FA"
+                        ValueChanged="@((bool newValue) => Use2FACheckboxChanged(newValue))"
+                        ValueExpression="@(() => use2FA)"
+                        class="form-check-input"
+                        id="isActiveCheck"/>
+                </div>
+
+                <div class="mb-3" id="qrcodeSection"
+                     style="display:@(use2FA ? "block" : "none")">
+                    <label class="form-label">Scan with your Authenticator App</label>
+
+                    <div class="row align-items-center g-4">
+                        <!-- Current Code -->
+                        <div class="col-md-6">
+                            <div class="alert alert-info mb-0 h-100 d-flex flex-column justify-content-center">
+                                <div>
+                                    <strong>Current Code (for testing):</strong>
+                                    <span class="badge bg-primary fs-4 ms-2">@currentTotpCode</span>
+                                </div>
+                                <small class="text-muted mt-1">
+                                    Refreshes in <strong>@secondsRemaining</strong> seconds
+                                </small>
+                            </div>
+                        </div>
+
+                        <!-- QR Code -->
+                        <div class="col-md-6 text-center">
+                            <div class="border p-3 rounded bg-white d-inline-block">
+                                <img src="@qrCodeUrl"
+                                     alt="2FA QR Code"
+                                     class="img-fluid"
+                                     style="max-width:200px;height:auto;" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="totpCode" class="form-label">Enter verification code</label>
+                        <InputText @bind-Value="verificationCode"
+                                   class="form-control"
+                                   id="totpCode" />
+                        @if (false == string.IsNullOrEmpty(errorMessage))
+                        {
+                            <p class="text-danger">@errorMessage</p>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ────── Site Information Tab ────── -->
+        <div class="tab-pane fade @(activeTab == 1 ? "show active" : "")">
+            <div class="mb-3">
+                <label for="sitetitle" class="form-label">Site Title</label>
+                <input id="sitetitle" @bind="siteTitle" class="form-control" placeholder="catch line" />
+            </div>
+
+            <div class="mb-3">
+                <label for="title" class="form-label">Short Title</label>
+                <input id="title" @bind="shortTitle" class="form-control" placeholder="catch line" />
+            </div>
+
+            <div class="mb-3">
+                <label for="tags" class="form-label">Long Title</label>
+                <input id="tags" @bind="longTitle" class="form-control" placeholder="a bigger statement" />
+            </div>
+
+            <div class="mb-3">
+                <label for="copyright" class="form-label">Copyright</label>
+                <input id="copyright"
+                       @bind="copyright"
+                       class="form-control"
+                       placeholder="Copyright (C) 2025 Matt Raffel. All rights reserved." />
+            </div>
+        </div>
+
+        <!-- ────── Introduction Tab ────── -->
+        <div class="tab-pane fade @(activeTab == 2 ? "show active" : "")">
+            <div class="mb-3">
+                <label for="IntroductionEditor" class="form-label">Introduction</label>
+                <Editor Id="IntroductionEditor"
+                        Conf="@editorConfig"
+                        ApiKey="@tinyMceKey"
+                        @bind-Value="introduction" />
+            </div>
+        </div>
+
+        <!-- ────── About Tab ────── -->
+        <div class="tab-pane fade @(activeTab == 3 ? "show active" : "")">
+            <div class="mb-3">
+                <label for="AboutEditor" class="form-label">About statements</label>
+                <Editor Id="AboutEditor"
+                        Conf="@editorConfig"
+                        ApiKey="@tinyMceKey"
+                        @bind-Value="about" />
+            </div>
+        </div>
+
+        <!-- ────── Comments Settings Tab ────── -->
+        <div class="tab-pane fade @(activeTab == 4 ? "show active" : "")">
+            <div class="mb-3">
+                <label for="allowComments" class="form-label">Allow Comments</label>
+                <InputCheckbox
+                    @bind-Value="@allowComments"
+                    class="form-check-input"
+                    id="allowComments"/>
+            </div>
+            <div class="mb-3">
+                <label for="commentMaxLen" class="form-label">Max Length of a single comment</label>
+                <input id="commentMaxLen" @bind="commentMaxLen" class="form-control" placeholder="100" />
+            </div>
+            <div class="mb-3">
+                <label for="maxCommentsPerPost" class="form-label">Max number of comments per post</label>
+                <input id="maxCommentsPerPost" @bind="maxCommentsPerPost" class="form-control" placeholder="100" />
+            </div>
+        </div>
+        
+        <!-- ────── Users Settings Tab ────── -->
+        <div class="tab-pane fade @(activeTab == 5 ? "show active" : "")">
+            <div class="mb-3">
+                <label for="allowLogins" class="form-label">Allow logins</label>
+                <InputCheckbox
+                    @bind-Value="@allowLogin"
+                    class="form-check-input"
+                    id="allowLogins"/>
+            </div>
+            <div class="mb-3">
+                <label for="allowNewUsers" class="form-label">Allow New Users to Sign up</label>
+                <InputCheckbox
+                    @bind-Value="@allowNewUsers"
+                    class="form-check-input"
+                    id="allowNewUsers"/>
+            </div>
+            <div class="mb-3">
+                <label for="passwordSalt" class="form-label">Password Salt</label>
+                <input id="passwordSalt" @bind="passwordSalt" class="form-control" placeholder="" />
+            </div>            
+            <div class="mb-3">
+                <label for="minPasswordLength" class="form-label">Min Password Length</label>
+                <input id="minPasswordLength" @bind="minPasswordLength" class="form-control" placeholder="100" />
+            </div>
+            <div class="mb-3">
+                <label for="maxPasswordLength" class="form-label">Max Password Length</label>
+                <input id="maxPasswordLength" @bind="maxPasswordLength" class="form-control" placeholder="100" />
+            </div>
+            <div class="mb-3">
+                <label for="userDBConnection" class="form-label">User DB Connection String</label>
+                <input id="userDBConnection" @bind="usersDBConnectionString" class="form-control" placeholder="" />
+                <p class="text-muted">@connectionStringNotice</p>
+            </div>
+        </div>
+
+        <!-- ────── Mail Settings Tab ────── -->
+        <div class="tab-pane fade @(activeTab == 6 ? "show active" : "")">
+            <div class="mb-3">
+                <label for="fromEmailAddr">From Email Address:</label>
+                <input id="fromEmailAddr" @bind="fromEmail" class="form-control" placeholder="Email address"/>
+            </div>
+            <div class="mb-3">
+                <label for="statusSelect">Select Status:</label>
+                <InputSelect id="statusSelect" @bind-Value="selectedEmailService">
+                    <option value="">-- Select Email options --</option>
+                    @foreach (var service in Enum.GetValues<EmailServices>())
+                    {
+                        <option value="@service">@service.ToString()</option>
+                    }
+                </InputSelect>
+            </div>
+            @switch (selectedEmailService)
+            {
+                case EmailServices.SendGrid:
+                    <div class="mb-3">
+                        <label for="sendGridAPI">Send Grid API Key:</label>
+                        <input id="sendGridAPI" @bind="sendGridApiKey" class="form-control" placeholder="Api Key"/>
+                    </div>
+                    break;
+                case EmailServices.Azure:
+                    <div class="mb-3">
+                        <label for="azureResourceId">Resource Id:</label>
+                        <input id="azureResourceId" @bind="azureResourceId" class="form-control" placeholder="Api Key"/>
+                    </div>
+                    <div class="mb-3">
+                        <label for="azureAccessKey">Access Key:</label>
+                        <input id="azureAccessKey" @bind="azureAccessKey" class="form-control" placeholder="Api Key"/>
+                    </div>
+                    break;
+                default:
+                    break;
+            }
+        </div>
+    </div> <!-- end .tab-content -->
+
+    <!-- ==================== SAVE BUTTON ==================== -->
+    <button class="btn btn-primary mt-2" @onclick="Save">Save</button>
+
+    <div>
+        <NavLink href="/a/Admin">Admin</NavLink>
+    </div>
+}
+else
+{
+    <div>Redirecting to Admin Login</div>
+}

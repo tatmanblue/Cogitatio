@@ -1,7 +1,10 @@
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web;
+using System.Net;
+using System.Threading.RateLimiting;
+using Microsoft.AspNetCore.HttpOverrides;
 using Cogitatio.Interfaces;
+using Cogitatio.Logic;
 using Cogitatio.Models;
+using Microsoft.AspNetCore.RateLimiting;
 using Serilog;
 using Serilog.Events;
 
@@ -27,9 +30,40 @@ builder.Services.AddServerSideBlazor()
         options.MaximumParallelInvocationsPerClient = 10;
         options.MaximumReceiveMessageSize = 64 * 1024;
     });
-builder.Services.AddControllers();
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
 
-builder.Services.AddScoped<UserState>();
+    options.AddPolicy("user-access-policy", httpContext =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            // Partition by IP address so users don't block each other
+            partitionKey: httpContext.Connection.RemoteIpAddress?.ToString() ?? httpContext.Request.Headers.Host.ToString(),
+            factory: partition => new FixedWindowRateLimiterOptions
+            {
+                AutoReplenishment = true,
+                PermitLimit = 5,
+                Window = TimeSpan.FromMinutes(1)
+            }));
+});
+builder.Services.AddControllers();
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddMemoryCache();
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+    // Clear known networks/proxies so the middleware will accept forwarded headers from Azure
+    options.KnownNetworks.Clear();
+    options.KnownProxies.Clear();
+});
+
+
+
+// ------------- Application Services -------------
+// User State -- for main admin account for managing site
+builder.Services.AddScoped<AdminUserState>();
+// User State -- for blog user account state tracking
+builder.Services.AddScoped<BlogUserState>();
+// Database -- general blog database access
 builder.Services.AddScoped<IDatabase>(p =>
 {
     var configuration = p.GetRequiredService<IConfiguration>();
@@ -59,11 +93,73 @@ builder.Services.AddScoped<IDatabase>(p =>
         throw new NotSupportedException($"Database type {type} is not supported.");
     }
 });
+// Site Settings
 builder.Services.AddScoped<SiteSettings>(p =>
 {
     var database = p.GetRequiredService<IDatabase>();
     return SiteSettings.Load(database);
 });
+// User Database -- for user accounts
+builder.Services.AddScoped<IUserDatabase>(p =>
+{
+    var configuration = p.GetRequiredService<IConfiguration>();
+    var tenantId = Convert.ToInt32(configuration["CogitatioTenantId"] ?? "0");
+    var dbType = configuration["CogitatioDBType"] ?? "MSSQL";
+    var db = p.GetRequiredService<IDatabase>();
+    var logger = p.GetRequiredService<ILoggerFactory>()
+        .CreateLogger<IUserDatabase>();
+
+    // technically this is not needed because user functions have to be turned on in site settings
+    // prior to the system trying to access the user database
+    var defaultConnection = configuration["CogitatioSiteDB"];
+    var connectionString = db.GetSetting(BlogSettings.UserDBConnectionString, defaultConnection);
+    if (string.IsNullOrEmpty(connectionString))
+        connectionString = defaultConnection;
+    
+    IUserDatabase userDB = dbType switch
+    {
+        "MSSQL" => new SqlServerUsers(
+            logger,
+            connectionString,
+            tenantId),
+        "POSTGRES" => new PostgresssqlUsers(
+            logger,
+            connectionString,
+            tenantId),
+        _ => ThrowUnsupported(dbType)
+    };
+    
+    return userDB;
+
+    IUserDatabase ThrowUnsupported(string type)
+    {
+        logger.LogWarning("Database type {DatabaseType} is not supported.", type);
+        throw new NotSupportedException($"Database type {type} is not supported.");
+    }
+});
+// Email Sender
+builder.Services.AddTransient<IEmailSender>(p =>
+{
+    var logger = p.GetRequiredService<ILogger<IEmailSender>>();
+    var db = p.GetRequiredService<IDatabase>();
+    EmailServices services = EmailServices.Mock;
+    if (System.Enum.TryParse<EmailServices>(db.GetSetting(BlogSettings.EmailService), out var service))
+        services = service;
+
+    switch (services)
+    {
+        case EmailServices.Azure:
+            return new AzureCommunications(logger, db);
+            break;
+        case EmailServices.SendGrid:
+            return new SendGridEmailSender(logger, db);
+        case EmailServices.Mock:
+        default:
+            return new MockEmailSender(logger);
+    }
+});
+// so that comments load quicker, we have a resolver that helps match user db entries with comment authors
+builder.Services.AddScoped<UserCommentsResolver>();
 
 var logFilePath = Path.Combine(AppContext.BaseDirectory, "Logs");
 Directory.CreateDirectory(logFilePath); 
@@ -83,23 +179,32 @@ builder.Host.UseSerilog();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// 1. Basic Infrastructure (Fastest exits first)
+app.UseForwardedHeaders();
+
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
 app.UseHttpsRedirection();
+app.UseStaticFiles(); 
 
-app.UseStaticFiles();
+// 2. Routing Logic
 app.UseSerilogRequestLogging();
 app.UseRouting();
-app.UseEndpoints(endpoints =>
-{
-    endpoints.MapControllers();
-});
+
+// 3. Security Checks (Order matters here!)
+app.UseRateLimiter();   
+app.UseAntiforgery();
+app.UseAuthentication(); 
+app.UseAuthorization(); 
+
+// 4. Endpoints
+app.MapControllers();
+app.MapGet("/api/users", () => "This endpoint is rate limited")
+    .RequireRateLimiting("user-access-policy"); 
 
 app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");

@@ -1,0 +1,67 @@
+﻿using Cogitatio.Interfaces;
+using Cogitatio.Models;
+using Microsoft.AspNetCore.Components;
+
+namespace Cogitatio.Pages.User;
+
+/// <summary>
+/// Used to verify a user's email address.
+/// </summary>
+public partial class Verify : ComponentBase
+{
+    [SupplyParameterFromQuery(Name = "vid")]
+    public string? VerificationId { get; set; }
+
+    [SupplyParameterFromQuery(Name = "email")]
+    public string? Email { get; set; }
+    
+    [Inject] IUserDatabase userDatabase { get; set; }
+    [Inject] ILogger<Verify> logger { get; set; }
+    
+    private string message = "Verifying...";
+
+    protected override void OnParametersSet()
+    {
+        message = "Invalid verification link."; 
+        if (string.IsNullOrEmpty(VerificationId) || string.IsNullOrEmpty(Email))
+        {
+            logger.LogError($"Verification failed: missing params");
+            return;
+        }
+        
+        BlogUserRecord record = userDatabase.Load(Email);
+        if (record == null) 
+        {
+            logger.LogError($"Verification failed: no user with email {Email} found.");
+            return;
+        }
+
+        switch (record.AccountState)
+        {
+            case UserAccountStates.AwaitingApproval:
+                message = "Email verified successfully. Your account is now awaiting approval.";
+                return;
+            case UserAccountStates.Created:
+                break;
+            case UserAccountStates.CommentWithApproval:
+            case UserAccountStates.CommentWithoutApproval:
+            case UserAccountStates.Moderator:
+                message = "Email verified successfully. ";
+                return;
+            default:
+                logger.LogError($"Verification failed: user with email {Email} is in state {record.AccountState}.");
+                return;
+        }
+        
+        if (record.VerificationId != VerificationId)
+        {
+            logger.LogError($"Verification failed: verification ID mismatch for user with email {Email}.");
+            return;
+        }
+        
+        record.AccountState = UserAccountStates.AwaitingApproval;
+        userDatabase.UpdateStatus(record);
+        message = "Email verified successfully. Your account is now awaiting approval.";
+        
+    }
+}

@@ -65,7 +65,7 @@ public partial class Search : ComponentBase
             return "post";
         
         if ("admineditpost" == ReturnTo.ToLower())
-            return "AdminEditPost";
+            return "a/EditPost";
         
         return "post";
     }

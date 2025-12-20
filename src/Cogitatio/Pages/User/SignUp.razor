@@ -1,0 +1,114 @@
+﻿@page "/u/SignUp"
+@using Microsoft.AspNetCore.RateLimiting
+@attribute [EnableRateLimiting("user-access-policy")]
+
+<h3>Sign Up</h3>
+
+
+@switch (signUpState)
+{
+    case SignUpState.VerifyingHuman:
+        <ProofOfWork @ref="proofOfWorkComponent"/>
+        break;
+    case SignUpState.Initial:
+    case SignUpState.Error:
+        <div class="mb-3">
+            <EditForm Model="record" OnValidSubmit="Save" class="needs-validation" novalidate>
+                <div class="d-flex flex-column">
+                    <div class="mb-2">
+                        <input id="email" @bind="record.Email" placeholder="Email address" class="form-control"/>
+                        <div class="invalid-feedback">
+                            Please enter a valid email address.
+                        </div>
+                    </div>
+                    <div class="mb-2">
+                        <input 
+                            id="displayName" 
+                            @bind="record.DisplayName" 
+                            placeholder="Display Name"
+                            minlength="@minDisplayNameLen"
+                            maxlength="@maxDisplayNameLen"
+                            class="form-control"/>
+                        <div class="invalid-feedback">
+                            Please enter a valid display name.
+                        </div>
+                    </div>
+                    <PasswordEditor
+                        MinLength="@minPasswordLength"
+                        MaxLength="@maxPasswordLength"
+                        @bind-Password="record.Password" 
+                        ShowStrengthMeter="true" />
+                    <PasswordEditor Password="@confirmPassword" ShowStrengthMeter="false" PasswordChanged="OnConfirmPasswordChanged" />
+                    <div class="mb-2">
+                        <p class="text-danger">@passwordMessage</p>
+                    </div>
+                </div>
+                <div class="mb-2">
+                    <p class="text-muted">@errorMessage</p>
+                </div>
+                <button type="submit" class="btn btn-primary mt-2">Sign Up</button>
+            </EditForm>
+            <div>
+                <NavLink href="/">Back to Start</NavLink>
+            </div>
+        </div>        
+        break;
+    case SignUpState.Confirm:
+        <div class="mb-3">
+            <div class="d-flex flex-column">
+                <div class="mb-2">
+                    Email: <strong>@record.Email</strong>
+                </div>
+
+                <!-- User agreement: readonly, scrollable, numbered list with bold/italic -->
+                <div class="mb-2">
+                    <LicensePrivacyAgreement />
+                    <div class="form-check mt-2">
+                        <label class="form-check-label" for="agreeCheckbox">I have read the agreement in its entirety, I understand and I agree</label>
+                        <input class="form-check-input" type="checkbox" id="agreeCheckbox" @bind="userAgreed" />
+                    </div>
+                </div>
+
+                <div class="mb-2">
+                    Display Name: <strong>@record.DisplayName</strong>
+                </div>
+                <div class="mb-2">
+                    Password: <strong>********</strong>
+                </div>
+                <div class="mb-2">
+                    <p class="text-muted">Your IP: @userIp</p>
+                </div>
+            </div>
+            <div class="mb-2">
+                <p class="text-muted">@errorMessage</p>
+            </div>
+            <button class="btn btn-primary mt-2" @onclick="Edit">Edit</button>
+            <button class="btn btn-primary mt-2" @onclick="Save">Save</button>
+            <div>
+                <NavLink href="/">Back to Start</NavLink>
+            </div>
+        </div>            
+        break;
+    case SignUpState.Saved:
+        <div class="d-flex flex-column">
+            <div class="mb-2">
+                <!-- TODO make this welcome message configurable -->
+                <p class="text-success">Thank you for choosing to be part of the Cogitatio Community. Please verify your email,
+                    which was sent to @record.Email. Once verification is complete, an administrator will activate your account.
+                </p>
+                <NavLink href="/">Back to Start</NavLink>
+            </div>
+        </div>
+        break;
+    case SignUpState.NotAllowed:
+    default:
+        <div class="d-flex flex-column">
+            New user registrations are currently not turned off.  Please check back soon.  
+            If you think this is an error, please contact support.
+            <NavLink href="/Contact">Support</NavLink>
+            <NavLink href="/">Back to Start</NavLink>
+        </div>
+        break;
+}
+
+<script src="js/pow.js"></script>
