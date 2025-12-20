@@ -1,12 +1,10 @@
+using System.Net;
 using System.Threading.RateLimiting;
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.HttpOverrides;
 using Cogitatio.Interfaces;
 using Cogitatio.Logic;
 using Cogitatio.Models;
 using Microsoft.AspNetCore.RateLimiting;
-using Microsoft.Extensions.Caching.Memory;
 using Serilog;
 using Serilog.Events;
 
@@ -34,17 +32,18 @@ builder.Services.AddServerSideBlazor()
     });
 builder.Services.AddRateLimiter(options =>
 {
-    options.AddFixedWindowLimiter("users_rate_limiting", fixedWindowOptions =>
-    {
-        fixedWindowOptions.PermitLimit = 5; // Allow 5 requests
-        fixedWindowOptions.Window = TimeSpan.FromSeconds(10); // in a 10 second window
-        fixedWindowOptions.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
-        fixedWindowOptions.QueueLimit = 0; // Don't queue extra requests
-
-    });
-
-    // Optional: Set a specific response status code when the limit is hit
     options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+
+    options.AddPolicy("user-access-policy", httpContext =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            // Partition by IP address so users don't block each other
+            partitionKey: httpContext.Connection.RemoteIpAddress?.ToString() ?? httpContext.Request.Headers.Host.ToString(),
+            factory: partition => new FixedWindowRateLimiterOptions
+            {
+                AutoReplenishment = true,
+                PermitLimit = 5,
+                Window = TimeSpan.FromMinutes(1)
+            }));
 });
 builder.Services.AddControllers();
 builder.Services.AddHttpContextAccessor();
@@ -56,6 +55,7 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
     options.KnownNetworks.Clear();
     options.KnownProxies.Clear();
 });
+
 
 
 // ------------- Application Services -------------
@@ -178,35 +178,33 @@ Log.Logger = new LoggerConfiguration()
 builder.Host.UseSerilog();
 
 var app = builder.Build();
+
+// 1. Basic Infrastructure (Fastest exits first)
 app.UseForwardedHeaders();
-app.UseRateLimiter();
 
-
-// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
-
 app.UseHttpsRedirection();
-/*
-// do we need this
-app.UseAuthentication();
-app.UseAuthorization();
-app.MapControllers();
- */
-app.UseStaticFiles();
+app.UseStaticFiles(); 
+
+// 2. Routing Logic
 app.UseSerilogRequestLogging();
 app.UseRouting();
-app.UseEndpoints(endpoints =>
-{
-    endpoints.MapControllers();
-});
+
+// 3. Security Checks (Order matters here!)
+app.UseRateLimiter();   
+app.UseAntiforgery();
+app.UseAuthentication(); 
+app.UseAuthorization(); 
+
+// 4. Endpoints
+app.MapControllers();
 app.MapGet("/api/users", () => "This endpoint is rate limited")
-    .RequireRateLimiting("users_rate_limiting"); 
+    .RequireRateLimiting("user-access-policy"); 
 
 app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");

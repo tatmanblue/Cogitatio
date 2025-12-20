@@ -1,5 +1,9 @@
 ﻿@page "/u/SignUp"
+@using Microsoft.AspNetCore.RateLimiting
+@attribute [EnableRateLimiting("user-access-policy")]
+
 <h3>Sign Up</h3>
+
 
 @switch (signUpState)
 {

@@ -1,5 +1,6 @@
 ﻿using Cogitatio.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace Cogitatio.Controllers;
 
@@ -12,6 +13,7 @@ public class UsersController(ILogger<UsersController> logger) : ControllerBase
     /// </summary>
     /// <returns></returns>
     [HttpGet("challenge")] 
+    [EnableRateLimiting("user-access-policy")]
     public async Task<IResult> GetChallenge()
     {
         var ipAddress = HttpContext.Connection.RemoteIpAddress;

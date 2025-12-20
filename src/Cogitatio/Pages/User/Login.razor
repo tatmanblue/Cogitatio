@@ -1,4 +1,6 @@
 ﻿@page "/u/Login"
+@using Microsoft.AspNetCore.RateLimiting
+@attribute [EnableRateLimiting("user-access-policy")]
 <h3>Login</h3>
 
 @if (site.AllowLogin)

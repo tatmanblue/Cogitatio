@@ -68,6 +68,8 @@ public partial class Login : ComponentBase
         message = string.Empty;
         try
         {
+            Task.Delay(1000);
+            
             if (false == site.AllowLogin)
                 throw new BlogUserException("You are not allowed to access this page.");
 

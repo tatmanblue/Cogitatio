@@ -145,6 +145,8 @@ public partial class SignUp : ComponentBase
             }
             catch (Exception ex)
             {
+                signUpState = SignUpState.Error;
+                errorMessage = "Signup failed. Please try again at a later time.";
                 logger.LogError(ex, "Signup OnAfterRenderAsync");
             }
         }
@@ -162,6 +164,8 @@ public partial class SignUp : ComponentBase
     /// </summary>
     private async Task Save()
     {
+        await Task.Delay(1000);
+        
         // this should not happen
         if (signUpState == SignUpState.Saved)
         {
