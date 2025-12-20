@@ -155,7 +155,7 @@ public class SqlServerUsers : AbstractDB<SqlConnection>, IUserDatabase
     {
         Connect();
         List<BlogUserRecord> users = new();
-        string sql = @"SELECT Id, DisplayName, Email, IpAddress, TwoFactorSecret, PasswordHash, VerificationId, AccountState, CreatedAt
+        string sql = @"SELECT Id, DisplayName, Email, IpAddress, TwoFactorSecret, PasswordHash, VerificationId, VerificationExpiry, AccountState, CreatedAt
             FROM Blog_Users WHERE TenantId = @TenantId ORDER BY AccountState";
         ExecuteReader<SqlCommand, SqlDataReader>(sql, () =>
         {
