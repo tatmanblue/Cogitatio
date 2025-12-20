@@ -4,6 +4,7 @@ using Cogitatio.General;
 using Cogitatio.Interfaces;
 using Cogitatio.Logic;
 using Cogitatio.Models;
+using Cogitatio.Shared;
 using Microsoft.AspNetCore.Components;
 
 namespace Cogitatio.Pages.User;
@@ -105,6 +106,7 @@ public partial class ResetPassword : ComponentBase
     
     private enum ResetPasswordStates
     {
+        VerifyingHuman,
         Request,
         RequestSent,
         Change,
@@ -123,7 +125,14 @@ public partial class ResetPassword : ComponentBase
     [Inject] private IEmailSender emailSender { get; set; }
     [Inject] private SiteSettings site { get; set; }
     
-    private ResetPasswordStates state = ResetPasswordStates.Request;
+    // --------------------------------------------------------------------------------------------
+    // proof of work component and state
+    private ResetPasswordStates state = ResetPasswordStates.VerifyingHuman;
+    private PoWResult powResult;
+    private ProofOfWork proofOfWorkComponent;
+    
+    // --------------------------------------------------------------------------------------------
+    // reset password data
     private BlogUserRecord record = new();
     private int minPasswordLength = 6;
     private int maxPasswordLength = 30;
@@ -136,6 +145,36 @@ public partial class ResetPassword : ComponentBase
     private string userIp = string.Empty;
     private bool isProcessing = false;
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        logger.LogDebug("Login: OnAfterRenderAsync");
+        if (state == ResetPasswordStates.VerifyingHuman)
+        {
+            try
+            {
+                errorMessage = string.Empty;
+                powResult = await proofOfWorkComponent.Start();
+
+                logger.LogDebug($"POW result {powResult.Challenge} {powResult.Nonce}");
+                if (false == proofOfWorkComponent.Verify(powResult))
+                {
+                    logger.LogWarning($"Reset Password POW verification failed for IP {userIp}");
+                    errorMessage = "Reset Password is not available at this time. Please try again later.";
+                    state = ResetPasswordStates.Error;
+                }
+                else
+                    state = ResetPasswordStates.Request;
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Login failed");
+                state = ResetPasswordStates.Error;
+            }
+
+            StateHasChanged();
+        }
+    }
+    
     protected override void OnParametersSet()
     {
         // a hardcoded delay to help mitigate brute force attacks
