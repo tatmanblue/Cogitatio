@@ -4,6 +4,7 @@ using Cogitatio.Interfaces;
 using Cogitatio.Models;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace Cogitatio.Controllers;
 
@@ -12,6 +13,7 @@ namespace Cogitatio.Controllers;
 public class RssXml(IDatabase database) : Controller
 {
     [HttpGet()]
+    [EnableRateLimiting("user-access-policy")]
     public IActionResult GenerateRss()
     {
         var rssDoc = new XmlDocument();
