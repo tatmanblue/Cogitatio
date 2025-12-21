@@ -1,4 +1,5 @@
 ﻿using System.Xml;
+using Cogitatio.General;
 using Cogitatio.Interfaces;
 using Cogitatio.Models;
 using Microsoft.AspNetCore.Components;
@@ -58,9 +59,10 @@ public class RssXml(IDatabase database) : Controller
     
     private string GetShortenedContent(BlogPost post)
     {
-        if (250 > post.Content.Length)
-            return post.Content;
+        string plainText = post.Content.PlainText();
+        if (250 > plainText.Length)
+            return plainText;
         
-        return post.Content.Substring(0, 250);
+        return plainText.Substring(0, 250);
     }
 }
