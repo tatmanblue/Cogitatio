@@ -5,6 +5,8 @@ Why Cogitatio CMS verses using a well established CMS?  Good question.
 
 The short answer is time.  In the time it took for me to learn and configure an established CMS system, I wrote Cogitatio and had it deployed.   Granted, Cogitatio is very lightweight but I have what I needed to run my own blog. 
 
+Since then, Cogitatio has grown a bit.  However, I hope you will still find it a easy lightweight solution to running your own blog.
+
 ## Features
 1. Add/Edit posts  
 2. Tag Posts with keywords  
