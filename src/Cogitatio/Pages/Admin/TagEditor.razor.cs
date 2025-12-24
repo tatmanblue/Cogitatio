@@ -49,18 +49,18 @@ public partial class TagEditor : ComponentBase
         }).ToList();
     }
     
-    private void ShowMessage(int id)
+    private void ShowDetails(int id)
     {
         if (selectedPostId != -1 && hasChanges)
             return;
         
         if (selectedPostId != -1)
-            HideMessage(selectedPostId);
+            HideDetails(selectedPostId);
         
         var post = posts.FirstOrDefault(c => c.Id == id);
         if (post != null)
         {
-            post.ShowDetails = true;
+            post.CanShowDetails = true;
             post.EditableTags = string.Join(", ", post.Tags); // Initialize editable tags
             selectedPostId = id;
             hasChanges = false;
@@ -69,12 +69,12 @@ public partial class TagEditor : ComponentBase
         StateHasChanged();
     }
 
-    private void HideMessage(int id)
+    private void HideDetails(int id)
     {
         var post = posts.FirstOrDefault(c => c.Id == id);
         if (post != null)
         {
-            post.ShowDetails = false;
+            post.CanShowDetails = false;
             selectedPostId = -1;
             hasChanges = false;
         }
@@ -94,18 +94,18 @@ public partial class TagEditor : ComponentBase
             post.Tags = post.EditableTags.Split(',', StringSplitOptions.RemoveEmptyEntries)
                                          .Select(tag => tag.Trim())
                                          .ToList();
-            post.ShowDetails = false; // Hide the row after saving
+            post.CanShowDetails = false; // Hide the row after saving
             // TODO optimize to only update tags in the database
             database.UpdatePost(post);
             hasChanges = false;
             selectedPostId = -1;
-            HideMessage(id);
+            HideDetails(id);
         }
     }
 
     private class BlogPostModel : BlogPost
     {
-        public bool ShowDetails { get; set; }
+        public bool CanShowDetails { get; set; }
         public string EditableTags { get; set; } 
 
         // New: comma-delimited tags string limited to max 25 displayed characters.

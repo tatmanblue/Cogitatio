@@ -48,13 +48,13 @@ public partial class UserManager : ComponentBase
         return AdminUserState.IsAdmin;
     }
     
-    private void ShowMessage(int id)
+    private void ShowDetails(int id)
     {
         if (selectedUser != -1 && hasChanges)
             return;
         
         if (selectedUser != -1)
-            HideMessage(selectedUser);
+            HideDetails(selectedUser);
         
         var user = records.FirstOrDefault(c => c.Id == id);
         if (user != null)
@@ -67,7 +67,7 @@ public partial class UserManager : ComponentBase
         StateHasChanged();
     }
 
-    private void HideMessage(int id)
+    private void HideDetails(int id)
     {
         var user = records.FirstOrDefault(c => c.Id == id);
         if (user != null)
@@ -96,7 +96,7 @@ public partial class UserManager : ComponentBase
             }
         }
 
-        HideMessage(selectedUser);
+        HideDetails(selectedUser);
         selectedUser = -1;
         hasChanges = false;
         StateHasChanged();

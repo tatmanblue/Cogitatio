@@ -41,12 +41,7 @@
       <_ContentIncludedByDefault Remove="Pages\Admin\_Imports.razor" />
     </ItemGroup>
     <ItemGroup>
-      <AdditionalFiles Include="Pages\Admin\AdminAddPost.razor" />
-      <AdditionalFiles Include="Pages\Admin\AdminContact.razor" />
-      <AdditionalFiles Include="Pages\Admin\AdminDiag.razor" />
-      <AdditionalFiles Include="Pages\Admin\AdminEditPost.razor" />
       <AdditionalFiles Include="Pages\Admin\AdminHome.razor" />
-      <AdditionalFiles Include="Pages\Admin\AdminSettings.razor" />
       <AdditionalFiles Include="Pages\Admin\TagEditor.razor" />
       <AdditionalFiles Include="Pages\User\SignUp.razor" />
     </ItemGroup>

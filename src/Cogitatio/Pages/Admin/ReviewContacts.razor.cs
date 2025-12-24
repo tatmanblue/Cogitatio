@@ -54,27 +54,27 @@ public partial class ReviewContacts : ComponentBase
         }
     }
     
-    private void ShowMessage(int id)
+    private void ShowDetails(int id)
     {
         var contact = contacts.FirstOrDefault(c => c.Id == id);
         if (contact != null)
         {
-            contact.ShowMessage = true;
+            contact.CanShowContacts = true;
         }
     }
 
-    private void HideMessage(int id)
+    private void HideDetails(int id)
     {
         var contact = contacts.FirstOrDefault(c => c.Id == id);
         if (contact != null)
         {
-            contact.ShowMessage = false;
+            contact.CanShowContacts = false;
         }
     }
 
     private class ContactRecordModel : ContactRecord
     {
         public bool IsSelected { get; set; }
-        public bool ShowMessage { get; set; }
+        public bool CanShowContacts { get; set; }
     }
 }

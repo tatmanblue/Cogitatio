@@ -69,13 +69,13 @@ public partial class ReviewComments : ComponentBase
         LoadComments();
     }
     
-    private void ShowMessage(int id)
+    private void ShowDetails(int id)
     {
         if (selectedCommentId == -1 || false == hasChanges)
             return;
         
         if (selectedCommentId != -1)
-            HideMessage(selectedCommentId);
+            HideDetails(selectedCommentId);
         
         var comment = comments.FirstOrDefault(c => c.Id == id);
         if (comment != null)
@@ -90,13 +90,13 @@ public partial class ReviewComments : ComponentBase
             comment.ShowDetails = true;
             selectedCommentId = id;
             hasChanges = false;
-            HideMessage(selectedCommentId);
+            HideDetails(selectedCommentId);
         }
         
         StateHasChanged();
     }
 
-    private void HideMessage(int id)
+    private void HideDetails(int id)
     {
         var comment = comments.FirstOrDefault(c => c.Id == id);
         if (comment != null)

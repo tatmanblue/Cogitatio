@@ -26,13 +26,13 @@
             <tbody>
             @foreach (var contact in contacts)
             {
-                <tr @onmouseover="() => ShowMessage(contact.Id)" @onmouseout="() => HideMessage(contact.Id)">
+                <tr @onmouseover="() => ShowDetails(contact.Id)" @onmouseout="() => HideDetails(contact.Id)">
                     <td><input type="checkbox" @bind="contact.IsSelected"/></td>
                     <td>@contact.Name</td>
                     <td>@contact.Email</td>
                     <td>@contact.DateAdded.ToShortDateString()</td>
                 </tr>
-                <tr class="bg-light" style="display: @(contact.ShowMessage ? "table-row" : "none");">
+                <tr class="bg-light" style="display: @(contact.CanShowContacts ? "table-row" : "none");">
                     <td colspan="4" class="p-2">
                         <strong>Message:</strong> @contact.Message
                         @if (!string.IsNullOrEmpty(contact.Slug))

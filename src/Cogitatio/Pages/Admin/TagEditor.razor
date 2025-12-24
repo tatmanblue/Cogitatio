@@ -43,13 +43,13 @@ else
             <tbody>
             @foreach (var post in posts)
             {
-                <tr @onmouseover="() => ShowMessage(post.Id)">
+                <tr @onmouseover="() => ShowDetails(post.Id)">
                     <td></td>
                     <td>@post.Title</td>
                     <td>@post.PublishedDate.ToShortDateString()</td>
                     <td>@post.TagsDisplay</td>
                 </tr>
-                <tr class="bg-light" style="display: @(post.ShowDetails ? "table-row" : "none");">
+                <tr class="bg-light" style="display: @(post.CanShowDetails ? "table-row" : "none");">
                     <td colspan="4" class="p-2">
                         <div class="d-flex gap-2 align-items-center">
                             <div class="flex-grow-1">
@@ -62,7 +62,7 @@ else
                             </div>
                             <div class="flex-shrink-0 mt-3"> 
                                 <button class="btn btn-primary btn-sm" @onclick="() => SaveTags(post.Id)">Save</button>
-                                <button class="btn btn-secondary btn-sm ms-2" @onclick="() => HideMessage(post.Id)">Cancel</button>
+                                <button class="btn btn-secondary btn-sm ms-2" @onclick="() => HideDetails(post.Id)">Cancel</button>
                             </div>
                         </div>
                     </td>

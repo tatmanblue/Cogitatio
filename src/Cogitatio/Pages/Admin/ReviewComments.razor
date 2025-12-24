@@ -29,7 +29,7 @@
             <tbody>
                 @foreach (var comment in comments)
                 {
-                    <tr @onmouseover="() => ShowMessage(comment.Id)">
+                    <tr @onmouseover="() => ShowDetails(comment.Id)">
                         <td></td>
                         <td>@comment.Author (@comment.AuthorId)</td>
                         <td>@comment.PostedDate.ToShortDateString()</td>
@@ -59,7 +59,7 @@
                                 </div>
                                 <div class="flex-shrink-0 mt-3">  
                                     <button class="btn btn-primary btn-sm" @onclick="() => SaveCommentStatus(comment.Id)">Save</button>
-                                    <button class="btn btn-secondary btn-sm ms-2" @onclick="() => HideMessage(comment.Id)">Cancel</button>
+                                    <button class="btn btn-secondary btn-sm ms-2" @onclick="() => HideDetails(comment.Id)">Cancel</button>
                                 </div>
                             </div>
                         </td>

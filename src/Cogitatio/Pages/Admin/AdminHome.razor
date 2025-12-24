@@ -27,6 +27,7 @@
     </div>
 }
 
+<!-- Admin Actions, I know, this is really an else from the above if.... -->
 @if (AdminUserState.IsAdmin)
 {
     <div class="card shadow-sm mb-3">
@@ -46,15 +47,20 @@
                     <span class="action-description">View contacts</span>
                 </div>
                 <div class="action-item">
+                    <button class="btn btn-primary" @onclick=@Logout>Logout</button>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <h5 class="card-title text-center">Blogging Actions</h5>
+            <div class="d-flex flex-wrap justify-content-center">
+                <div class="action-item">
                     <NavLink href="/a/AddPost" class="btn btn-outline-primary">Add New Post</NavLink>
                     <span class="action-description">Create a new post</span>
                 </div>
                 <div class="action-item">
                     <NavLink href="/a/EditPost" class="btn btn-outline-primary">Edit Post</NavLink>
                     <span class="action-description">Edit a post</span>
-                </div>
-                <div class="action-item">
-                    <button class="btn btn-primary" @onclick=@Logout>Logout</button>
                 </div>
             </div>
         </div>
@@ -74,7 +80,7 @@
                     <span class="action-description">Manage Users</span>
                 </div>
             </div>
-        </div>        
+        </div>
     </div>
 }
 

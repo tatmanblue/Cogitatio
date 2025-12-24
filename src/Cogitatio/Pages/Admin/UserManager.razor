@@ -26,7 +26,7 @@
             <tbody>
                 @foreach (var user in records)
                 {
-                    <tr @onmouseover="() => ShowMessage(user.Id)">
+                    <tr @onmouseover="() => ShowDetails(user.Id)">
                         <td></td>
                         <td>@user.DisplayName</td>
                         <td>@user.Email</td>
@@ -75,7 +75,7 @@
                                 <div class="flex-shrink-0 gap-2">
                                     <div class="mb-3">&nbsp;</div>
                                     <button class="btn btn-primary btn-sm" @onclick="() => Save(user.Id)">Save</button>
-                                    <button class="btn btn-secondary btn-sm" @onclick="() => HideMessage(user.Id)">Cancel</button>
+                                    <button class="btn btn-secondary btn-sm" @onclick="() => HideDetails(user.Id)">Cancel</button>
                                 </div>
                             </div>
                         </td>
