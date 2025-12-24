@@ -19,7 +19,7 @@ public partial class ReviewContacts : ComponentBase
     protected override void OnParametersSet()
     {
         if (!AdminUserState.IsAdmin)
-            navigationManager.NavigateTo("/Admin");
+            navigationManager.NavigateTo(General.Constants.ROUTE_ADMIN_HOME);
     }
     
     protected override void OnInitialized()

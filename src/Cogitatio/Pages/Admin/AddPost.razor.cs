@@ -1,6 +1,7 @@
 ﻿using Cogitatio.Interfaces;
 using Cogitatio.Models;
 using Microsoft.AspNetCore.Components;
+using Serilog.Core;
 
 namespace Cogitatio.Pages.Admin;
 
@@ -26,7 +27,7 @@ public partial class AddPost : ComponentBase
     protected override void OnParametersSet()
     {
         if (!AdminUserState.IsAdmin)
-            navigationManager.NavigateTo("/a/Admin");
+            navigationManager.NavigateTo(Cogitatio.General.Constants.ROUTE_ADMIN_HOME);
     }
     
     private async Task Publish()
@@ -36,7 +37,7 @@ public partial class AddPost : ComponentBase
         BlogPost post = BlogPost.Create(tenantId, title, content);
         post.Tags.AddRange(tags.Split(','));
         database.CreatePost(post);
-        navigationManager.NavigateTo("/", forceLoad: true);
+        navigationManager.NavigateTo(Cogitatio.General.Constants.ROUTE_HOME, forceLoad: true);
     }
     
 }

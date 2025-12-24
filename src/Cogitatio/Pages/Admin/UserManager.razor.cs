@@ -24,7 +24,7 @@ public partial class UserManager : ComponentBase
     protected override void OnParametersSet()
     {
         if (!HasRights())
-            navigationManager.NavigateTo("/a/Admin");
+            navigationManager.NavigateTo(General.Constants.ROUTE_ADMIN_HOME);
     }
 
     protected override void OnInitialized()

@@ -1,4 +1,5 @@
-﻿using Cogitatio.Interfaces;
+﻿using Cogitatio.General;
+using Cogitatio.Interfaces;
 using Cogitatio.Models;
 using Microsoft.AspNetCore.Components;
 
@@ -27,7 +28,7 @@ public partial class EditPost : ComponentBase
     protected override void OnParametersSet()
     {
         if (!AdminUserState.IsAdmin)
-            navigationManager.NavigateTo("/a/Admin");
+            navigationManager.NavigateTo(Constants.ROUTE_ADMIN_HOME);
         
         if (string.IsNullOrEmpty(Slug))
             navigationManager.NavigateTo("/search/ret=admineditpost");
@@ -52,6 +53,6 @@ public partial class EditPost : ComponentBase
         post.Tags.AddRange(tags.Split(','));
         database.UpdatePost(post);
         
-        navigationManager.NavigateTo("/a/Admin");
+        navigationManager.NavigateTo(Constants.ROUTE_ADMIN_HOME);
     }
 }

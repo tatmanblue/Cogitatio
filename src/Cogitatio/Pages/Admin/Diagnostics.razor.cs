@@ -26,7 +26,7 @@ public partial class Diagnostics : ComponentBase
     protected override void OnParametersSet()
     {
         if (!AdminUserState.IsAdmin)
-            navigationManager.NavigateTo("/a/Admin");
+            navigationManager.NavigateTo(Cogitatio.General.Constants.ROUTE_ADMIN_HOME);
         
         cogitatioSiteDB = configuration["CogitatioSiteDB"];
         analyticsId = configuration["CogitatioAnalyticsId"];
