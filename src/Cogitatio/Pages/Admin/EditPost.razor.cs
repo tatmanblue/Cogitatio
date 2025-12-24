@@ -52,6 +52,6 @@ public partial class EditPost : ComponentBase
         post.Tags.AddRange(tags.Split(','));
         database.UpdatePost(post);
         
-        navigationManager.NavigateTo("/Admin");
+        navigationManager.NavigateTo("/a/Admin");
     }
 }
