@@ -1,4 +1,6 @@
 # Cogitatio CMS
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/tatmanblue/Cogitatio)  
+
 A very lightweight content management system (CMS) written in C#/Blazor. You can see it working on [my blog site](http://blog.tatmanblue.com/).   
 
 Why Cogitatio CMS verses using a well established CMS?  Good question.    
