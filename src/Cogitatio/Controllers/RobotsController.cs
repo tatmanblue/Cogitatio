@@ -16,6 +16,8 @@ public class RobotsController : ControllerBase
         // Main rules for all well-behaved bots
         // ───────────────────────────────────────────────
         sb.AppendLine("User-agent: *");
+        // super restrictive (uncomment to block all bots from crawling anything)
+        // sb.AppendLine("Disallow: /");
 
         // Block specific sections (e.g., admin pages)
         sb.AppendLine("Disallow: /admin");
