@@ -31,16 +31,16 @@ src/schema - database schema files
 
 ## Project structure for Cogitatio - main CMS code base
 
-All of these directories are subdirectories of src/Cogitatio
-Controllers - Api Controllers.  Mostly for robots.txt, sitemap etc
-General - Constants, exceptions and extension methods
-Interfaces - Key interfaces for injected types
-Logic - Interface implementations and other necessary logic not in pages and models
-Models - data structures 
-Pages - all of the pages for the site including Admin and Users
-Properties - dotnet specific directory for settings files
-Shared - components used in multiple Pages
-wwwroot - dotnet directory for standard web assets
+All of these directories are subdirectories of src/Cogitatio:  
+Controllers - Api Controllers.  Mostly for robots.txt, sitemap etc  
+General - Constants, exceptions and extension methods  
+Interfaces - Key interfaces for injected types  
+Logic - Interface implementations and other necessary logic not in pages and models  
+Models - data structures   
+Pages - all of the pages for the site including Admin and Users  
+Properties - dotnet specific directory for settings files  
+Shared - components used in multiple Pages  
+wwwroot - dotnet directory for standard web assets  
 
 ## Coding Conventions
 - Modern C# features enabled: primary constructors, implicit usings, nullable reference types (#nullable enable)
