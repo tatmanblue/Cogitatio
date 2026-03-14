@@ -22,12 +22,12 @@ All configuration settings must come from either .env file or from the configura
 
 
 ## Structure
-docs - public documentation
-src - all source code
-src/AppHost V2 - .NET aspire project 
-src/Cogitatio - main CMS code base
-src/ServiceDefaults - extension for AppHost V2
-src/schema - database schema files 
+docs - public documentation  
+src - all source code  
+src/AppHost V2 - .NET aspire project   
+src/Cogitatio - main CMS code base  
+src/ServiceDefaults - extension for AppHost V2  
+src/schema - database schema files   
 
 ## Project structure for Cogitatio - main CMS code base
 
