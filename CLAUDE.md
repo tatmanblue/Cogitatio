@@ -58,4 +58,4 @@ wwwroot - dotnet directory for standard web assets
 - Requires either SQL Server or PostgreSQL — connection strings configured via .env
 
 ## Testing
-There are currently no automated tests in this project.
+There are currently no automated tests in this project.  A test project and tests can be created but it is not imperative at this time.
