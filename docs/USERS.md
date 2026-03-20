@@ -9,9 +9,17 @@ helpful for anyone wanting to understand this part of this system better.
 this document does not discuss the database nor the database access for users. That 
 is discussed in the [database](DATABASE.md) document.  
 
+## Site admin account
+
+The site admin account is separate from user accounts. At this time, no user account can be used to administer the site.
+
+## user administration
+
+The site admin can use the [user administration page](../src/Cogitatio/Pages/Admin/UserManager.razor.cs) to manage user accounts.  It is implemented as a blazer page. The link includes only the C# code behind.
+
 ## Components
 
-these components are implemented as blazer components. There are blazer files, C# code 
+There are several components related to user accounts.  These components are implemented as blazer components. There are blazer files, C# code 
 behind files and CSS style sheets.  The links below referenced strictly the C# code.  
 
 [Proof of work](../src/Cogitatio/Shared/PasswordEditor.razor.cs)  
