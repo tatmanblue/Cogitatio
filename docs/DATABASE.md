@@ -23,7 +23,7 @@ value is retrieved from the environment.
 
 # database schema
 
-[schema](src/schema)
+[schema](../src/schema)
 
 There are separate sql files for creating Microsoft sequel server, databases, and postgres databases.
 
