@@ -29,12 +29,14 @@ There are separate sql files for creating Microsoft sequel server, databases, an
 
 # implementations
 
-[interfaces](src/Cogitatio/Interfaces)  
-[ms sql implementatiom](src/Cogitatio/Logic/SqlServer.cs) - for a blog data using ms sql  
-[postgress implementation](src/Cogitatio/Logic/Postgressql.cs) - for blog data using postgres  
-[abstract base class](src/Cogitatio/Logic/AbstractDB.cs)  - the abstract class is intended to 
+[interfaces](../src/Cogitatio/Interfaces)  
+[ms sql implementatiom](../src/Cogitatio/Logic/SqlServer.cs) - for a blog data using ms sql  
+[postgress implementation](../src/Cogitatio/Logic/Postgressql.cs) - for blog data using postgres  
+[abstract base class](../src/Cogitatio/Logic/AbstractDB.cs)  - the abstract class is intended to 
 implement common behaviors between both implementations, so has to reduce duplicate code and reduce difficulty in making changes.
 
+[ms sql user db implementation](../src/Cogitatio/Logic/SqlServerUsers.cs) - for user data using ms sql  
+[postgres user db implementation](../src/Cogitatio/Logic/PostgresssqlUsers.cs) - for user data using postgres  
 
 please note the postgress implementation does not inherit from the base class and it needs to be updated.
 
