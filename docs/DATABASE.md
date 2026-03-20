@@ -38,7 +38,10 @@ implement common behaviors between both implementations, so has to reduce duplic
 [ms sql user db implementation](../src/Cogitatio/Logic/SqlServerUsers.cs) - for user data using ms sql  
 [postgres user db implementation](../src/Cogitatio/Logic/PostgresssqlUsers.cs) - for user data using postgres  
 
-please note the postgress implementation does not inherit from the base class and it needs to be updated.
+# work needed
+the postgress implementation does not inherit from the base class and it needs to be updated.
 
-please note the postgress user implementation has not been complete completed. 
+the postgress user implementation has not been complete completed. 
+
+it makes sense to create an abstract base class for the user database as well.
 
