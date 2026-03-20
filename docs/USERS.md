@@ -26,6 +26,8 @@ The password editor is a blazer component for the user to enter a password. This
 ## Pages
 
 The use pages are implemented as blazer pages. There are blazer files, c# code behind 
-files and CSS style sheets. The links below reference strictly the c# code.    
+files and CSS style sheets. The links below reference strictly the c# code.   
+
+[Code](../src/Cogitatio/Pages/User) - all pages for the user to create accounts, login, reset passwords and verify accounts is contained in this directory.
 
 
