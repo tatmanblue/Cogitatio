@@ -1,0 +1,24 @@
+# User accounts, logins and security
+
+The purpose of this document is to document how logins, user account creation and 
+management is implemented for this site.  
+
+While this document is intended for Claude code, it is human readable and should be 
+helpful for anyone wanting to understand this part of this system better.  
+
+this document does not discuss the database nor the database access for users. That 
+is discussed in the [database](DATABASE.md) document.  
+
+## Componemnts
+
+these components are implemented as blazer components. There are blazer files, C# code 
+behind files and CSS style sheets.  The links below referenced strictly the C# code.  
+
+[Proof of work](../src/Cogitatio/Shared/PasswordEditor.razor.cs)  
+[Password Editor](../src/Cogitatio/Shared/PasswordEditor.razor.cs)  
+
+## Pages
+
+The use pages are implemented as blazer pages. There are blazer files, c# code behind 
+files and CSS style sheets. The links below reference strictly the c# code.    
+
