@@ -6,7 +6,7 @@ While this documentation is primarily intended for Claude code, it is written to
 
 # the interfaces
 
-The site is designed to use to different databases: Microsoft sequel server and postgress. The code 
+The site is designed to use to different databases: Microsoft SQL server and postgress. The code 
 uses interfaces to read and write to the database so that the exact database type is abstracted out 
 from the implementation.  The database is further abstracted out between blog data and user data.
 
@@ -25,13 +25,13 @@ value is retrieved from the environment.
 
 [schema](src/schema)
 
-There are separate sequel files for creating Microsoft sequel server, databases, and postgres databases.
+There are separate sql files for creating Microsoft sequel server, databases, and postgres databases.
 
 # implementations
 
 [interfaces](src/Cogitatio/Interfaces)  
-[ms sql implementatiom](src/Cogitatio/Logic/SqlServer.cs)  
-[postgress implementation](src/Cogitatio/Logic/Postgressql.cs)  
+[ms sql implementatiom](src/Cogitatio/Logic/SqlServer.cs) - for a blog data using ms sql  
+[postgress implementation](src/Cogitatio/Logic/Postgressql.cs) - for blog data using postgres  
 [abstract base class](src/Cogitatio/Logic/AbstractDB.cs)  - the abstract class is intended to 
 implement common behaviors between both implementations, so has to reduce duplicate code and reduce difficulty in making changes.
 
