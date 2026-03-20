@@ -1,0 +1,42 @@
+# Database Design
+
+The purpose of this file is to document how the database is structured, and how it is used in the website
+
+While this documentation is primarily intended for Claude code, it is written to be human readable readable.
+
+# the interfaces
+
+The site is designed to use to different databases: Microsoft sequel server and postgress. The code 
+uses interfaces to read and write to the database so that the exact database type is abstracted out 
+from the implementation.  The database is further abstracted out between blog data and user data.
+
+The separation between blog and user data was intended to allow user data to be stored in a database types 
+separate from everything else.  This also helps protect user data since a compromised blog database will 
+not compromise user data.
+
+The database is initialized through injection, and is determined by environment variables.
+
+# multi tenancy
+
+The site is capable of having quasi-multi tenancy.  Most database tables include a tenancy ID. This 
+value is retrieved from the environment.
+
+# database schema
+
+[schema](src/schema)
+
+There are separate sequel files for creating Microsoft sequel server, databases, and postgres databases.
+
+# implementations
+
+[interfaces](src/Cogitatio/Interfaces)  
+[ms sql implementatiom](src/Cogitatio/Logic/SqlServer.cs)  
+[postgress implementation](src/Cogitatio/Logic/Postgressql.cs)  
+[abstract base class](src/Cogitatio/Logic/AbstractDB.cs)  - the abstract class is intended to 
+implement common behaviors between both implementations, so has to reduce duplicate code and reduce difficulty in making changes.
+
+
+please note the postgress implementation does not inherit from the base class and it needs to be updated.
+
+please note the postgress user implementation has not been complete completed. 
+
