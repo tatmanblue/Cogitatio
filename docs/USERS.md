@@ -30,4 +30,9 @@ files and CSS style sheets. The links below reference strictly the c# code.
 
 [Code](../src/Cogitatio/Pages/User) - all pages for the user to create accounts, login, reset passwords and verify accounts is contained in this directory.
 
+## user accounts
+
+User account state is represented by the [UserAccountStates](../src/Cogitatio/Models/enums.cs) enum.   The meaning of each of the enum values are fairly well commented in the code.  
+
+
 
