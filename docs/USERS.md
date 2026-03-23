@@ -13,7 +13,7 @@ is discussed in the [database](DATABASE.md) document.
 
 The site admin account is separate from user accounts. At this time, no user account can be used to administer the site.
 
-## user administration
+## User administration
 
 The site admin can use the [user administration page](../src/Cogitatio/Pages/Admin/UserManager.razor.cs) to manage user accounts.  It is implemented as a blazer page. The link includes only the C# code behind.
 
@@ -25,10 +25,10 @@ behind files and CSS style sheets.  The links below referenced strictly the C# c
 [Proof of work](../src/Cogitatio/Shared/PasswordEditor.razor.cs)  
 [Password Editor](../src/Cogitatio/Shared/PasswordEditor.razor.cs)  
 
-### proof of work
+### Proof of work
 The proof of work component is intended to slow down, automated processes that may attempt to login or create accounts. It relies on the browser, computing a value and sending that back to the site for verification.
 
-### password editor
+### Password editor
 The password editor is a blazer component for the user to enter a password. This field is used both for login and for account creation.
 
 ## Pages
@@ -38,7 +38,7 @@ files and CSS style sheets. The links below reference strictly the c# code.
 
 [Code](../src/Cogitatio/Pages/User) - all pages for the user to create accounts, login, reset passwords and verify accounts is contained in this directory.
 
-## user accounts
+## User accounts
 
 User account state is represented by the [UserAccountStates](../src/Cogitatio/Models/enums.cs) enum.   The meaning of each of the enum values are fairly well commented in the code.  
 
