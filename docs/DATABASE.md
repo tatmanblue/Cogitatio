@@ -25,7 +25,7 @@ value is retrieved from the environment.
 
 [schema](../src/schema)
 
-There are separate sql files for creating Microsoft sequel server, databases, and postgres databases.
+There are separate sql files for creating Microsoft sequel server databases, and postgres databases.
 
 # Implementations
 
@@ -40,10 +40,6 @@ implement common behaviors between both implementations, so has to reduce duplic
 
 # Work needed
 the postgress implementation does not inherit from the base class and it needs to be updated.
-
-the postgress user implementation has not been complete completed. 
-
-it makes sense to create an abstract base class for the user database as well.
 
 ## Doc version
 
