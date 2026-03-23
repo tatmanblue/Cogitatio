@@ -32,6 +32,7 @@ public class SqlServerUsers : AbstractDB<SqlConnection>, IUserDatabase
     
     public void Save(BlogUserRecord user)
     {
+        // Save only inserts user records, so if the user exists, we do not continue
         if (DoesUserExist(user.Email))
             throw new BlogUserException($"User with email {user.Email} already exists");
         

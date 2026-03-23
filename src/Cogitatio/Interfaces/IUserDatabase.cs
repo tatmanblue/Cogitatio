@@ -9,8 +9,24 @@ namespace Cogitatio.Interfaces;
 public interface IUserDatabase
 {
     void Save(BlogUserRecord user);   
+    /// <summary>
+    /// Loads a user record by ID.
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns>null means user record does not exist</returns>
     BlogUserRecord Load(int id);
+    /// <summary>
+    /// Loads a user id by email address only
+    /// </summary>
+    /// <param name="email"></param>
+    /// <returns>null means the user record does not exist</returns>
     BlogUserRecord Load(string email);
+    /// <summary>
+    /// Loads a user record by email address or display name.
+    /// </summary>
+    /// <param name="email"></param>
+    /// <param name="displayName"></param>
+    /// <returns>null means the user record does not exist</returns>
     BlogUserRecord Load(string email, string displayName);
     BlogUserRecord LoadByVerificationId(string id);
     List<BlogUserRecord> LoadAll();
