@@ -9,3 +9,4 @@ riderModule.iml
 LaunchSettings.json
 .env
 .aspire/
+.claude/
