@@ -2,16 +2,21 @@
 
 Here's some terse documentation on allowing authenticated users to comment on blog posts. 
 
+While this document is intended for Claude code, it is human readable and should be 
+helpful for anyone wanting to understand this part of this system better.  
+
+_Please note_: This document is needing additional content.  
+
 ## Setup 
 
 ### Comment Table Set up
-_Currently only available for MSSQL dbs._  You will need to create the blog table.  See the `create_blob_tables.sql`.
+_Currently only available for MSSQL dbs._  You will need to create the blog table.  See the `../src/schema/MSSQL/create_blob_tables.sql` for the MS SQL implementation.
 
 ### User Table setup
 _Currently only available for MSSQL dbs._
 
 There's a bit more setup here:
-1. Create the user tables.  See `create_blog_users_table.sql`
+1. Create the user tables.  See `../src/schema/MSSQL/create_blog_users_table.sql` for the MS SQL implementation.
 2. Provide a connection string to the user table in admin settings.
 
 Highly recommended (optional) you put the users table in a separate db.
@@ -51,4 +56,4 @@ There is a tool, available in the admin portal, to help with moderation.  I'm su
 
 ## Doc version
 
-2025.12.15
+2026.03.21

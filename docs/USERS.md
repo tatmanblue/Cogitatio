@@ -6,7 +6,7 @@ management is implemented for this site.
 While this document is intended for Claude code, it is human readable and should be 
 helpful for anyone wanting to understand this part of this system better.  
 
-this document does not discuss the database nor the database access for users. That 
+This document does not discuss the database nor the database access for users. That 
 is discussed in the [database](DATABASE.md) document.  
 
 ## Site admin account
@@ -44,3 +44,6 @@ User account state is represented by the [UserAccountStates](../src/Cogitatio/Mo
 
 
 
+## Doc version
+
+2026.03.21

@@ -42,6 +42,14 @@ Properties - dotnet specific directory for settings files
 Shared - components used in multiple Pages  
 wwwroot - dotnet directory for standard web assets  
 
+## Additional documentation
+[Admin Portal](docs/ADMIN.md)  
+[Comment System](docs/COMMENTS.md)  
+[Database](docs/DATABASE.md)  
+[User System](docs/USERS.md)  
+
+
+
 ## Coding Conventions
 - Modern C# features enabled: primary constructors, implicit usings, nullable reference types (#nullable enable)
 - Blazor components use code-behind pattern (.razor + .razor.cs)
@@ -59,3 +67,7 @@ wwwroot - dotnet directory for standard web assets
 
 ## Testing
 There are currently no automated tests in this project.  A test project and tests can be created but it is not imperative at this time.
+
+## Doc version
+
+2026.03.21

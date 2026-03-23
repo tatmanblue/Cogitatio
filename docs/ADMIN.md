@@ -31,3 +31,7 @@ The default admin account is:
 
 **THIS ACCOUNT INFORMATION SHOULD BE CHANGED IMMEDIATELY AFTER FIRST LOGIN!**  Both the username 
 and password can be changed after login via the settings page.
+
+## Doc version
+
+2026.03.21
