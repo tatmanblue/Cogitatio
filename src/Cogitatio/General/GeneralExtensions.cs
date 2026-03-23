@@ -1,4 +1,5 @@
 ﻿using System.Text.RegularExpressions;
+using Microsoft.AspNetCore.Http;
 
 namespace Cogitatio.General;
 
@@ -34,6 +35,14 @@ public static class GeneralExtensions
             string pattern = @"^[^@\s]+@[^@\s]+\.[^@\s]+$";
     
             return Regex.IsMatch(str, pattern, RegexOptions.IgnoreCase);
+        }
+    }
+
+    extension(IHttpContextAccessor accessor)
+    {
+        public string GetClientIp()
+        {
+            return accessor.HttpContext?.Connection.RemoteIpAddress?.ToString() ?? "unknown";
         }
     }
 

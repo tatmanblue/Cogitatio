@@ -4,6 +4,7 @@ using Cogitatio.Logic;
 using Cogitatio.Models;
 using Cogitatio.Shared;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Http;
 
 namespace Cogitatio.Pages.User;
 
@@ -23,6 +24,7 @@ public partial class Login : ComponentBase
     [Inject] BlogUserState userState { get; set; }
     [Inject] IUserDatabase userDB { get; set; }
     [Inject] NavigationManager navigationManager { get; set; }
+    [Inject] IHttpContextAccessor httpContextAccessor { get; set; }
 
     // --------------------------------------------------------------------------------------------
     // login data
@@ -111,7 +113,7 @@ public partial class Login : ComponentBase
         catch (BlogUserException ex)
         {
             retryCount++;
-            logger.LogWarning($"Login error for account '{accountId}': {ex.Message}");
+            logger.LogWarning($"Login error for account '{accountId}' from IP '{httpContextAccessor.GetClientIp()}': {ex.Message}");
             // this will be non empty only for user errors we want to bubble up to the user
             if (string.IsNullOrEmpty(message))
                 message = "Unable to login.  Please try again.";
