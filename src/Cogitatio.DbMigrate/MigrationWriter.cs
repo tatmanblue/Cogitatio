@@ -10,6 +10,8 @@ namespace Cogitatio.DbMigrate;
 /// IDs are preserved so that foreign key relationships remain intact.
 /// For MSSQL targets, IDENTITY_INSERT is used for tables with auto-increment PKs.
 /// For PostgreSQL targets, sequences are reset after all data is written.
+///
+/// TODO: Replace database specific sql by using IDatabase and IUserDatabase implementations
 /// </summary>
 public class MigrationWriter : IDisposable
 {

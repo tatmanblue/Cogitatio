@@ -9,6 +9,10 @@ namespace Cogitatio.DbMigrate;
 /// <summary>
 /// Reads all data from the source database using direct SQL.
 /// Handles both MSSQL (PascalCase columns) and PostgreSQL (snake_case columns).
+///
+/// TODO: Replace database specific sql by using IDatabase and IUserDatabase implementations
+///       in the case of ReadAllPosts update interface and implemenations to have ReadAllPosts
+///       and thereby reduce duplication of SQL 
 /// </summary>
 public class MigrationReader : IDisposable
 {

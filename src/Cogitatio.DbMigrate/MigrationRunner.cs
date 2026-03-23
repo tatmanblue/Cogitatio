@@ -17,6 +17,8 @@ public class MigrationRunner
         Print($"Target: {config.TargetDbType} (tenant {config.TargetTenantId})");
         Console.WriteLine();
 
+        // TODO: create appropriate types of and inject IDatabase and IUserDatabase implementations
+        //       into MigrationReader and MigrationWriter
         using var reader = new MigrationReader(config);
         using var writer = new MigrationWriter(config);
 
