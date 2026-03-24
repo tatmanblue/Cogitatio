@@ -29,4 +29,6 @@ public interface IDatabase
     Dictionary<BlogSettings, string> GetAllSettings();
     string GetSetting(BlogSettings setting, string defaultValue = "");
     void SaveSetting(BlogSettings setting, string value);
+    List<BlogPost> GetAllPosts();
+    List<Comment> GetAllPostComments(int postId);
 }

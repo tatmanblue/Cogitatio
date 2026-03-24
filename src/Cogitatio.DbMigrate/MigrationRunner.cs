@@ -1,3 +1,8 @@
+using Cogitatio.Interfaces;
+using Cogitatio.Logic;
+using Cogitatio.Models;
+using Microsoft.Extensions.Logging.Abstractions;
+
 namespace Cogitatio.DbMigrate;
 
 public class MigrationRunner
@@ -17,29 +22,57 @@ public class MigrationRunner
         Print($"Target: {config.TargetDbType} (tenant {config.TargetTenantId})");
         Console.WriteLine();
 
-        // TODO: create appropriate types of and inject IDatabase and IUserDatabase implementations
-        //       into MigrationReader and MigrationWriter
-        using var reader = new MigrationReader(config);
-        using var writer = new MigrationWriter(config);
+        string sourceUserCs = string.IsNullOrEmpty(config.SourceUserConnectionString)
+            ? config.SourceConnectionString
+            : config.SourceUserConnectionString;
+        string destUserCs = string.IsNullOrEmpty(config.TargetUserConnectionString)
+            ? config.TargetConnectionString
+            : config.TargetUserConnectionString;
 
-        int stages = 0, succeeded = 0;
+        var sourceBlogDb = CreateBlogDb(config.SourceConnectionString, config.SourceDbType, config.SourceTenantId);
+        var destBlogDb = CreateBlogDb(config.TargetConnectionString, config.TargetDbType, config.TargetTenantId);
+        var sourceUserDb = CreateUserDb(sourceUserCs, config.SourceDbType, config.SourceTenantId);
+        var destUserDb = CreateUserDb(destUserCs, config.TargetDbType, config.TargetTenantId);
 
-        stages++; if (MigrateSettings(reader, writer)) succeeded++;
-        stages++; if (MigratePosts(reader, writer)) succeeded++;
-        stages++; if (MigrateContacts(reader, writer)) succeeded++;
-        stages++; if (MigrateUsers(reader, writer)) succeeded++;
-
-        if (!dryRun && config.TargetDbType == "POSTGRES")
+        try
         {
-            Print("Resetting PostgreSQL sequences...");
-            writer.ResetSequences();
-            Print("Sequences reset.", ConsoleColor.Green);
-        }
+            var reader = new MigrationReader(sourceBlogDb, sourceUserDb);
+            var writer = new MigrationWriter(destBlogDb, destUserDb, config.TargetTenantId);
 
-        Console.WriteLine();
-        bool allSucceeded = succeeded == stages;
-        Print($"Migration complete. {succeeded}/{stages} stages successful.",
-            allSucceeded ? ConsoleColor.Green : ConsoleColor.Yellow);
+            int stages = 0, succeeded = 0;
+
+            stages++; if (MigrateSettings(reader, writer)) succeeded++;
+            Dictionary<int, int> userIdMap = new();
+            stages++; if (MigrateUsers(reader, writer, userIdMap)) succeeded++;
+            stages++; if (MigratePosts(reader, writer, userIdMap)) succeeded++;
+            stages++; if (MigrateContacts(reader, writer)) succeeded++;
+
+            Console.WriteLine();
+            bool allSucceeded = succeeded == stages;
+            Print($"Migration complete. {succeeded}/{stages} stages successful.",
+                allSucceeded ? ConsoleColor.Green : ConsoleColor.Yellow);
+        }
+        finally
+        {
+            (sourceBlogDb as IDisposable)?.Dispose();
+            (destBlogDb as IDisposable)?.Dispose();
+            (sourceUserDb as IDisposable)?.Dispose();
+            (destUserDb as IDisposable)?.Dispose();
+        }
+    }
+
+    private static IDatabase CreateBlogDb(string connectionString, string dbType, int tenantId)
+    {
+        return dbType == "MSSQL"
+            ? new SqlServer(NullLogger<IDatabase>.Instance, connectionString, tenantId)
+            : new Postgresssql(NullLogger<IDatabase>.Instance, connectionString, tenantId);
+    }
+
+    private static IUserDatabase CreateUserDb(string connectionString, string dbType, int tenantId)
+    {
+        return dbType == "MSSQL"
+            ? (IUserDatabase)new SqlServerUsers(NullLogger<IUserDatabase>.Instance, connectionString, tenantId)
+            : new PostgresssqlUsers(NullLogger<IUserDatabase>.Instance, connectionString, tenantId);
     }
 
     private bool MigrateSettings(MigrationReader reader, MigrationWriter writer)
@@ -52,19 +85,9 @@ public class MigrationRunner
 
             if (!dryRun)
             {
-                foreach (var (key, value) in settings)
-                    writer.WriteSetting(key, value);
+                foreach (var (setting, value) in settings)
+                    writer.WriteSetting(setting, value);
                 Print("[Settings] Done.", ConsoleColor.Green);
-            }
-
-            // Resolve source user connection string from settings if not supplied via env var
-            if (string.IsNullOrEmpty(config.SourceUserConnectionString))
-            {
-                if (settings.TryGetValue("UserDBConnectionString", out var userCs) && !string.IsNullOrEmpty(userCs))
-                {
-                    config.SourceUserConnectionString = userCs;
-                    Print($"[Settings] Source user DB connection resolved from settings.");
-                }
             }
 
             return true;
@@ -76,7 +99,35 @@ public class MigrationRunner
         }
     }
 
-    private bool MigratePosts(MigrationReader reader, MigrationWriter writer)
+    private bool MigrateUsers(MigrationReader reader, MigrationWriter writer, Dictionary<int, int> userIdMap)
+    {
+        try
+        {
+            Print("[Users] Reading from source...");
+            var users = reader.ReadAllUsers();
+            Print($"[Users] {users.Count} records found.");
+
+            if (!dryRun)
+            {
+                foreach (var user in users)
+                {
+                    int sourceUserId = user.Id;
+                    int destUserId = writer.WriteUser(user);
+                    userIdMap[sourceUserId] = destUserId;
+                }
+                Print("[Users] Done.", ConsoleColor.Green);
+            }
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            PrintError("[Users] Failed", ex);
+            return false;
+        }
+    }
+
+    private bool MigratePosts(MigrationReader reader, MigrationWriter writer, Dictionary<int, int> userIdMap)
     {
         try
         {
@@ -96,12 +147,17 @@ public class MigrationRunner
             int migrated = 0;
             foreach (var post in posts)
             {
-                post.Tags = reader.ReadTagsForPost(post.Id);
-                writer.WritePost(post);
+                int sourcePostId = post.Id;
+                post.Tags = reader.ReadTagsForPost(sourcePostId);
+                writer.WritePost(post); // post.Id is now the destination post ID
 
-                var comments = reader.ReadCommentsForPost(post.Id);
+                var comments = reader.ReadCommentsForPost(sourcePostId);
                 foreach (var comment in comments)
+                {
+                    if (userIdMap.TryGetValue(comment.AuthorId, out int destUserId))
+                        comment.AuthorId = destUserId;
                     writer.WriteComment(post, comment);
+                }
 
                 migrated++;
                 if (migrated % 10 == 0)
@@ -138,30 +194,6 @@ public class MigrationRunner
         catch (Exception ex)
         {
             PrintError("[Contacts] Failed", ex);
-            return false;
-        }
-    }
-
-    private bool MigrateUsers(MigrationReader reader, MigrationWriter writer)
-    {
-        try
-        {
-            Print("[Users] Reading from source...");
-            var users = reader.ReadAllUsers();
-            Print($"[Users] {users.Count} records found.");
-
-            if (!dryRun)
-            {
-                foreach (var user in users)
-                    writer.WriteUser(user);
-                Print("[Users] Done.", ConsoleColor.Green);
-            }
-
-            return true;
-        }
-        catch (Exception ex)
-        {
-            PrintError("[Users] Failed", ex);
             return false;
         }
     }
