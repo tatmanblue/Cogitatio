@@ -10,18 +10,18 @@ _Please note_: This document is needing additional content.
 ## Setup 
 
 ### Comment Table Set up
-_Currently only available for MSSQL dbs._  You will need to create the blog table.  See the `../src/schema/MSSQL/create_blob_tables.sql` for the MS SQL implementation.
+You will need to create the blog table.  See the appropriate schema file for your database:
+- MS SQL: `../src/schema/MSSQL/create_blog_tables.sql`
+- PostgreSQL: `../src/schema/Postgresql/create_blog_tables.sql`
 
 ### User Table setup
-_Currently only available for MSSQL dbs._
-
 There's a bit more setup here:
-1. Create the user tables.  See `../src/schema/MSSQL/create_blog_users_table.sql` for the MS SQL implementation.
+1. Create the user tables.  See the appropriate schema file for your database:
+   - MS SQL: `../src/schema/MSSQL/create_blog_users_tables.sql`
+   - PostgreSQL: `../src/schema/Postgresql/create_blog_user_tables.sql`
 2. Provide a connection string to the user table in admin settings.
 
 Highly recommended (optional) you put the users table in a separate db.
-
-Yes, postgres sql will be updated to allow for commenting/users.
 
 ## Users
 
@@ -56,4 +56,4 @@ There is a tool, available in the admin portal, to help with moderation.  I'm su
 
 ## Doc version
 
-2026.03.21
+2026.05.05
