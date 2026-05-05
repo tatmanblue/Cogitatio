@@ -6,6 +6,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cogitatio.ServiceDefaults",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppHost V2", "AppHost V2\AppHost V2.csproj", "{E542990D-4324-4E4C-8942-58A790BCCBB3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cogitatio.DbMigrate", "Cogitatio.DbMigrate\Cogitatio.DbMigrate.csproj", "{A5BD82F9-188D-48E1-8C50-CE569224369B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -52,6 +54,18 @@ Global
 		{E542990D-4324-4E4C-8942-58A790BCCBB3}.Release|x64.Build.0 = Release|Any CPU
 		{E542990D-4324-4E4C-8942-58A790BCCBB3}.Release|x86.ActiveCfg = Release|Any CPU
 		{E542990D-4324-4E4C-8942-58A790BCCBB3}.Release|x86.Build.0 = Release|Any CPU
+		{A5BD82F9-188D-48E1-8C50-CE569224369B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A5BD82F9-188D-48E1-8C50-CE569224369B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A5BD82F9-188D-48E1-8C50-CE569224369B}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{A5BD82F9-188D-48E1-8C50-CE569224369B}.Debug|x64.Build.0 = Debug|Any CPU
+		{A5BD82F9-188D-48E1-8C50-CE569224369B}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{A5BD82F9-188D-48E1-8C50-CE569224369B}.Debug|x86.Build.0 = Debug|Any CPU
+		{A5BD82F9-188D-48E1-8C50-CE569224369B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A5BD82F9-188D-48E1-8C50-CE569224369B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A5BD82F9-188D-48E1-8C50-CE569224369B}.Release|x64.ActiveCfg = Release|Any CPU
+		{A5BD82F9-188D-48E1-8C50-CE569224369B}.Release|x64.Build.0 = Release|Any CPU
+		{A5BD82F9-188D-48E1-8C50-CE569224369B}.Release|x86.ActiveCfg = Release|Any CPU
+		{A5BD82F9-188D-48E1-8C50-CE569224369B}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -503,6 +503,50 @@ public class Postgresssql : AbstractDB<NpgsqlConnection>, IDatabase
         return result;
     }
 
+    public List<BlogPost> GetAllPosts()
+    {
+        List<BlogPost> result = new();
+        string sql = @"SELECT post_id, tenant_id, title, author, content, slug, published_date, status
+                       FROM blog_posts WHERE tenant_id = @n1 ORDER BY post_id";
+        ExecuteReader<NpgsqlCommand, NpgsqlDataReader>(sql, () => new NpgsqlCommand(), rdr =>
+        {
+            result.Add(new BlogPost
+            {
+                Id = rdr.AsInt("post_id"),
+                TenantId = rdr.AsInt("tenant_id"),
+                Title = rdr.AsString("title"),
+                Author = rdr.AsString("author"),
+                Content = rdr.AsString("content"),
+                Slug = rdr.AsString("slug"),
+                PublishedDate = rdr.AsDateTime("published_date"),
+                Status = (BlogPostStatuses)rdr.AsInt("status"),
+            });
+            return true;
+        }, cmd => cmd.Parameters.AddWithValue("n1", tenantId));
+        return result;
+    }
+
+    public List<Comment> GetAllPostComments(int postId)
+    {
+        List<Comment> comments = new();
+        string sql = @"SELECT id, post_id, user_id, text, posted_date, status
+                       FROM blog_comments WHERE post_id = @p1 ORDER BY posted_date ASC";
+        ExecuteReader<NpgsqlCommand, NpgsqlDataReader>(sql, () => new NpgsqlCommand(), rdr =>
+        {
+            comments.Add(new Comment
+            {
+                Id = rdr.AsInt("id"),
+                PostId = rdr.AsInt("post_id"),
+                AuthorId = rdr.AsInt("user_id"),
+                Text = rdr.AsString("text"),
+                PostedDate = rdr.AsDateTime("posted_date"),
+                Status = (CommentStatuses)rdr.AsInt("status"),
+            });
+            return true;
+        }, cmd => cmd.Parameters.AddWithValue("p1", postId));
+        return comments;
+    }
+
     public void SaveSetting(BlogSettings setting, string value)
     {
         Connect();

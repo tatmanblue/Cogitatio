@@ -532,6 +532,50 @@ public class SqlServer : AbstractDB<SqlConnection>, IDatabase
         return result;
     }
     
+    public List<BlogPost> GetAllPosts()
+    {
+        List<BlogPost> result = new();
+        string sql = @"SELECT PostId, TenantId, Title, Author, Content, Slug, PublishedDate, Status
+                       FROM Blog_Posts WHERE TenantId = @TenantId ORDER BY PostId";
+        ExecuteReader<SqlCommand, SqlDataReader>(sql, () => new SqlCommand(), rdr =>
+        {
+            result.Add(new BlogPost
+            {
+                Id = rdr.AsInt("PostId"),
+                TenantId = rdr.AsInt("TenantId"),
+                Title = rdr.AsString("Title"),
+                Author = rdr.AsString("Author"),
+                Content = rdr.AsString("Content"),
+                Slug = rdr.AsString("Slug"),
+                PublishedDate = rdr.AsDateTime("PublishedDate"),
+                Status = (BlogPostStatuses)rdr.AsInt("Status"),
+            });
+            return true;
+        }, cmd => cmd.Parameters.AddWithValue("@TenantId", tenantId));
+        return result;
+    }
+
+    public List<Comment> GetAllPostComments(int postId)
+    {
+        List<Comment> comments = new();
+        string sql = @"SELECT Id, PostId, UserId, Text, PostedDate, Status
+                       FROM Blog_Comments WHERE PostId = @postId ORDER BY PostedDate ASC";
+        ExecuteReader<SqlCommand, SqlDataReader>(sql, () => new SqlCommand(), rdr =>
+        {
+            comments.Add(new Comment
+            {
+                Id = rdr.AsInt("Id"),
+                PostId = rdr.AsInt("PostId"),
+                AuthorId = rdr.AsInt("UserId"),
+                Text = rdr.AsString("Text"),
+                PostedDate = rdr.AsDateTime("PostedDate"),
+                Status = (CommentStatuses)rdr.AsInt("Status"),
+            });
+            return true;
+        }, cmd => cmd.Parameters.AddWithValue("@postId", postId));
+        return comments;
+    }
+
     public void SaveSetting(BlogSettings setting, string value)
     {
         Connect();
