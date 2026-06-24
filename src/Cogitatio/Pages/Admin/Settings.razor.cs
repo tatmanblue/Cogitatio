@@ -99,7 +99,6 @@ public partial class Settings : ComponentBase
     
     protected override void OnParametersSet()
     {
-        logger.LogError("OnParametersSet() called with parameters:");
         tinyMceKey = configuration.GetValue<string>("CogitatioTinyMceKey") ?? "no-api";
         
         if (!AdminUserState.IsAdmin)
