@@ -637,12 +637,15 @@ public class SqlServer : AbstractDB<SqlConnection>, IDatabase
     private void SaveTags(BlogPost post, SqlCommand cmd)
     {
         // TODO: for safety do we need to check if post.TenantId == this.tenantId?
+        bool allowMultiWord = bool.TryParse(GetSetting(Models.BlogSettings.TagAllowMultiWord, "false"), out bool mw) && mw;
+        string allowedSpecialChars = GetSetting(Models.BlogSettings.TagAllowedSpecialChars, "#.");
+
         foreach (string tag in post.Tags)
         {
-            string cleanTag = tag.Replace(" ", "");
+            string cleanTag = General.TagHelper.Normalize(tag, allowMultiWord, allowedSpecialChars);
             if (string.IsNullOrWhiteSpace(cleanTag))
                 continue;
-            
+
             cmd.Parameters.Clear();
             cmd.CommandText = @"INSERT INTO Blog_Tags (PostId, Tag, TenantId) VALUES (@postId, @tag, @tenantId);";
             cmd.Parameters.AddWithValue("@postId", post.Id);

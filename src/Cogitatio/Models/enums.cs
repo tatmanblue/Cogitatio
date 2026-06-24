@@ -66,7 +66,11 @@ public enum BlogSettings
     [Description("The Azure Communications Connection string sending emails")]
     AzureCommunicationsAccessKey,
     [Description("Azure resource id for sending emails")]
-    AzureCommunicationsResourceId
+    AzureCommunicationsResourceId,
+    [Description("Whether tags may contain spaces (multi-word phrases), false strips all spaces")]
+    TagAllowMultiWord,
+    [Description("Characters (other than letters and digits) that are permitted in tag names, e.g. #.")]
+    TagAllowedSpecialChars
 }
 
 public enum UserAccountStates

@@ -3,6 +3,6 @@
 <p>@Subline:
 @foreach (var tag in Tags)
 {
-    <a href="/search/@tag" >@tag</a>@:&nbsp;
+    <a href="/search/@Uri.EscapeDataString(tag)" >@tag</a>@:&nbsp;
 }
 </p>

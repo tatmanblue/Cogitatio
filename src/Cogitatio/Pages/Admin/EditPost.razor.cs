@@ -50,7 +50,7 @@ public partial class EditPost : ComponentBase
         post.Title = title;
         post.Content = content;
         post.Tags.Clear();
-        post.Tags.AddRange(tags.Split(','));
+        post.Tags.AddRange(tags.Split(',').Select(t => t.Trim()).Where(t => t.Length > 0));
         database.UpdatePost(post);
         
         navigationManager.NavigateTo(Constants.ROUTE_ADMIN_HOME);

@@ -113,6 +113,18 @@
                        class="form-control"
                        placeholder="Copyright (C) 2025 Matt Raffel. All rights reserved." />
             </div>
+
+            <hr />
+            <h6>Tag Settings</h6>
+            <div class="mb-3 form-check">
+                <InputCheckbox @bind-Value="@tagAllowMultiWord" class="form-check-input" id="tagAllowMultiWord" />
+                <label for="tagAllowMultiWord" class="form-check-label">Allow multi-word tags (phrases with spaces)</label>
+            </div>
+            <div class="mb-3">
+                <label for="tagAllowedSpecialChars" class="form-label">Allowed special characters in tags</label>
+                <input id="tagAllowedSpecialChars" @bind="tagAllowedSpecialChars" class="form-control" placeholder="#." />
+                <small class="text-muted">Characters (besides letters and digits) permitted in tag names. Example: <code>#.</code></small>
+            </div>
         </div>
 
         <!-- ────── Introduction Tab ────── -->

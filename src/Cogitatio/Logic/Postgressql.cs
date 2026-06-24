@@ -596,9 +596,12 @@ public class Postgresssql : AbstractDB<NpgsqlConnection>, IDatabase
     private void SaveTags(BlogPost post, NpgsqlCommand cmd)
     {
         // TODO: for safety do we need to check if post.TenantId == this.tenantId?
+        bool allowMultiWord = bool.TryParse(GetSetting(Models.BlogSettings.TagAllowMultiWord, "false"), out bool mw) && mw;
+        string allowedSpecialChars = GetSetting(Models.BlogSettings.TagAllowedSpecialChars, "#.");
+
         foreach (string tag in post.Tags)
         {
-            string cleanTag = tag.Replace(" ", "");
+            string cleanTag = General.TagHelper.Normalize(tag, allowMultiWord, allowedSpecialChars);
             if (string.IsNullOrWhiteSpace(cleanTag))
                 continue;
 

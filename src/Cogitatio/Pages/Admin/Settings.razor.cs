@@ -29,6 +29,8 @@ public partial class Settings : ComponentBase
     private string introduction = string.Empty;
     private string siteTitle = string.Empty;
     private string copyright = string.Empty;
+    private bool tagAllowMultiWord = false;
+    private string tagAllowedSpecialChars = "#.";
     
     // --------------------------------------------------------------------------
     // comment configuration
@@ -191,6 +193,12 @@ public partial class Settings : ComponentBase
                 case BlogSettings.AzureCommunicationsResourceId:
                     azureResourceId = setting.Value;
                     break;
+                case BlogSettings.TagAllowMultiWord:
+                    tagAllowMultiWord = Convert.ToBoolean(setting.Value);
+                    break;
+                case BlogSettings.TagAllowedSpecialChars:
+                    tagAllowedSpecialChars = setting.Value;
+                    break;
             }
         }
         
@@ -285,7 +293,10 @@ public partial class Settings : ComponentBase
             database.SaveSetting(BlogSettings.AdminId, adminId);
         if (!string.IsNullOrEmpty(adminPassword))
             database.SaveSetting(BlogSettings.AdminPassword, adminPassword);
-        
+
+        database.SaveSetting(BlogSettings.TagAllowMultiWord, tagAllowMultiWord.ToString());
+        database.SaveSetting(BlogSettings.TagAllowedSpecialChars, tagAllowedSpecialChars);
+
         navigationManager.NavigateTo("/a/Admin");
     }
     

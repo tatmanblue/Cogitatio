@@ -35,7 +35,7 @@ public partial class AddPost : ComponentBase
         logger.LogInformation("Publishing blog post");
         var tenantId = Convert.ToInt32(configuration["CogitatioTenantId"] ?? "0");
         BlogPost post = BlogPost.Create(tenantId, title, content);
-        post.Tags.AddRange(tags.Split(','));
+        post.Tags.AddRange(tags.Split(',').Select(t => t.Trim()).Where(t => t.Length > 0));
         database.CreatePost(post);
         navigationManager.NavigateTo(Cogitatio.General.Constants.ROUTE_HOME, forceLoad: true);
     }
