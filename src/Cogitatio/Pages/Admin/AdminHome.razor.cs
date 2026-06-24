@@ -32,6 +32,10 @@ public partial class AdminHome : ComponentBase
     protected override void OnInitialized()
     {
         useTOTP = database.GetSettingAsBool(BlogSettings.UseTOTP);
+#if DEBUG
+        if (byPassAuth)
+            AdminUserState.IsAdmin = true;
+#endif
     }
 
     private async Task Logout()
