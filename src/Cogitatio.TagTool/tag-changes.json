@@ -1,0 +1,40 @@
+{
+  "tenantId": 0,
+  "consolidations": [
+    { "from": "processes",       "to": "process"            },
+    { "from": "AI",              "to": "ai"                 },
+    { "from": "artificialintelligence", "to": "ai"          },
+    { "from": "c#",              "to": "C#"                 },
+    { "from": "architect",       "to": "architecture"       },
+    { "from": "projects",        "to": "project"            },
+    { "from": "staff",           "to": "hiring"             },
+    { "from": "teamculture",     "to": "culture"            },
+    { "from": "techdebt",        "to": "tech-debt"          },
+    { "from": "hiddencosts",     "to": "hidden-costs"       },
+    { "from": "projectmanagement","to": "project-management"},
+    { "from": "GRPC",            "to": "grpc"               },
+    { "from": "hashalgorithm",   "to": "hash-algorithm"     },
+    { "from": "year",            "to": "annual-recap"       }
+  ],
+  "deletions": [
+    "2025",
+    "software",
+    "time",
+    "motivation",
+    "organization",
+    "deepwiki",
+    "creative",
+    "promises",
+    "specialization",
+    "dotnetnuke",
+    "drupal",
+    "wordpress"
+  ],
+  "additions": [
+    { "tag": "code-review",  "postIds": [12, 23, 24] },
+    { "tag": "leadership",   "postIds": [4, 5, 15, 22, 29, 30, 42, 43] },
+    { "tag": "tech-debt",    "postIds": [41, 46] },
+    { "tag": "metrics",      "postIds": [32, 40] },
+    { "tag": "ai-tools",     "postIds": [8, 9, 47, 49] }
+  ]
+}
