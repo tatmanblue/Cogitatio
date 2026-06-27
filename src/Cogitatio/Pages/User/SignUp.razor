@@ -48,8 +48,8 @@
                 </div>
                 <button type="submit" class="btn btn-primary mt-2">Sign Up</button>
             </EditForm>
-            <div>
-                <NavLink href="/">Back to Start</NavLink>
+            <div class="mt-4 pt-3 border-top">
+                <small><NavLink href="/">Back to Start</NavLink></small>
             </div>
         </div>        
         break;
@@ -94,8 +94,8 @@
             </div>
             <button class="btn btn-primary mt-2" @onclick="Edit">Edit</button>
             <button class="btn btn-primary mt-2" @onclick="Save">Save</button>
-            <div>
-                <NavLink href="/">Back to Start</NavLink>
+            <div class="mt-4 pt-3 border-top">
+                <small><NavLink href="/">Back to Start</NavLink></small>
             </div>
         </div>            
         break;
@@ -106,17 +106,21 @@
                 <p class="text-success">Thank you for choosing to be part of the Cogitatio Community. Please verify your email,
                     which was sent to @record.Email. Once verification is complete, an administrator will activate your account.
                 </p>
-                <NavLink href="/">Back to Start</NavLink>
+                <div class="mt-4 pt-3 border-top">
+                    <small><NavLink href="/">Back to Start</NavLink></small>
+                </div>
             </div>
         </div>
         break;
     case SignUpState.NotAllowed:
     default:
         <div class="d-flex flex-column">
-            New user registrations are currently not turned off.  Please check back soon.  
+            New user registrations are currently not turned off.  Please check back soon.
             If you think this is an error, please contact support.
-            <NavLink href="/Contact">Support</NavLink>
-            <NavLink href="/">Back to Start</NavLink>
+            <div class="mt-4 pt-3 border-top d-flex gap-4">
+                <small><NavLink href="/Contact">Support</NavLink></small>
+                <small><NavLink href="/">Back to Start</NavLink></small>
+            </div>
         </div>
         break;
 }

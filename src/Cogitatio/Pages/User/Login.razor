@@ -49,7 +49,13 @@ else
     Login is currently disabled. Please check back later.  If you feel you are seeing this message in error, please contact support.
 </p>
 }
-<NavLink href="/Contact">Support</NavLink>
-<NavLink href="/">Back to Start</NavLink>
+<div class="mt-4 pt-3 border-top d-flex gap-4">
+    @if (site.AllowNewUsers)
+    {
+        <small><NavLink href="/u/SignUp">Create an account</NavLink></small>
+    }
+    <small><NavLink href="/Contact">Support</NavLink></small>
+    <small><NavLink href="/">Back to Start</NavLink></small>
+</div>
 
 <script src="js/pow.js"></script>
