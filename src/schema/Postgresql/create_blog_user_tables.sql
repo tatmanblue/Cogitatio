@@ -12,7 +12,8 @@ CREATE TABLE IF NOT EXISTS blog_users (
     password_hash VARCHAR(255) NOT NULL,
     account_state INT NOT NULL DEFAULT 0,    -- maps to enum UserAccountStates
     tenant_id INT NOT NULL DEFAULT 0,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    notification_flags INT NOT NULL DEFAULT 3  -- maps to [Flags] enum NotificationFlags; 3 = NewPosts|Periodic
 );
 
 CREATE INDEX ix_blog_users_id ON blog_users (id);

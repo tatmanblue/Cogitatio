@@ -37,7 +37,8 @@ public partial class UserManager : ComponentBase
                 DisplayName = u.DisplayName,
                 Email = u.Email,
                 CreatedAt = u.CreatedAt,
-                AccountState = u.AccountState 
+                AccountState = u.AccountState,
+                NotificationFlags = u.NotificationFlags
             };
             return record;
         }).ToList();
@@ -82,7 +83,7 @@ public partial class UserManager : ComponentBase
     {
         if (selectedUser == -1 || false == hasChanges)
             return;
-        
+
         var user = records.FirstOrDefault(c => c.Id == id);
         if (user != null)
         {
@@ -94,6 +95,8 @@ public partial class UserManager : ComponentBase
                 userDB.UpdatePassword(user);
                 logger.LogInformation($"User {id} password has been changed");
             }
+            userDB.UpdateNotificationPreferences(user);
+            logger.LogInformation($"User {id} notification preferences have been updated");
         }
 
         HideDetails(selectedUser);
@@ -111,6 +114,18 @@ public partial class UserManager : ComponentBase
         {
             user.AccountState = state;
         }
+    }
+
+    private void ToggleNotificationFlag(int id, NotificationFlags flag, bool enabled)
+    {
+        selectedUser = id;
+        hasChanges = true;
+        var user = records.FirstOrDefault(c => c.Id == id);
+        if (user == null) return;
+        if (enabled)
+            user.NotificationFlags |= flag;
+        else
+            user.NotificationFlags &= ~flag;
     }
 
     class AdminUserRecord : BlogUserRecord

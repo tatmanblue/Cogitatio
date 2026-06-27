@@ -1,0 +1,22 @@
+@page "/u/Unsubscribe/{Token}"
+
+<h3>Unsubscribe</h3>
+
+@if (processing)
+{
+    <p>Processing your request...</p>
+}
+else if (success)
+{
+    <div class="d-flex flex-column">
+        <p class="text-success">You have been successfully unsubscribed from new post notifications.</p>
+        <NavLink href="/">Back to Home</NavLink>
+    </div>
+}
+else
+{
+    <div class="d-flex flex-column">
+        <p class="text-danger">@errorMessage</p>
+        <NavLink href="/">Back to Home</NavLink>
+    </div>
+}

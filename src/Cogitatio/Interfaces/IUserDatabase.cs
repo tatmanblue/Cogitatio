@@ -37,6 +37,12 @@ public interface IUserDatabase
     void UpdatePassword(BlogUserRecord record);
     void UpdateStatus(BlogUserRecord user);
     void UpdateVerificationId(BlogUserRecord user);
+    void UpdateNotificationPreferences(BlogUserRecord user);
+    /// <summary>
+    /// Returns all users eligible to receive new-post notifications:
+    /// NotificationFlags has the NewPosts bit set and AccountState is an active commenting state.
+    /// </summary>
+    List<BlogUserRecord> LoadAllForNotification();
     bool DoesUserExist(string email);
     bool DoesUserExist(int id);
 }

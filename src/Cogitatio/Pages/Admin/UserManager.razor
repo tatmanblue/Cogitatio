@@ -72,6 +72,25 @@
                                     </div>
                                 </div>
 
+                                <div class="flex-grow-1">
+                                    <!-- Notification preferences section -->
+                                    <div class="mb-3">
+                                        <strong>Notifications</strong>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="notifyNewPosts_@user.Id"
+                                               checked="@user.NotificationFlags.HasFlag(NotificationFlags.NewPosts)"
+                                               @onchange="e => ToggleNotificationFlag(user.Id, NotificationFlags.NewPosts, (bool)e.Value!)" />
+                                        <label class="form-check-label" for="notifyNewPosts_@user.Id">New post notifications</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="notifyPeriodic_@user.Id"
+                                               checked="@user.NotificationFlags.HasFlag(NotificationFlags.Periodic)"
+                                               @onchange="e => ToggleNotificationFlag(user.Id, NotificationFlags.Periodic, (bool)e.Value!)" />
+                                        <label class="form-check-label" for="notifyPeriodic_@user.Id">Periodic updates</label>
+                                    </div>
+                                </div>
+
                                 <div class="flex-shrink-0 gap-2">
                                     <div class="mb-3">&nbsp;</div>
                                     <button class="btn btn-primary btn-sm" @onclick="() => Save(user.Id)">Save</button>

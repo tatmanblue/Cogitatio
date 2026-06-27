@@ -14,7 +14,7 @@ public class PostgresssqlUsers : AbstractDB<NpgsqlConnection>, IUserDatabase
     private readonly ILogger<IUserDatabase> logger;
 
     private const string SELECT_FROM =
-        @"SELECT id, display_name, email, ip_address, two_factor_secret, password_hash, verification_id, verification_expiry, account_state, created_at
+        @"SELECT id, display_name, email, ip_address, two_factor_secret, password_hash, verification_id, verification_expiry, account_state, notification_flags, created_at
           FROM blog_users ";
 
     public PostgresssqlUsers(ILogger<IUserDatabase> logger, string connectionString, int tenantId) : base(connectionString, tenantId)
@@ -41,8 +41,8 @@ public class PostgresssqlUsers : AbstractDB<NpgsqlConnection>, IUserDatabase
         cmd.CommandType = CommandType.Text;
         cmd.Connection = connection;
         cmd.Parameters.Clear();
-        cmd.CommandText = @"INSERT INTO blog_users (display_name, email, ip_address, two_factor_secret, verification_id, verification_expiry, password_hash, account_state, tenant_id)
-                VALUES (@displayName, @email, @ipAddress, @twoFactorSecret, @verificationId, @verificationExpiry, @passwordHash, @accountState, @tenantId)
+        cmd.CommandText = @"INSERT INTO blog_users (display_name, email, ip_address, two_factor_secret, verification_id, verification_expiry, password_hash, account_state, tenant_id, notification_flags)
+                VALUES (@displayName, @email, @ipAddress, @twoFactorSecret, @verificationId, @verificationExpiry, @passwordHash, @accountState, @tenantId, @notificationFlags)
                 RETURNING id";
         cmd.Parameters.AddWithValue("displayName", user.DisplayName);
         cmd.Parameters.AddWithValue("email", user.Email);
@@ -53,6 +53,7 @@ public class PostgresssqlUsers : AbstractDB<NpgsqlConnection>, IUserDatabase
         cmd.Parameters.AddWithValue("passwordHash", user.Password);
         cmd.Parameters.AddWithValue("accountState", (int)user.AccountState);
         cmd.Parameters.AddWithValue("tenantId", tenantId);
+        cmd.Parameters.AddWithValue("notificationFlags", (int)user.NotificationFlags);
 
         user.Id = (int)cmd.ExecuteScalar();
         logger.LogInformation($"Blog User Created Successfully, id {user.Id}");
@@ -147,7 +148,7 @@ public class PostgresssqlUsers : AbstractDB<NpgsqlConnection>, IUserDatabase
     {
         Connect();
         List<BlogUserRecord> users = new();
-        string sql = @"SELECT id, display_name, email, ip_address, two_factor_secret, password_hash, verification_id, verification_expiry, account_state, created_at
+        string sql = @"SELECT id, display_name, email, ip_address, two_factor_secret, password_hash, verification_id, verification_expiry, account_state, notification_flags, created_at
             FROM blog_users WHERE tenant_id = @tenantId ORDER BY account_state";
         ExecuteReader<NpgsqlCommand, NpgsqlDataReader>(sql, () =>
         {
@@ -211,6 +212,40 @@ public class PostgresssqlUsers : AbstractDB<NpgsqlConnection>, IUserDatabase
         logger.LogInformation($"Blog User Updated Successfully, id {user.Id}, new verification Id {user.VerificationId}");
     }
 
+    public void UpdateNotificationPreferences(BlogUserRecord user)
+    {
+        Connect();
+        using NpgsqlCommand cmd = new NpgsqlCommand();
+        cmd.CommandType = CommandType.Text;
+        cmd.Connection = connection;
+        cmd.Parameters.Clear();
+        cmd.CommandText = @"UPDATE blog_users SET notification_flags = @notificationFlags WHERE id = @id AND tenant_id = @tenantId";
+        cmd.Parameters.AddWithValue("notificationFlags", (int)user.NotificationFlags);
+        cmd.Parameters.AddWithValue("id", user.Id);
+        cmd.Parameters.AddWithValue("tenantId", tenantId);
+        cmd.ExecuteNonQuery();
+        logger.LogInformation($"Blog User notification preferences updated, id {user.Id}, flags {(int)user.NotificationFlags}");
+    }
+
+    public List<BlogUserRecord> LoadAllForNotification()
+    {
+        List<BlogUserRecord> users = new();
+        string sql = @"SELECT id, display_name, email, ip_address, two_factor_secret, password_hash, verification_id, verification_expiry, account_state, notification_flags, created_at
+            FROM blog_users
+            WHERE tenant_id = @tenantId
+              AND account_state IN (3, 4, 5)
+              AND (notification_flags & 1) = 1";
+        ExecuteReader<NpgsqlCommand, NpgsqlDataReader>(sql, () => new NpgsqlCommand(), reader =>
+        {
+            users.Add(ReadUserRecord(reader));
+            return true;
+        }, setup =>
+        {
+            setup.Parameters.AddWithValue("tenantId", tenantId);
+        });
+        return users;
+    }
+
     public void UpdatePassword(BlogUserRecord user)
     {
         Connect();
@@ -241,6 +276,7 @@ public class PostgresssqlUsers : AbstractDB<NpgsqlConnection>, IUserDatabase
             TwoFactorSecret = reader.AsString("two_factor_secret"),
             Password = reader.AsString("password_hash"),
             AccountState = (UserAccountStates)reader.AsInt("account_state"),
+            NotificationFlags = (NotificationFlags)reader.AsInt("notification_flags"),
             CreatedAt = reader.AsDateTime("created_at")
         };
     }

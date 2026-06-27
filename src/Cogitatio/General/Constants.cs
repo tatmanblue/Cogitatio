@@ -10,4 +10,5 @@ public static class Constants
     public static readonly string ROUTE_ADMIN_ADDPOST = "/a/AddPost";
     public static readonly string ROUTE_ADMIN_HOME = "/a/Admin";
     public static readonly string ROUTE_ADMIN_EDITPOST = "/a/EditPost/";
+    public static readonly string ROUTE_USER_UNSUBSCRIBE = "/u/Unsubscribe/";
 }

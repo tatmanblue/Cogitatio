@@ -14,6 +14,7 @@ CREATE TABLE Blog_Users (
     AccountState INT NOT NULL DEFAULT 0,                -- maps to enum UserAccountStates
     TenantId INT NOT NULL DEFAULT 0,                    -- comes from site settings
     CreatedAt DATETIME2 DEFAULT GETDATE(),
+    NotificationFlags INT NOT NULL DEFAULT 3,           -- maps to [Flags] enum NotificationFlags; 3 = NewPosts|Periodic
 );
 
 

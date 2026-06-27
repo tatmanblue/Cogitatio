@@ -1,7 +1,6 @@
 ﻿using Cogitatio.Interfaces;
 using Cogitatio.Models;
 using Microsoft.AspNetCore.Components;
-using Serilog.Core;
 
 namespace Cogitatio.Pages.Admin;
 
@@ -11,6 +10,7 @@ public partial class AddPost : ComponentBase
     [Inject] private IConfiguration configuration { get; set; }
     [Inject] private NavigationManager navigationManager { get; set; }
     [Inject] private IDatabase database { get; set; }
+    [Inject] private INotificationQueue notificationQueue { get; set; }
     [Inject] private AdminUserState AdminUserState { get; set; }
 
     private string title = string.Empty;
@@ -37,6 +37,7 @@ public partial class AddPost : ComponentBase
         BlogPost post = BlogPost.Create(tenantId, title, content);
         post.Tags.AddRange(tags.Split(',').Select(t => t.Trim()).Where(t => t.Length > 0));
         database.CreatePost(post);
+        notificationQueue.Enqueue(post);
         navigationManager.NavigateTo(Cogitatio.General.Constants.ROUTE_HOME, forceLoad: true);
     }
     

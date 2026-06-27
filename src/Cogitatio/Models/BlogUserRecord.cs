@@ -16,6 +16,7 @@ public class BlogUserRecord
     public DateTime VerificationExpiry { get; set; } = DateTime.Now.AddDays(-1);
     public string Password { get; set; } = string.Empty;
     public DateTime CreatedAt { get; set; }
+    public NotificationFlags NotificationFlags { get; set; } = NotificationFlags.NewPosts | NotificationFlags.Periodic;
 
 }
 

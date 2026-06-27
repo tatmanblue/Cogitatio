@@ -113,6 +113,8 @@ public partial class SignUp : ComponentBase
     private string passwordMessage = string.Empty;
     private string errorMessage = string.Empty;
     private bool userAgreed = false;
+    private bool notifyNewPosts = true;
+    private bool notifyPeriodic = true;
     
     protected override void OnInitialized()
     {
@@ -248,6 +250,9 @@ public partial class SignUp : ComponentBase
             record.IpAddress = userIp;
             record.VerificationId = Guid.NewGuid().ToSecureToken();
             record.VerificationExpiry = DateTime.Now.AddHours(12);
+            record.NotificationFlags = NotificationFlags.None;
+            if (notifyNewPosts) record.NotificationFlags |= NotificationFlags.NewPosts;
+            if (notifyPeriodic) record.NotificationFlags |= NotificationFlags.Periodic;
             userDB.Save(record);
             signUpState = SignUpState.Saved;
 

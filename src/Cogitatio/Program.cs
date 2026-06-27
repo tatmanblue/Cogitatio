@@ -158,6 +158,35 @@ builder.Services.AddTransient<IEmailSender>(p =>
             return new MockEmailSender(logger);
     }
 });
+// Notification token database — uses same connection string as user database
+builder.Services.AddScoped<INotificationTokenDatabase>(p =>
+{
+    var configuration = p.GetRequiredService<IConfiguration>();
+    var tenantId = Convert.ToInt32(configuration["CogitatioTenantId"] ?? "0");
+    var dbType = configuration["CogitatioDBType"] ?? "MSSQL";
+    var db = p.GetRequiredService<IDatabase>();
+    var logger = p.GetRequiredService<ILoggerFactory>()
+        .CreateLogger<INotificationTokenDatabase>();
+
+    var defaultConnection = configuration["CogitatioSiteDB"];
+    var connectionString = db.GetSetting(BlogSettings.UserDBConnectionString, defaultConnection);
+    if (string.IsNullOrEmpty(connectionString))
+        connectionString = defaultConnection;
+
+    INotificationTokenDatabase tokenDb = dbType switch
+    {
+        "MSSQL" => new SqlServerNotificationTokens(logger, connectionString, tenantId),
+        "POSTGRES" => new PostgresqlNotificationTokens(logger, connectionString, tenantId),
+        _ => throw new NotSupportedException($"Database type {dbType} is not supported.")
+    };
+
+    return tokenDb;
+});
+// Notification queue — singleton so the channel outlives individual requests
+builder.Services.AddSingleton<INotificationQueue, NotificationQueue>();
+// Background service that reads from the queue and sends notification emails
+// Note: add CogitatioSiteUrl to your .env file (e.g. CogitatioSiteUrl=https://blog.example.com)
+builder.Services.AddHostedService<NotificationBackgroundService>();
 // so that comments load quicker, we have a resolver that helps match user db entries with comment authors
 builder.Services.AddScoped<UserCommentsResolver>();
 

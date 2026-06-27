@@ -14,7 +14,7 @@ public class SqlServerUsers : AbstractDB<SqlConnection>, IUserDatabase
     private ILogger<IUserDatabase> logger;
 
     private readonly string SELECT_FROM =
-        @"SELECT TOP 1 Id, DisplayName, Email, IpAddress, TwoFactorSecret, PasswordHash, VerificationId, VerificationExpiry, AccountState, CreatedAt
+        @"SELECT TOP 1 Id, DisplayName, Email, IpAddress, TwoFactorSecret, PasswordHash, VerificationId, VerificationExpiry, AccountState, NotificationFlags, CreatedAt
                 FROM Blog_Users ";
 
     public SqlServerUsers(ILogger<IUserDatabase> logger, string connectionStr, int tenantId) : base(connectionStr, tenantId)
@@ -41,8 +41,8 @@ public class SqlServerUsers : AbstractDB<SqlConnection>, IUserDatabase
         cmd.CommandType = CommandType.Text;
         cmd.Connection = connection;
         cmd.Parameters.Clear();
-        cmd.CommandText = @"INSERT INTO Blog_Users (DisplayName, Email, IpAddress, TwoFactorSecret, VerificationId, VerificationExpiry, PasswordHash, AccountState, TenantId)
-                OUTPUT INSERTED.Id 
+        cmd.CommandText = @"INSERT INTO Blog_Users (DisplayName, Email, IpAddress, TwoFactorSecret, VerificationId, VerificationExpiry, PasswordHash, AccountState, TenantId, NotificationFlags)
+                OUTPUT INSERTED.Id
                 VALUES
                 (
                     @displayName,
@@ -53,7 +53,8 @@ public class SqlServerUsers : AbstractDB<SqlConnection>, IUserDatabase
                     @verificationExpiry,
                     @passwordHash,
                     @accountState,
-                    @TenantId
+                    @TenantId,
+                    @notificationFlags
                 )";
         cmd.Parameters.AddWithValue("@displayName", user.DisplayName);
         cmd.Parameters.AddWithValue("@email", user.Email);
@@ -64,6 +65,7 @@ public class SqlServerUsers : AbstractDB<SqlConnection>, IUserDatabase
         cmd.Parameters.AddWithValue("@passwordHash", user.Password);
         cmd.Parameters.AddWithValue("@accountState", (int)user.AccountState);
         cmd.Parameters.AddWithValue("@TenantId", tenantId);
+        cmd.Parameters.AddWithValue("@notificationFlags", (int)user.NotificationFlags);
         
         user.Id = (int)cmd.ExecuteScalar();
         logger.LogInformation($"Blog User Created Successfully, id {user.Id}");
@@ -156,7 +158,7 @@ public class SqlServerUsers : AbstractDB<SqlConnection>, IUserDatabase
     {
         Connect();
         List<BlogUserRecord> users = new();
-        string sql = @"SELECT Id, DisplayName, Email, IpAddress, TwoFactorSecret, PasswordHash, VerificationId, VerificationExpiry, AccountState, CreatedAt
+        string sql = @"SELECT Id, DisplayName, Email, IpAddress, TwoFactorSecret, PasswordHash, VerificationId, VerificationExpiry, AccountState, NotificationFlags, CreatedAt
             FROM Blog_Users WHERE TenantId = @TenantId ORDER BY AccountState";
         ExecuteReader<SqlCommand, SqlDataReader>(sql, () =>
         {
@@ -219,6 +221,40 @@ public class SqlServerUsers : AbstractDB<SqlConnection>, IUserDatabase
         logger.LogInformation($"Blog User Updated Successfully, id {user.Id}, new verification Id {user.VerificationId}");
     }
     
+    public void UpdateNotificationPreferences(BlogUserRecord user)
+    {
+        Connect();
+        using SqlCommand cmd = new SqlCommand();
+        cmd.CommandType = CommandType.Text;
+        cmd.Connection = connection;
+        cmd.Parameters.Clear();
+        cmd.CommandText = @"UPDATE Blog_Users SET NotificationFlags = @notificationFlags WHERE Id = @id AND TenantId = @TenantId";
+        cmd.Parameters.AddWithValue("@notificationFlags", (int)user.NotificationFlags);
+        cmd.Parameters.AddWithValue("@id", user.Id);
+        cmd.Parameters.AddWithValue("@TenantId", tenantId);
+        cmd.ExecuteNonQuery();
+        logger.LogInformation($"Blog User notification preferences updated, id {user.Id}, flags {(int)user.NotificationFlags}");
+    }
+
+    public List<BlogUserRecord> LoadAllForNotification()
+    {
+        List<BlogUserRecord> users = new();
+        string sql = @"SELECT Id, DisplayName, Email, IpAddress, TwoFactorSecret, PasswordHash, VerificationId, VerificationExpiry, AccountState, NotificationFlags, CreatedAt
+            FROM Blog_Users
+            WHERE TenantId = @TenantId
+              AND AccountState IN (3, 4, 5)
+              AND (NotificationFlags & 1) = 1";
+        ExecuteReader<SqlCommand, SqlDataReader>(sql, () => new SqlCommand(), reader =>
+        {
+            users.Add(ReadUserRecord(reader));
+            return true;
+        }, setup =>
+        {
+            setup.Parameters.AddWithValue("@TenantId", tenantId);
+        });
+        return users;
+    }
+
     public void UpdatePassword(BlogUserRecord user)
     {
         Connect();
@@ -251,6 +287,7 @@ public class SqlServerUsers : AbstractDB<SqlConnection>, IUserDatabase
             TwoFactorSecret = reader.AsString("TwoFactorSecret"),
             Password = reader.AsString("PasswordHash"),
             AccountState = (UserAccountStates)reader.AsInt("AccountState"),
+            NotificationFlags = (NotificationFlags)reader.AsInt("NotificationFlags"),
             CreatedAt = reader.AsDateTime("CreatedAt")
         };
     }

@@ -99,3 +99,16 @@ public enum CommentStatuses
     AwaitingApproval,
     Approved,                           // only approved comments are visible
 }
+
+[Flags]
+public enum NotificationFlags
+{
+    None     = 0,
+    NewPosts = 1,                       // receive email when a new post is published
+    Periodic = 2                        // receive periodic update emails (sending logic not yet implemented)
+}
+
+public enum NotificationTokenType
+{
+    UnsubscribeNewPosts = 0             // one-click token to opt out of new post notifications
+}
