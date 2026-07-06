@@ -26,6 +26,8 @@ Since then, Cogitatio has grown a bit.  However, I hope you will still find it a
 11. MS SQL or Postgres backend
 
 
+## Example
+![Example](docs/example.png)
 
 ## System Requirements at a glance
 
