@@ -42,7 +42,9 @@ public class NotificationBackgroundService : BackgroundService
     {
         var siteUrl = (configuration["CogitatioSiteUrl"] ?? string.Empty).TrimEnd('/');
         var postUrl = $"{siteUrl}/post/{post.Slug}";
-        var teaser = BuildTeaser(post.Content);
+        var teaser = !string.IsNullOrEmpty(post.Excerpt)
+            ? System.Net.WebUtility.HtmlEncode(post.Excerpt)
+            : BuildTeaser(post.Content);
 
         using var scope = scopeFactory.CreateScope();
         var userDb = scope.ServiceProvider.GetRequiredService<IUserDatabase>();
@@ -80,10 +82,10 @@ public class NotificationBackgroundService : BackgroundService
     private static string BuildTeaser(string htmlContent, int maxLength = 200)
     {
         var plain = htmlContent.PlainText();
-        if (plain.Length <= maxLength) return plain;
+        if (plain.Length <= maxLength) return System.Net.WebUtility.HtmlEncode(plain);
         var truncated = plain[..maxLength];
         var lastSpace = truncated.LastIndexOf(' ');
-        return (lastSpace > 0 ? truncated[..lastSpace] : truncated) + "…";
+        return System.Net.WebUtility.HtmlEncode((lastSpace > 0 ? truncated[..lastSpace] : truncated) + "…");
     }
 
     private static string BuildEmailBody(string siteTitle, string postTitle, string teaser, string postUrl, string unsubscribeUrl) => $"""
