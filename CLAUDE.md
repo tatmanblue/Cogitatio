@@ -61,6 +61,12 @@ wwwroot - dotnet directory for standard web assets
 - Multi-tenant architecture — the codebase uses TenantId throughout database operations. 
 - Two database providers — when writing SQL or schema changes, both implementations should be provided 9MSSQL and PostgreSQL versions)
 
+## Specific Coding Style Instructions
+Please adhere to standard C# conventions unless instructed elsewhere.  If there appears to be conflicts or discrenpancies, please raise these during planning.
+
+- do not use var
+- do not use underscore _ for class instance variables
+
 ## Build & Run
 - Set up a .env file in src/Cogitatio/ for local configuration (uses DotNetEnv)
 - Run via the AppHost V2 Aspire project for full orchestration
