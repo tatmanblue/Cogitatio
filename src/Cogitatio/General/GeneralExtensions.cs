@@ -33,10 +33,75 @@ public static class GeneralExtensions
 
             // Standard pattern for: name@domain.extension
             string pattern = @"^[^@\s]+@[^@\s]+\.[^@\s]+$";
-    
+
             return Regex.IsMatch(str, pattern, RegexOptions.IgnoreCase);
         }
+
+        /// <summary>
+        /// Truncates HTML to maxLength visible characters, closing any open tags cleanly.
+        /// Counts only rendered text characters, not tag markup.
+        /// </summary>
+        public string TruncateHtml(int maxLength)
+        {
+            if (string.IsNullOrEmpty(str)) return str;
+
+            var result = new System.Text.StringBuilder();
+            var openTags = new Stack<string>();
+            int visibleChars = 0;
+            int i = 0;
+
+            while (i < str.Length)
+            {
+                if (str[i] == '<')
+                {
+                    int closePos = str.IndexOf('>', i);
+                    if (closePos < 0) break;
+
+                    string tag = str.Substring(i, closePos - i + 1);
+                    string name = HtmlTagName(tag);
+
+                    if (tag.Length > 1 && tag[1] == '/')
+                    {
+                        if (openTags.Count > 0) openTags.Pop();
+                    }
+                    else if (!tag.EndsWith("/>") && !HtmlIsSelfClosing(name))
+                    {
+                        openTags.Push(name);
+                    }
+
+                    result.Append(tag);
+                    i = closePos + 1;
+                }
+                else
+                {
+                    result.Append(str[i]);
+                    visibleChars++;
+                    i++;
+
+                    if (visibleChars >= maxLength)
+                    {
+                        result.Append("...");
+                        while (openTags.Count > 0)
+                            result.Append($"</{openTags.Pop()}>");
+                        return result.ToString();
+                    }
+                }
+            }
+
+            return result.ToString();
+        }
     }
+
+    private static string HtmlTagName(string tag)
+    {
+        string inner = tag.TrimStart('<').TrimEnd('>').TrimStart('/').Trim();
+        int space = inner.IndexOf(' ');
+        return (space < 0 ? inner : inner[..space]).ToLowerInvariant();
+    }
+
+    private static bool HtmlIsSelfClosing(string name) =>
+        name is "br" or "hr" or "img" or "input" or "meta" or "link"
+              or "area" or "base" or "col" or "embed" or "param" or "source";
 
     extension(IHttpContextAccessor accessor)
     {

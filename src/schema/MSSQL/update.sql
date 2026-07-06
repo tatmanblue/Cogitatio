@@ -1,4 +1,7 @@
-﻿-- For Existing sites
+﻿-- Add optional excerpt/summary field to posts
+ALTER TABLE Blog_Posts ADD Excerpt NVARCHAR(500) NULL;
+
+-- For Existing sites
 ALTER TABLE Blog_Posts
     ADD TenantId INT NOT NULL CONSTRAINT DF_Blog_Posts_TenantId DEFAULT 0;
 

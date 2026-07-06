@@ -15,19 +15,22 @@ public partial class AddPost : ComponentBase
 
     private string title = string.Empty;
     private string tags = string.Empty;
+    private string excerpt = string.Empty;
     private string content = "<b>New blog Post</b>";
-    
-    
+    private string apiKey = string.Empty;
+
     private Dictionary<string, object> editorConfig = new Dictionary<string, object>{
         { "menubar", true },
         { "plugins", "link image code" },
-        { "toolbar", "undo redo | styleselect | forecolor | bold italic | alignleft aligncenter alignright alignjustify | outdent indent | link image | code" }
+        { "toolbar", "undo redo | styleselect | blockquote | bullist numlist | forecolor | bold italic | alignleft aligncenter alignright alignjustify | outdent indent | link image | code" }
     };
 
     protected override void OnParametersSet()
     {
         if (!AdminUserState.IsAdmin)
             navigationManager.NavigateTo(Cogitatio.General.Constants.ROUTE_ADMIN_HOME);
+
+        apiKey = configuration["CogitatioTinyMceKey"] ?? string.Empty;
     }
     
     private async Task Publish()
@@ -35,6 +38,7 @@ public partial class AddPost : ComponentBase
         logger.LogInformation("Publishing blog post");
         var tenantId = Convert.ToInt32(configuration["CogitatioTenantId"] ?? "0");
         BlogPost post = BlogPost.Create(tenantId, title, content);
+        post.Excerpt = string.IsNullOrWhiteSpace(excerpt) ? null : excerpt.Trim();
         post.Tags.AddRange(tags.Split(',').Select(t => t.Trim()).Where(t => t.Length > 0));
         database.CreatePost(post);
         notificationQueue.Enqueue(post);

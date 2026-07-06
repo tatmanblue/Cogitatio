@@ -1,4 +1,5 @@
-﻿using Cogitatio.Interfaces;
+﻿using Cogitatio.General;
+using Cogitatio.Interfaces;
 using Cogitatio.Models;
 using Microsoft.AspNetCore.Components;
 
@@ -15,15 +16,17 @@ public partial class BlogPostShort : ComponentBase
     private string GetShortenedContent()
     {
         const int maxLength = 250;
-        
-        if (PostContent == null) return string.Empty;
-        if (string.IsNullOrEmpty(PostContent.Content)) return string.Empty;
-        if (maxLength > PostContent.Content.Length)
-            return PostContent.Content;
-        
-        string shortenedContent = PostContent.Content.Substring(0, maxLength);
-        logger.LogDebug($"Content Length: {PostContent.Content.Length} so truncated to [{shortenedContent}]");
 
-        return $"{shortenedContent}...";
+        if (PostContent == null) return string.Empty;
+
+        if (!string.IsNullOrEmpty(PostContent.Excerpt))
+            return $"<p>{System.Net.WebUtility.HtmlEncode(PostContent.Excerpt)}</p>";
+
+        if (string.IsNullOrEmpty(PostContent.Content)) return string.Empty;
+        if (PostContent.Content.Length <= maxLength) return PostContent.Content;
+
+        string truncated = PostContent.Content.TruncateHtml(maxLength);
+        logger.LogDebug($"Content length {PostContent.Content.Length} truncated to {truncated.Length}");
+        return truncated;
     }
 }

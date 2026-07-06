@@ -10,8 +10,9 @@ public class BlogPost
     public string Title { get; set; } = string.Empty;
     public string Author { get; set; } = string.Empty;
     public DateTime PublishedDate { get; set; } = DateTime.MinValue;
-    public string Content { get; set; } = string.Empty; 
-    public string Slug { get; set; } = string.Empty;     
+    public string Content { get; set; } = string.Empty;
+    public string? Excerpt { get; set; }
+    public string Slug { get; set; } = string.Empty;
     public List<string> Tags { get; set; } = new();
     public List<Comment> Comments { get; set; } = new();
     public BlogPostStatuses Status { get; set; } = BlogPostStatuses.NA;

@@ -7,6 +7,7 @@ CREATE TABLE Blog_Posts (
     Author NVARCHAR(100) NOT NULL,        -- Author name
     PublishedDate DATETIME NOT NULL DEFAULT GETDATE(), -- Publish date
     Content NVARCHAR(MAX) NOT NULL,       -- Content of the blog post
+    Excerpt NVARCHAR(500) NULL,           -- Optional short summary shown on listing pages
     Status INT NOT NULL DEFAULT 0,
     TenantId INT NOT NULL DEFAULT 0,      -- Tenant ID for multi-tenant support
 );

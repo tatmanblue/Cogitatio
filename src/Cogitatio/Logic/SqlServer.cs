@@ -125,14 +125,15 @@ public class SqlServer : AbstractDB<SqlConnection>, IDatabase
             cmd.CommandType = CommandType.Text;
             cmd.Connection = connection;
             cmd.Parameters.Clear();
-            cmd.CommandText = @"INSERT INTO Blog_Posts (Slug, Title, Author, Content, Status, TenantId)
-                OUTPUT INSERTED.PostId 
+            cmd.CommandText = @"INSERT INTO Blog_Posts (Slug, Title, Author, Content, Excerpt, Status, TenantId)
+                OUTPUT INSERTED.PostId
                 VALUES
                 (
                     @slug,
                     @title,
                     @author,
                     @content,
+                    @excerpt,
                     1,
                     @TenantId
                 )";
@@ -140,6 +141,7 @@ public class SqlServer : AbstractDB<SqlConnection>, IDatabase
             cmd.Parameters.AddWithValue("@title", post.Title);
             cmd.Parameters.AddWithValue("@author", post.Author);
             cmd.Parameters.AddWithValue("@content", post.Content);
+            cmd.Parameters.AddWithValue("@excerpt", string.IsNullOrEmpty(post.Excerpt) ? DBNull.Value : (object)post.Excerpt);
             cmd.Parameters.AddWithValue("@TenantId", tenantId);
 
             post.Id = (int)cmd.ExecuteScalar();
@@ -165,15 +167,17 @@ public class SqlServer : AbstractDB<SqlConnection>, IDatabase
             using SqlCommand cmd = new SqlCommand();
             cmd.CommandType = CommandType.Text;
             cmd.Connection = connection;
-            cmd.CommandText = @"UPDATE Blog_Posts SET 
+            cmd.CommandText = @"UPDATE Blog_Posts SET
                       title = @title,
                       author = @author,
-                      content = @content
+                      content = @content,
+                      Excerpt = @excerpt
                       WHERE PostId = @postId";
             cmd.Parameters.AddWithValue("@postId", post.Id);
             cmd.Parameters.AddWithValue("@title", post.Title);
             cmd.Parameters.AddWithValue("@author", post.Author);
             cmd.Parameters.AddWithValue("@content", post.Content);
+            cmd.Parameters.AddWithValue("@excerpt", string.IsNullOrEmpty(post.Excerpt) ? DBNull.Value : (object)post.Excerpt);
 
             int rows = cmd.ExecuteNonQuery();
             if (rows == 0)
@@ -535,7 +539,7 @@ public class SqlServer : AbstractDB<SqlConnection>, IDatabase
     public List<BlogPost> GetAllPosts()
     {
         List<BlogPost> result = new();
-        string sql = @"SELECT PostId, TenantId, Title, Author, Content, Slug, PublishedDate, Status
+        string sql = @"SELECT PostId, TenantId, Title, Author, Content, Excerpt, Slug, PublishedDate, Status
                        FROM Blog_Posts WHERE TenantId = @TenantId ORDER BY PostId";
         ExecuteReader<SqlCommand, SqlDataReader>(sql, () => new SqlCommand(), rdr =>
         {
@@ -546,6 +550,7 @@ public class SqlServer : AbstractDB<SqlConnection>, IDatabase
                 Title = rdr.AsString("Title"),
                 Author = rdr.AsString("Author"),
                 Content = rdr.AsString("Content"),
+                Excerpt = rdr.AsString("Excerpt") is { Length: > 0 } e ? e : null,
                 Slug = rdr.AsString("Slug"),
                 PublishedDate = rdr.AsDateTime("PublishedDate"),
                 Status = (BlogPostStatuses)rdr.AsInt("Status"),
@@ -618,6 +623,7 @@ public class SqlServer : AbstractDB<SqlConnection>, IDatabase
         result.Id = rdr.AsInt("PostId");
         result.Author = rdr.AsString("Author");
         result.Content = rdr.AsString("Content");
+        result.Excerpt = rdr.AsString("Excerpt") is { Length: > 0 } e ? e : null;
         result.Title = rdr.AsString("Title");
         result.Slug = rdr.AsString("Slug");
         result.PublishedDate = rdr.AsDateTime("PublishedDate");

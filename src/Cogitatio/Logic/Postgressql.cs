@@ -118,13 +118,14 @@ public class Postgresssql : AbstractDB<NpgsqlConnection>, IDatabase
             cmd.CommandType = CommandType.Text;
             cmd.Connection = connection;
             cmd.Parameters.Clear();
-            cmd.CommandText = @"INSERT INTO blog_posts (slug, title, author, content, status, tenant_id)
-                VALUES (@slug, @title, @author, @content, 1, @tenantId)
+            cmd.CommandText = @"INSERT INTO blog_posts (slug, title, author, content, excerpt, status, tenant_id)
+                VALUES (@slug, @title, @author, @content, @excerpt, 1, @tenantId)
                 RETURNING post_id";
             cmd.Parameters.AddWithValue("slug", post.Slug);
             cmd.Parameters.AddWithValue("title", post.Title);
             cmd.Parameters.AddWithValue("author", post.Author);
             cmd.Parameters.AddWithValue("content", post.Content);
+            cmd.Parameters.AddWithValue("excerpt", string.IsNullOrEmpty(post.Excerpt) ? DBNull.Value : (object)post.Excerpt);
             cmd.Parameters.AddWithValue("tenantId", tenantId);
 
             post.Id = (int)cmd.ExecuteScalar();
@@ -153,12 +154,14 @@ public class Postgresssql : AbstractDB<NpgsqlConnection>, IDatabase
             cmd.CommandText = @"UPDATE blog_posts SET
                       title = @title,
                       author = @author,
-                      content = @content
+                      content = @content,
+                      excerpt = @excerpt
                       WHERE post_id = @postId";
             cmd.Parameters.AddWithValue("postId", post.Id);
             cmd.Parameters.AddWithValue("title", post.Title);
             cmd.Parameters.AddWithValue("author", post.Author);
             cmd.Parameters.AddWithValue("content", post.Content);
+            cmd.Parameters.AddWithValue("excerpt", string.IsNullOrEmpty(post.Excerpt) ? DBNull.Value : (object)post.Excerpt);
 
             int rows = cmd.ExecuteNonQuery();
             if (rows == 0)
@@ -506,7 +509,7 @@ public class Postgresssql : AbstractDB<NpgsqlConnection>, IDatabase
     public List<BlogPost> GetAllPosts()
     {
         List<BlogPost> result = new();
-        string sql = @"SELECT post_id, tenant_id, title, author, content, slug, published_date, status
+        string sql = @"SELECT post_id, tenant_id, title, author, content, excerpt, slug, published_date, status
                        FROM blog_posts WHERE tenant_id = @n1 ORDER BY post_id";
         ExecuteReader<NpgsqlCommand, NpgsqlDataReader>(sql, () => new NpgsqlCommand(), rdr =>
         {
@@ -517,6 +520,7 @@ public class Postgresssql : AbstractDB<NpgsqlConnection>, IDatabase
                 Title = rdr.AsString("title"),
                 Author = rdr.AsString("author"),
                 Content = rdr.AsString("content"),
+                Excerpt = rdr.AsString("excerpt") is { Length: > 0 } e ? e : null,
                 Slug = rdr.AsString("slug"),
                 PublishedDate = rdr.AsDateTime("published_date"),
                 Status = (BlogPostStatuses)rdr.AsInt("status"),
@@ -577,6 +581,7 @@ public class Postgresssql : AbstractDB<NpgsqlConnection>, IDatabase
         result.Id = rdr.AsInt("post_id");
         result.Author = rdr.AsString("author");
         result.Content = rdr.AsString("content");
+        result.Excerpt = rdr.AsString("excerpt") is { Length: > 0 } e ? e : null;
         result.Title = rdr.AsString("title");
         result.Slug = rdr.AsString("slug");
         result.PublishedDate = rdr.AsDateTime("published_date");

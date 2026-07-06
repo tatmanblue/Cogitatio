@@ -15,10 +15,14 @@
             <label for="tags" class="form-label">Tags</label>
             <input id="tags" @bind="tags" class="form-control" placeholder="Tags (comma delimited)" />
             <small class="form-text text-muted">Separate tags with commas.</small>
-        </div>    
+        </div>
+        <div class="mb-3">
+            <label for="excerpt" class="form-label">Summary / Excerpt <small class="text-muted">(optional — shown on the home page)</small></label>
+            <textarea id="excerpt" @bind="excerpt" class="form-control" rows="2" placeholder="Brief summary displayed on the post listing page. Leave blank to auto-generate."></textarea>
+        </div>
         <TinyMCE.Blazor.Editor
             Conf="@editorConfig"
-            ApiKey="xabfxca9ddbq4r1833sdp13ycvfxwt7iz66rw55oqvt6bav5"
+            ApiKey="@apiKey"
             @bind-Value="content"/>
         <button class="btn btn-primary mt-2" @onclick=@Update>Update</button>
         <div>

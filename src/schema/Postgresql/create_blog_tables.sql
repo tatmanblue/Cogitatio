@@ -6,6 +6,7 @@ CREATE TABLE blog_posts (
     author VARCHAR(100) NOT NULL,        -- NVARCHAR(100) -> VARCHAR(100)
     published_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, -- DATETIME -> TIMESTAMP
     content TEXT NOT NULL,               -- NVARCHAR(MAX) -> TEXT
+    excerpt VARCHAR(500),                -- Optional short summary shown on listing pages
     status INT NOT NULL DEFAULT 0,
     tenant_id INT NOT NULL DEFAULT 0
 );
