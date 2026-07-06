@@ -28,7 +28,8 @@ src/AppHost V2 - .NET aspire project
 src/Cogitatio - main CMS code base  
 src/ServiceDefaults - extension for AppHost V2  
 src/schema - database schema files   
-src/Cogitatio.DbMigrate -- CLI tool for migrating blog data between databases
+src/Cogitatio.DbMigrate -- CLI tool for migrating blog data between databases  
+src/Cogitatio.TagTool -- tool for mass tag management  
 
 ## Project structure for Cogitatio - main CMS code base
 
