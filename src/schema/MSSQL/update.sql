@@ -11,7 +11,12 @@ CREATE INDEX [IX_Blog_Posts_TenantId] ON [Blog_Posts]
 ALTER TABLE Blog_Tags
     ADD TenantId INT NOT NULL CONSTRAINT DF_Blog_Tags_TenantId DEFAULT 0;
 
+-- Support fast recent-posts lookups on the home page and date-range search
+CREATE INDEX [IX_Blog_Posts_PublishedDate] ON [Blog_Posts]
+    (PublishedDate);
 
+CREATE INDEX [IX_Blog_Posts_TenantId_PublishedDate] ON [Blog_Posts]
+    (TenantId, PublishedDate);
 
 DROP TABLE IF EXISTS Blog_Settings;
 CREATE TABLE Blog_Settings

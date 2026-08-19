@@ -1,4 +1,4 @@
-﻿using Cogitatio.Interfaces;
+using Cogitatio.Interfaces;
 using Cogitatio.Models;
 using Microsoft.AspNetCore.Components;
 
@@ -6,28 +6,34 @@ namespace Cogitatio.Pages;
 
 public partial class Index
 {
+    private const int MonthsToShow = 12;
+
     [Inject] private SiteSettings SiteSettings { get; set; } = default!;
-    [Inject] private ILogger<System.Index> logger { get; set; }
-    
+    [Inject] private ILogger<Index> logger { get; set; }
+
     [Inject] private IDatabase db { get; set; } = default!;
-    
-    private BlogPost? PostContent { get; set; }
-    
-    protected override async Task OnInitializedAsync()
+
+    private List<BlogPost> RecentPosts { get; set; } = new();
+
+    private string SearchFurtherBackUrl { get; set; } = string.Empty;
+
+    protected override Task OnInitializedAsync()
     {
-        logger.LogDebug($"Getting Most recent post");
-        PostContent = db.GetMostRecent();
-        if (PostContent == null)
+        DateTime homeCutoff = DateTime.Now.AddMonths(-MonthsToShow).Date;
+
+        logger.LogDebug($"Getting posts published since {homeCutoff}");
+        RecentPosts = db.GetPostsSince(homeCutoff);
+
+        Dictionary<int, List<string>> tagsByPostId = db.GetTagsForPostsSince(homeCutoff);
+        foreach (BlogPost post in RecentPosts)
         {
-            PostContent = new BlogPost()
-            {
-                Title = "No posts exist yet",
-                Author = "System",
-                Tags = new()
-            };
-            
-            return;
+            post.Tags = tagsByPostId.TryGetValue(post.Id, out List<string> tags) ? tags : new List<string>();
         }
-        PostContent.Tags = db.GetPostTags(PostContent.Id);
-    }    
+
+        DateTime priorWindowEnd = homeCutoff.AddDays(-1);
+        DateTime priorWindowStart = DateTime.Now.AddMonths(-MonthsToShow * 2).Date;
+        SearchFurtherBackUrl = $"/search/{priorWindowStart:yyyy-MM-dd}/{priorWindowEnd:yyyy-MM-dd}";
+
+        return Task.CompletedTask;
+    }
 }

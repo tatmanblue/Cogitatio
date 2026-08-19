@@ -372,6 +372,63 @@ public class Postgresssql : AbstractDB<NpgsqlConnection>, IDatabase
         return result;
     }
 
+    public List<BlogPost> GetPostsSince(DateTime since)
+    {
+        List<BlogPost> result = new();
+        string sql = @"SELECT post_id, tenant_id, title, author, content, excerpt, slug, published_date, status
+                       FROM blog_posts
+                       WHERE tenant_id = @n1 AND status = 1 AND published_date >= @since
+                       ORDER BY published_date DESC;";
+        ExecuteReader<NpgsqlCommand, NpgsqlDataReader>(sql, () => new NpgsqlCommand(), rdr =>
+        {
+            result.Add(new BlogPost
+            {
+                Id = rdr.AsInt("post_id"),
+                TenantId = rdr.AsInt("tenant_id"),
+                Title = rdr.AsString("title"),
+                Author = rdr.AsString("author"),
+                Content = rdr.AsString("content"),
+                Excerpt = rdr.AsString("excerpt") is { Length: > 0 } e ? e : null,
+                Slug = rdr.AsString("slug"),
+                PublishedDate = rdr.AsDateTime("published_date"),
+                Status = (BlogPostStatuses)rdr.AsInt("status"),
+            });
+            return true;
+        }, cmd =>
+        {
+            cmd.Parameters.AddWithValue("since", since);
+            cmd.Parameters.AddWithValue("n1", tenantId);
+        });
+        return result;
+    }
+
+    public Dictionary<int, List<string>> GetTagsForPostsSince(DateTime since)
+    {
+        Dictionary<int, List<string>> result = new();
+        string sql = @"SELECT bt.post_id, bt.tag
+                       FROM blog_tags bt
+                       INNER JOIN blog_posts bp ON bp.post_id = bt.post_id
+                       WHERE bp.tenant_id = @n1 AND bp.status = 1 AND bp.published_date >= @since
+                         AND bt.tenant_id = @n1
+                       ORDER BY bt.post_id;";
+        ExecuteReader<NpgsqlCommand, NpgsqlDataReader>(sql, () => new NpgsqlCommand(), rdr =>
+        {
+            int postId = rdr.AsInt("post_id");
+            if (!result.TryGetValue(postId, out List<string> tags))
+            {
+                tags = new List<string>();
+                result[postId] = tags;
+            }
+            tags.Add(rdr.AsString("tag"));
+            return true;
+        }, cmd =>
+        {
+            cmd.Parameters.AddWithValue("since", since);
+            cmd.Parameters.AddWithValue("n1", tenantId);
+        });
+        return result;
+    }
+
     public List<BlogPost> GetPostsForRSS(int max = 25)
     {
         List<BlogPost> result = new();

@@ -1,4 +1,4 @@
-﻿@page "/"
+@page "/"
 @using Cogitatio.Shared
 
 
@@ -10,5 +10,22 @@
     @((MarkupString)SiteSettings.Introduction)
 </span>
 <p>&nbsp;</p>
-<h3>Latest Post</h3>
-<BlogPostShort PostContent="@PostContent" />
+
+<h3>Recent Posts</h3>
+
+@if (RecentPosts.Count == 0)
+{
+    <p>No posts exist yet.</p>
+}
+else
+{
+    <Virtualize Items="RecentPosts" Context="post">
+        <BlogPostShort PostContent="post" />
+    </Virtualize>
+    <div class="mt-4 border-top pt-3">
+        <NavLink class="btn btn-outline-primary" href="@SearchFurtherBackUrl">
+            &larr; See older posts
+        </NavLink>
+    </div>
+
+}

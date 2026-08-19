@@ -14,6 +14,8 @@ CREATE TABLE blog_posts (
 CREATE INDEX ix_blog_posts_post_id ON blog_posts (post_id);
 CREATE INDEX ix_blog_posts_tenant_id ON blog_posts (tenant_id);
 CREATE INDEX ix_blog_posts_slug ON blog_posts (slug);
+CREATE INDEX ix_blog_posts_published_date ON blog_posts (published_date);
+CREATE INDEX ix_blog_posts_tenant_id_published_date ON blog_posts (tenant_id, published_date);
 
 -- Table to store blog tags
 CREATE TABLE blog_tags (

@@ -15,7 +15,7 @@ public partial class BlogPostShort : ComponentBase
 
     private string GetShortenedContent()
     {
-        const int maxLength = 250;
+        const int maxLength = 150;
 
         if (PostContent == null) return string.Empty;
 

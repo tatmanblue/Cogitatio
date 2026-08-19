@@ -20,6 +20,8 @@ public interface IDatabase
     List<string> GetAllPostSlugs();
     List<BlogPost> GetAllPostsByTag(string tag);
     List<BlogPost> GetAllPostsByDates(DateTime from, DateTime to);
+    List<BlogPost> GetPostsSince(DateTime since);
+    Dictionary<int, List<string>> GetTagsForPostsSince(DateTime since);
     List<BlogPost> GetPostsForRSS(int max = 25);
     List<BlogPost> GetRecentPosts();
     void SaveContactRequest(ContactRecord contact);

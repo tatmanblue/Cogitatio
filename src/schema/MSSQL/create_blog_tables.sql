@@ -21,6 +21,12 @@ CREATE INDEX [IX_Blog_Posts_TenantId] ON [Blog_Posts]
 CREATE INDEX [IX_Blog_Posts_Slug] ON [Blog_Posts]
     (Slug);
 
+CREATE INDEX [IX_Blog_Posts_PublishedDate] ON [Blog_Posts]
+    (PublishedDate);
+
+CREATE INDEX [IX_Blog_Posts_TenantId_PublishedDate] ON [Blog_Posts]
+    (TenantId, PublishedDate);
+
 CREATE TABLE Blog_Tags (
     TagId INT IDENTITY(1,1) PRIMARY KEY, -- Auto-incrementing ID
     PostId INT NOT NULL,                     -- Foreign key to BlogPosts table
