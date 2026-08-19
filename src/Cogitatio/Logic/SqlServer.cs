@@ -1,5 +1,6 @@
 ﻿using System.Data;
 using System.Transactions;
+using Cogitatio.General;
 using Cogitatio.Interfaces;
 using Cogitatio.Models;
 using Microsoft.Data.SqlClient;
@@ -700,7 +701,7 @@ public class SqlServer : AbstractDB<SqlConnection>, IDatabase
     private void SaveTags(BlogPost post, SqlCommand cmd)
     {
         // TODO: for safety do we need to check if post.TenantId == this.tenantId?
-        bool allowMultiWord = bool.TryParse(GetSetting(Models.BlogSettings.TagAllowMultiWord, "false"), out bool mw) && mw;
+        bool allowMultiWord = this.GetBoolSetting(Models.BlogSettings.TagAllowMultiWord);
         string allowedSpecialChars = GetSetting(Models.BlogSettings.TagAllowedSpecialChars, "#.");
 
         foreach (string tag in post.Tags)

@@ -1,5 +1,7 @@
 ﻿using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Http;
+using Cogitatio.Interfaces;
+using Cogitatio.Models;
 
 namespace Cogitatio.General;
 
@@ -102,6 +104,19 @@ public static class GeneralExtensions
     private static bool HtmlIsSelfClosing(string name) =>
         name is "br" or "hr" or "img" or "input" or "meta" or "link"
               or "area" or "base" or "col" or "embed" or "param" or "source";
+
+    extension(IDatabase db)
+    {
+        public int GetIntSetting(BlogSettings setting, int defaultValue = 0)
+        {
+            return int.TryParse(db.GetSetting(setting, defaultValue.ToString()), out int value) ? value : defaultValue;
+        }
+
+        public bool GetBoolSetting(BlogSettings setting, bool defaultValue = false)
+        {
+            return bool.TryParse(db.GetSetting(setting, defaultValue.ToString()), out bool value) ? value : defaultValue;
+        }
+    }
 
     extension(IHttpContextAccessor accessor)
     {

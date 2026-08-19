@@ -21,6 +21,8 @@ public enum BlogSettings
     LongTitle,
     [Description("The description of the blog which appears on the home page")]
     Introduction,
+    [Description("Number of months of recent posts to show on the home page")]
+    HomeMonthsToShow,
     [Description("The about page content")]
     About,
     [Description("The copyright information in the footer")]

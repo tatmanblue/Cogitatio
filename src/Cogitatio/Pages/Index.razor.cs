@@ -1,3 +1,4 @@
+using Cogitatio.General;
 using Cogitatio.Interfaces;
 using Cogitatio.Models;
 using Microsoft.AspNetCore.Components;
@@ -6,7 +7,7 @@ namespace Cogitatio.Pages;
 
 public partial class Index
 {
-    private const int MonthsToShow = 12;
+    private const int DefaultMonthsToShow = 12;
 
     [Inject] private SiteSettings SiteSettings { get; set; } = default!;
     [Inject] private ILogger<Index> logger { get; set; }
@@ -19,7 +20,9 @@ public partial class Index
 
     protected override Task OnInitializedAsync()
     {
-        DateTime homeCutoff = DateTime.Now.AddMonths(-MonthsToShow).Date;
+        int monthsToShow = db.GetIntSetting(BlogSettings.HomeMonthsToShow, DefaultMonthsToShow);
+
+        DateTime homeCutoff = DateTime.Now.AddMonths(-monthsToShow).Date;
 
         logger.LogDebug($"Getting posts published since {homeCutoff}");
         RecentPosts = db.GetPostsSince(homeCutoff);
@@ -31,7 +34,7 @@ public partial class Index
         }
 
         DateTime priorWindowEnd = homeCutoff.AddDays(-1);
-        DateTime priorWindowStart = DateTime.Now.AddMonths(-MonthsToShow * 2).Date;
+        DateTime priorWindowStart = DateTime.Now.AddMonths(-monthsToShow * 2).Date;
         SearchFurtherBackUrl = $"/search/{priorWindowStart:yyyy-MM-dd}/{priorWindowEnd:yyyy-MM-dd}";
 
         return Task.CompletedTask;

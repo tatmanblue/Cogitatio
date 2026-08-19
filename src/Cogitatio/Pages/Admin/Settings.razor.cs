@@ -29,6 +29,7 @@ public partial class Settings : ComponentBase
     private string introduction = string.Empty;
     private string siteTitle = string.Empty;
     private string copyright = string.Empty;
+    private int homeMonthsToShow = 12;
     private bool tagAllowMultiWord = false;
     private string tagAllowedSpecialChars = "#.";
     
@@ -128,6 +129,9 @@ public partial class Settings : ComponentBase
                     break;
                 case BlogSettings.Introduction:
                     introduction = setting.Value;
+                    break;
+                case BlogSettings.HomeMonthsToShow:
+                    homeMonthsToShow = Convert.ToInt32(setting.Value);
                     break;
                 case BlogSettings.UseTOTP:
                     use2FA = Convert.ToBoolean(setting.Value);
@@ -267,6 +271,7 @@ public partial class Settings : ComponentBase
         database.SaveSetting(BlogSettings.ShortTitle, shortTitle);
         database.SaveSetting(BlogSettings.LongTitle, longTitle);
         database.SaveSetting(BlogSettings.Copyright, copyright);
+        database.SaveSetting(BlogSettings.HomeMonthsToShow, homeMonthsToShow.ToString());
         database.SaveSetting(BlogSettings.UseTOTP, use2FA.ToString());
         database.SaveSetting(BlogSettings.TwoFactorSecret, twoFactorSecret);
         database.SaveSetting(BlogSettings.AllowComments, allowComments.ToString());
