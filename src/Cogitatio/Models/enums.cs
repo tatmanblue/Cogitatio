@@ -72,7 +72,9 @@ public enum BlogSettings
     [Description("Whether tags may contain spaces (multi-word phrases), false strips all spaces")]
     TagAllowMultiWord,
     [Description("Characters (other than letters and digits) that are permitted in tag names, e.g. #.")]
-    TagAllowedSpecialChars
+    TagAllowedSpecialChars,
+    [Description("The public base URL of the site (e.g. https://blog.example.com), used for links in emails, sitemap and RSS")]
+    SiteUrl
 }
 
 public enum UserAccountStates

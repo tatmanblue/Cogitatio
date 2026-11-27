@@ -18,7 +18,12 @@ public class SiteSettings
     public bool AllowLogin { get; private set; } = false;
     public bool AllowSite2FA { get; private set; } = false;
     public string PasswordSalt { get; private set; } = string.Empty;
-    
+    /// <summary>
+    /// Public base URL of the site with no trailing slash, e.g. https://blog.example.com.
+    /// Empty when not configured.
+    /// </summary>
+    public string SiteUrl { get; private set; } = string.Empty;
+
     public static SiteSettings Load(IDatabase database)
     {
         SiteSettings site = new SiteSettings();
@@ -56,6 +61,9 @@ public class SiteSettings
                     break;
                 case BlogSettings.AllowSite2FA:
                     site.AllowSite2FA = Convert.ToBoolean(setting.Value);
+                    break;
+                case BlogSettings.SiteUrl:
+                    site.SiteUrl = (setting.Value ?? string.Empty).Trim().TrimEnd('/');
                     break;
             }
         }

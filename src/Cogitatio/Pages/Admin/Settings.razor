@@ -211,6 +211,11 @@
         <!-- ────── Mail Settings Tab ────── -->
         <div class="tab-pane fade @(activeTab == 6 ? "show active" : "")">
             <div class="mb-3">
+                <label for="siteUrl">Site URL:</label>
+                <input id="siteUrl" @bind="siteUrl" class="form-control" placeholder="https://blog.example.com"/>
+                <small class="text-muted">Public address of the site. Used for links in notification emails and the sitemap.</small>
+            </div>
+            <div class="mb-3">
                 <label for="fromEmailAddr">From Email Address:</label>
                 <input id="fromEmailAddr" @bind="fromEmail" class="form-control" placeholder="Email address"/>
             </div>

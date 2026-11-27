@@ -40,19 +40,32 @@ public class NotificationBackgroundService : BackgroundService
 
     private async Task SendNotificationsAsync(BlogPost post, CancellationToken cancellationToken)
     {
-        var siteUrl = (configuration["CogitatioSiteUrl"] ?? string.Empty).TrimEnd('/');
-        var postUrl = $"{siteUrl}/post/{post.Slug}";
-        var teaser = !string.IsNullOrEmpty(post.Excerpt)
+        using IServiceScope scope = scopeFactory.CreateScope();
+        SiteSettings siteSettings = scope.ServiceProvider.GetRequiredService<SiteSettings>();
+
+        // Site URL comes from the database setting (Admin > Settings > Mail); the CogitatioSiteUrl
+        // environment value is kept as a fallback for existing deployments.
+        string siteUrl = siteSettings.SiteUrl;
+        if (string.IsNullOrEmpty(siteUrl))
+            siteUrl = (configuration["CogitatioSiteUrl"] ?? string.Empty).Trim().TrimEnd('/');
+
+        if (!Uri.TryCreate(siteUrl, UriKind.Absolute, out Uri? siteUri)
+            || (siteUri.Scheme != Uri.UriSchemeHttp && siteUri.Scheme != Uri.UriSchemeHttps))
+        {
+            logger.LogError("Cannot send notifications for post {PostId}: Site URL is not configured or is not an absolute http(s) URL ('{SiteUrl}'). Set it in Admin > Settings > Mail.", post.Id, siteUrl);
+            return;
+        }
+
+        string postUrl = $"{siteUrl}/post/{post.Slug}";
+        string teaser = !string.IsNullOrEmpty(post.Excerpt)
             ? System.Net.WebUtility.HtmlEncode(post.Excerpt)
             : BuildTeaser(post.Content);
 
-        using var scope = scopeFactory.CreateScope();
-        var userDb = scope.ServiceProvider.GetRequiredService<IUserDatabase>();
-        var tokenDb = scope.ServiceProvider.GetRequiredService<INotificationTokenDatabase>();
-        var emailSender = scope.ServiceProvider.GetRequiredService<IEmailSender>();
-        var siteSettings = scope.ServiceProvider.GetRequiredService<SiteSettings>();
+        IUserDatabase userDb = scope.ServiceProvider.GetRequiredService<IUserDatabase>();
+        INotificationTokenDatabase tokenDb = scope.ServiceProvider.GetRequiredService<INotificationTokenDatabase>();
+        IEmailSender emailSender = scope.ServiceProvider.GetRequiredService<IEmailSender>();
 
-        var users = userDb.LoadAllForNotification();
+        List<BlogUserRecord> users = userDb.LoadAllForNotification();
         logger.LogInformation("Sending new post notifications for post {PostId} to {Count} users", post.Id, users.Count);
 
         foreach (var user in users)

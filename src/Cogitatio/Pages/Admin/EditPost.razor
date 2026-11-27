@@ -25,7 +25,27 @@
             ApiKey="@apiKey"
             @bind-Value="content"/>
         <button class="btn btn-primary mt-2" @onclick=@Update>Update</button>
-        <div>
+
+        <div class="border rounded p-3 mt-4">
+            <h5>Notifications</h5>
+            <p class="text-muted">Resend the new-post notification email to all subscribers. No changes to the post are required.</p>
+            @if (!confirmingResend)
+            {
+                <button class="btn btn-outline-secondary" @onclick=@RequestResend>Resend Notification Email</button>
+            }
+            else
+            {
+                <span class="me-2">Are you sure you want to resend the notification email for this post?</span>
+                <button class="btn btn-danger" @onclick=@ConfirmResend>Yes, Send</button>
+                <button class="btn btn-outline-secondary" @onclick=@CancelResend>Cancel</button>
+            }
+            @if (!string.IsNullOrEmpty(resendStatusMessage))
+            {
+                <div class="text-success mt-2">@resendStatusMessage</div>
+            }
+        </div>
+
+        <div class="mt-3">
             <NavLink href=@General.Constants.ROUTE_ADMIN_HOME>Admin</NavLink>
         </div>
     }

@@ -11,6 +11,7 @@ public partial class TagEditor : ComponentBase
     [Inject] private IDatabase database { get; set; }
     [Inject] AdminUserState AdminUserState { get; set; }
     [Inject] private NavigationManager navigationManager { get; set; }
+    [Inject] private INotificationQueue notificationQueue { get; set; }
 
     private List<BlogPostModel> posts = new();
     private Dictionary<string, int> usedTags = new();
@@ -103,10 +104,41 @@ public partial class TagEditor : ComponentBase
         }
     }
 
+    private void RequestSend(int id)
+    {
+        var post = posts.FirstOrDefault(p => p.Id == id);
+        if (post != null)
+        {
+            post.ConfirmingSend = true;
+            post.SendEmailStatus = string.Empty;
+        }
+    }
+
+    private void CancelSend(int id)
+    {
+        var post = posts.FirstOrDefault(p => p.Id == id);
+        if (post != null)
+            post.ConfirmingSend = false;
+    }
+
+    private void ConfirmSend(int id)
+    {
+        var post = posts.FirstOrDefault(p => p.Id == id);
+        if (post != null)
+        {
+            notificationQueue.Enqueue(post);
+            post.ConfirmingSend = false;
+            post.SendEmailStatus = "Notification email queued for delivery.";
+            logger.LogInformation("Manually re-queued notification email for post {PostId}", post.Id);
+        }
+    }
+
     private class BlogPostModel : BlogPost
     {
         public bool CanShowDetails { get; set; }
-        public string EditableTags { get; set; } 
+        public string EditableTags { get; set; }
+        public bool ConfirmingSend { get; set; }
+        public string SendEmailStatus { get; set; } = string.Empty;
 
         // New: comma-delimited tags string limited to max 25 displayed characters.
         public string TagsDisplay

@@ -62,6 +62,7 @@ public partial class Settings : ComponentBase
     private string sendGridApiKey = string.Empty;
     private string azureAccessKey = string.Empty;
     private string azureResourceId = string.Empty;
+    private string siteUrl = string.Empty;
 
     
     // -------------------------------------------------------------------------
@@ -202,6 +203,9 @@ public partial class Settings : ComponentBase
                 case BlogSettings.TagAllowedSpecialChars:
                     tagAllowedSpecialChars = setting.Value;
                     break;
+                case BlogSettings.SiteUrl:
+                    siteUrl = setting.Value;
+                    break;
             }
         }
         
@@ -287,6 +291,7 @@ public partial class Settings : ComponentBase
         database.SaveSetting(BlogSettings.MaxDisplayNameLength, maxDisplayNameLen.ToString());
         database.SaveSetting(BlogSettings.EmailService, selectedEmailService.ToString());
         database.SaveSetting(BlogSettings.FromEmail, fromEmail);
+        database.SaveSetting(BlogSettings.SiteUrl, (siteUrl ?? string.Empty).Trim().TrimEnd('/'));
         
         // TODO, we could probably smarten this up by only saving what is selected
         database.SaveSetting(BlogSettings.SendGridApiKey, sendGridApiKey);

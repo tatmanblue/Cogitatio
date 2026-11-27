@@ -141,7 +141,17 @@ builder.Services.AddScoped<IUserDatabase>(p =>
 builder.Services.AddTransient<IEmailSender>(p =>
 {
     var logger = p.GetRequiredService<ILogger<IEmailSender>>();
+    var env = p.GetRequiredService<IHostEnvironment>();
+    var configuration = p.GetRequiredService<IConfiguration>();
     var db = p.GetRequiredService<IDatabase>();
+
+    bool allowLiveEmailInDevelopment = configuration.GetValue<bool>("AllowLiveEmailInDevelopment");
+    if (env.IsDevelopment() && !allowLiveEmailInDevelopment)
+    {
+        logger.LogInformation("Development environment detected and AllowLiveEmailInDevelopment is not set — using MockEmailSender regardless of the configured EmailService setting.");
+        return new MockEmailSender(logger);
+    }
+
     EmailServices services = EmailServices.Mock;
     if (System.Enum.TryParse<EmailServices>(db.GetSetting(BlogSettings.EmailService), out var service))
         services = service;
@@ -185,7 +195,8 @@ builder.Services.AddScoped<INotificationTokenDatabase>(p =>
 // Notification queue — singleton so the channel outlives individual requests
 builder.Services.AddSingleton<INotificationQueue, NotificationQueue>();
 // Background service that reads from the queue and sends notification emails
-// Note: add CogitatioSiteUrl to your .env file (e.g. CogitatioSiteUrl=https://blog.example.com)
+// Note: links in emails use the SiteUrl setting (Admin > Settings > Mail). The CogitatioSiteUrl
+// environment value (e.g. CogitatioSiteUrl=https://blog.example.com) is used only as a fallback.
 builder.Services.AddHostedService<NotificationBackgroundService>();
 // so that comments load quicker, we have a resolver that helps match user db entries with comment authors
 builder.Services.AddScoped<UserCommentsResolver>();

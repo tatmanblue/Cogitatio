@@ -25,6 +25,8 @@ string analyticsId = GetEnvVarWithLogging("CogitatioAnalyticsId");
 string tinyMceKey = GetEnvVarWithLogging("CogitatioTinyMceKey");
 string tenantId = GetEnvVarWithLogging("CogitatioTenantId", "0");
 string byPassAuth = GetEnvVarWithLogging("ByPassAuth", "false");
+string siteUrl = GetEnvVarWithLogging("CogitatioSiteUrl");
+string allowLiveEmailInDevelopment = GetEnvVarWithLogging("AllowLiveEmailInDevelopment", "false");
 
 
 builder.AddProject<Cogitatio>("Cogitatio")
@@ -33,7 +35,9 @@ builder.AddProject<Cogitatio>("Cogitatio")
     .WithEnvironment("CogitatioAnalyticsId", analyticsId)
     .WithEnvironment("CogitatioTinyMceKey", tinyMceKey)
     .WithEnvironment("CogitatioTenantId", tenantId)
-    .WithEnvironment("ByPassAuth", byPassAuth);
+    .WithEnvironment("ByPassAuth", byPassAuth)
+    .WithEnvironment("CogitatioSiteUrl", siteUrl)
+    .WithEnvironment("AllowLiveEmailInDevelopment", allowLiveEmailInDevelopment);
 
 
 builder.Build().Run();

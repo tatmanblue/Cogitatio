@@ -12,14 +12,17 @@ public partial class EditPost : ComponentBase
     [Inject] private NavigationManager navigationManager { get; set; }
     [Inject] private IDatabase database { get; set; }
     [Inject] private AdminUserState AdminUserState { get; set; }
+    [Inject] private INotificationQueue notificationQueue { get; set; }
     [Parameter] public string Slug { get; set; }
-    
+
     private string title = string.Empty;
     private string tags = string.Empty;
     private string excerpt = string.Empty;
     private string content = "<b>New blog Post</b>";
     private string apiKey = string.Empty;
     private BlogPost post = null;
+    private bool confirmingResend = false;
+    private string resendStatusMessage = string.Empty;
 
     private Dictionary<string, object> editorConfig = new Dictionary<string, object>{
         { "menubar", true },
@@ -59,7 +62,26 @@ public partial class EditPost : ComponentBase
         post.Tags.Clear();
         post.Tags.AddRange(tags.Split(',').Select(t => t.Trim()).Where(t => t.Length > 0));
         database.UpdatePost(post);
-        
+
         navigationManager.NavigateTo(Constants.ROUTE_ADMIN_HOME);
+    }
+
+    private void RequestResend()
+    {
+        confirmingResend = true;
+        resendStatusMessage = string.Empty;
+    }
+
+    private void CancelResend()
+    {
+        confirmingResend = false;
+    }
+
+    private void ConfirmResend()
+    {
+        notificationQueue.Enqueue(post);
+        confirmingResend = false;
+        resendStatusMessage = "Notification email queued for delivery.";
+        logger.LogInformation("Manually re-queued notification email for post {PostId}", post.Id);
     }
 }

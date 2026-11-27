@@ -51,22 +51,37 @@ else
                 </tr>
                 <tr class="bg-light" style="display: @(post.CanShowDetails ? "table-row" : "none");">
                     <td colspan="4" class="p-2">
-                        <div class="d-flex gap-2 align-items-center">
-                            <div class="flex-grow-1">
-                                <strong>Edit Tags:</strong>
-                                <input type="text"
-                                       @bind="post.EditableTags"
-                                       @oninput="() => MarkAsChanged(post.Id)"
-                                       class="form-control w-80"
-                                       placeholder="Enter tags separated by commas" />
-                            </div>
-                            <div class="flex-shrink-0 mt-3"> 
+                        <div>
+                            <strong>Edit Tags:</strong>
+                            <textarea @bind="post.EditableTags"
+                                      @oninput="() => MarkAsChanged(post.Id)"
+                                      class="form-control"
+                                      rows="3"
+                                      style="resize: vertical;"
+                                      placeholder="Enter tags separated by commas"></textarea>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center mt-2 pt-2 border-top">
+                            <div>
                                 <button class="btn btn-primary btn-sm" @onclick="() => SaveTags(post.Id)">Save</button>
                                 <button class="btn btn-secondary btn-sm ms-2" @onclick="() => HideDetails(post.Id)">Cancel</button>
                             </div>
+                            @if (!post.ConfirmingSend)
+                            {
+                                <button class="btn btn-outline-secondary btn-sm" @onclick="() => RequestSend(post.Id)">Send Notification Email</button>
+                            }
+                            else
+                            {
+                                <span class="me-2 small">Resend the notification email for this post?</span>
+                                <button class="btn btn-danger btn-sm" @onclick="() => ConfirmSend(post.Id)">Yes, Send</button>
+                                <button class="btn btn-outline-secondary btn-sm ms-2" @onclick="() => CancelSend(post.Id)">Cancel</button>
+                            }
+                            @if (!string.IsNullOrEmpty(post.SendEmailStatus))
+                            {
+                                <span class="text-success small ms-2">@post.SendEmailStatus</span>
+                            }
                         </div>
                     </td>
-                </tr>           
+                </tr>
             }
             </tbody>
         </table>
