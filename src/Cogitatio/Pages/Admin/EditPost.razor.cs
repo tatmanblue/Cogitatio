@@ -19,18 +19,12 @@ public partial class EditPost : ComponentBase
     private string tags = string.Empty;
     private string excerpt = string.Empty;
     private string content = "<b>New blog Post</b>";
-    private string apiKey = string.Empty;
+    private string errorMessage = string.Empty;
     private BlogPost post = null;
     private bool confirmingResend = false;
     private string resendStatusMessage = string.Empty;
 
-    private Dictionary<string, object> editorConfig = new Dictionary<string, object>{
-        { "menubar", true },
-        { "plugins", "link image code" },
-        { "toolbar", "undo redo | styleselect | blockquote | bullist numlist | forecolor | bold italic | alignleft aligncenter alignright alignjustify | outdent indent | link image | code" }
-    };
-    
-    
+
     protected override void OnParametersSet()
     {
         if (!AdminUserState.IsAdmin)
@@ -40,8 +34,6 @@ public partial class EditPost : ComponentBase
             navigationManager.NavigateTo("/search/ret=admineditpost");
 
         if (string.IsNullOrEmpty(Slug)) return;
-        
-        apiKey = configuration["CogitatioTinyMceKey"] ?? string.Empty;
 
         post = database.GetBySlug(Slug);
         title = post.Title;
@@ -55,6 +47,14 @@ public partial class EditPost : ComponentBase
     
     private async Task Update()
     {
+        int missingAlt = content.CountImagesMissingAlt();
+        if (missingAlt > 0)
+        {
+            errorMessage = $"{missingAlt} image(s) missing alt text. Add a description to each image before saving.";
+            return;
+        }
+        errorMessage = string.Empty;
+
         logger.LogInformation("Updating blog post");
         post.Title = title;
         post.Content = content;

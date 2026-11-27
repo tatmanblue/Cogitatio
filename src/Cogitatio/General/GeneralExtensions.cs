@@ -7,6 +7,17 @@ namespace Cogitatio.General;
 
 public static class GeneralExtensions
 {
+    private static readonly Regex ImgTagRegex = new Regex(@"<img\b[^>]*>",
+        RegexOptions.IgnoreCase | RegexOptions.Compiled);
+    private static readonly Regex FigureWithImgRegex = new Regex(@"<figure\b[^>]*>(?:(?!</figure>).)*?<img\b.*?</figure>",
+        RegexOptions.IgnoreCase | RegexOptions.Singleline | RegexOptions.Compiled);
+    private static readonly Regex PictureRegex = new Regex(@"<picture\b[^>]*>.*?</picture>",
+        RegexOptions.IgnoreCase | RegexOptions.Singleline | RegexOptions.Compiled);
+    private static readonly Regex EmptyParagraphRegex = new Regex(@"<p\b[^>]*>(?:\s|&nbsp;|&#160;|<br\s*/?>)*</p>",
+        RegexOptions.IgnoreCase | RegexOptions.Compiled);
+    private static readonly Regex AltAttributeRegex = new Regex(@"(?<=[\s""'])alt\s*=\s*(?:""(?<v>[^""]*)""|'(?<v>[^']*)'|(?<v>[^\s""'>]+))",
+        RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
     extension(string str)
     {
         public T ParseEnum<T>() where T : struct, Enum
@@ -28,6 +39,39 @@ public static class GeneralExtensions
             return plainText.Trim();
         }
         
+        /// <summary>
+        /// Removes images from HTML for display in previews: img tags, figure blocks that contain
+        /// an image (including their figcaption), picture blocks, and paragraphs left empty afterwards.
+        /// The remaining HTML is otherwise unchanged.
+        /// </summary>
+        public string StripImages()
+        {
+            if (string.IsNullOrEmpty(str)) return str;
+
+            string result = FigureWithImgRegex.Replace(str, string.Empty);
+            result = PictureRegex.Replace(result, string.Empty);
+            result = ImgTagRegex.Replace(result, string.Empty);
+            result = EmptyParagraphRegex.Replace(result, string.Empty);
+            return result.Trim();
+        }
+
+        /// <summary>
+        /// Counts img tags that have no alt attribute or an empty/whitespace alt value.
+        /// </summary>
+        public int CountImagesMissingAlt()
+        {
+            if (string.IsNullOrEmpty(str)) return 0;
+
+            int missing = 0;
+            foreach (Match img in ImgTagRegex.Matches(str))
+            {
+                Match alt = AltAttributeRegex.Match(img.Value);
+                if (!alt.Success || string.IsNullOrWhiteSpace(alt.Groups["v"].Value))
+                    missing++;
+            }
+            return missing;
+        }
+
         public bool IsValidEmail()
         {
             if (string.IsNullOrWhiteSpace(str))

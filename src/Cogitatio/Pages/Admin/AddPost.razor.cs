@@ -1,4 +1,5 @@
-﻿using Cogitatio.Interfaces;
+﻿using Cogitatio.General;
+using Cogitatio.Interfaces;
 using Cogitatio.Models;
 using Microsoft.AspNetCore.Components;
 
@@ -17,24 +18,24 @@ public partial class AddPost : ComponentBase
     private string tags = string.Empty;
     private string excerpt = string.Empty;
     private string content = "<b>New blog Post</b>";
-    private string apiKey = string.Empty;
-
-    private Dictionary<string, object> editorConfig = new Dictionary<string, object>{
-        { "menubar", true },
-        { "plugins", "link image code" },
-        { "toolbar", "undo redo | styleselect | blockquote | bullist numlist | forecolor | bold italic | alignleft aligncenter alignright alignjustify | outdent indent | link image | code" }
-    };
+    private string errorMessage = string.Empty;
 
     protected override void OnParametersSet()
     {
         if (!AdminUserState.IsAdmin)
             navigationManager.NavigateTo(Cogitatio.General.Constants.ROUTE_ADMIN_HOME);
-
-        apiKey = configuration["CogitatioTinyMceKey"] ?? string.Empty;
     }
-    
+
     private async Task Publish()
     {
+        int missingAlt = content.CountImagesMissingAlt();
+        if (missingAlt > 0)
+        {
+            errorMessage = $"{missingAlt} image(s) missing alt text. Add a description to each image before publishing.";
+            return;
+        }
+        errorMessage = string.Empty;
+
         logger.LogInformation("Publishing blog post");
         var tenantId = Convert.ToInt32(configuration["CogitatioTenantId"] ?? "0");
         BlogPost post = BlogPost.Create(tenantId, title, content);

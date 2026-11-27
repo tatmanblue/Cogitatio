@@ -32,6 +32,35 @@ The default admin account is:
 **THIS ACCOUNT INFORMATION SHOULD BE CHANGED IMMEDIATELY AFTER FIRST LOGIN!**  Both the username 
 and password can be changed after login via the settings page.
 
+## Post editor
+
+AddPost and EditPost share one TinyMCE editor component,
+[Shared/PostEditor.razor](../src/Cogitatio/Shared/PostEditor.razor.cs). Editor options,
+including image options, are defined there once.
+
+### Images in posts
+
+Image upload and storage are planned (GitHub issue #5). Until then:
+
+- Images are inserted **by URL** with the toolbar image button.
+- **Pasting or dragging images into the editor is disabled** (`paste_data_images: false`).
+  Otherwise they would be stored as base64 data inside the post content.
+- **Alt text is required.** A post can't be published or updated while any image has
+  missing or empty alt text, and the page shows how many images need it.
+- **Layout:** pick a *Class* in the image dialog:
+  - Responsive (default)
+  - Left, text wraps
+  - Right, text wraps
+  - Centered
+  - Full width
+
+  These use Bootstrap classes. Captions are available with the dialog's *Show caption* option.
+- Post images scale down to fit the column (`site.css`), and floated images are cleared
+  at the end of the post.
+- **Home page previews never show images.** `BlogPostShort` removes images
+  (`StripImages()` in `General/GeneralExtensions.cs`) before shortening the post. A post
+  with only images shows "(image post)". This doesn't change the stored post.
+
 ## Doc version
 
-2026.03.21
+2026.11.27

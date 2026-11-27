@@ -23,9 +23,15 @@ public partial class BlogPostShort : ComponentBase
             return $"<p>{System.Net.WebUtility.HtmlEncode(PostContent.Excerpt)}</p>";
 
         if (string.IsNullOrEmpty(PostContent.Content)) return string.Empty;
-        if (PostContent.Content.Length <= maxLength) return PostContent.Content;
 
-        string truncated = PostContent.Content.TruncateHtml(maxLength);
+        // Previews are text only. Strip images before the length check, otherwise a short
+        // post consisting mostly of an image would be returned as-is with the image.
+        string content = PostContent.Content.StripImages();
+        if (string.IsNullOrEmpty(content.PlainText()))
+            return "<p class=\"text-muted fst-italic\">(image post)</p>";
+        if (content.Length <= maxLength) return content;
+
+        string truncated = content.TruncateHtml(maxLength);
         logger.LogDebug($"Content length {PostContent.Content.Length} truncated to {truncated.Length}");
         return truncated;
     }

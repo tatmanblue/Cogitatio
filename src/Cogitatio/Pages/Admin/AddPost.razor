@@ -17,10 +17,11 @@
         <label for="excerpt" class="form-label">Summary / Excerpt <small class="text-muted">(optional — shown on the home page)</small></label>
         <textarea id="excerpt" @bind="excerpt" class="form-control" rows="2" placeholder="Brief summary displayed on the post listing page. Leave blank to auto-generate."></textarea>
     </div>
-    <TinyMCE.Blazor.Editor
-        Conf="@editorConfig"
-        ApiKey="@apiKey"
-        @bind-Value="content"/>
+    <PostEditor @bind-Value="content"/>
+    @if (!string.IsNullOrEmpty(errorMessage))
+    {
+        <div class="alert alert-danger mt-2">@errorMessage</div>
+    }
     <button class="btn btn-primary mt-2" @onclick=@Publish>Publish</button>
     <div>
         <NavLink href=@General.Constants.ROUTE_ADMIN_HOME>Admin</NavLink>
