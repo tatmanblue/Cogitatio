@@ -9,4 +9,6 @@ riderModule.iml
 LaunchSettings.json
 .env
 .aspire/
+# images uploaded with the Local image store (development only)
+App_Data/
 .claude/

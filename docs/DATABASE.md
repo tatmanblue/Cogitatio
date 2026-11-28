@@ -38,9 +38,20 @@ implement common behaviors between both implementations, so has to reduce duplic
 [ms sql user db implementation](../src/Cogitatio/Logic/SqlServerUsers.cs) - for user data using ms sql  
 [postgres user db implementation](../src/Cogitatio/Logic/PostgresssqlUsers.cs) - for user data using postgres  
 
+[ms sql image db implementation](../src/Cogitatio/Logic/SqlServerImages.cs) - post image metadata using ms sql  
+[postgres image db implementation](../src/Cogitatio/Logic/PostgresqlImages.cs) - post image metadata using postgres  
+
+## Post images
+
+Image metadata is kept in `Blog_Images` / `blog_images`, in the **main blog database**
+(`CogitatioSiteDB`), through `IImageDatabase`. Create it with `create_blog_images.sql`
+(MSSQL and Postgresql folders). The image files themselves are kept in the configured image
+store (Azure Blob or a local folder, see [Admin Portal](ADMIN.md)). Posts reference an image
+as `/img/{Id}`, never by storage path.
+
 # Work needed
 the postgress implementation does not inherit from the base class and it needs to be updated.
 
 ## Doc version
 
-2026.03.21
+2026.11.27

@@ -251,6 +251,61 @@
                     break;
             }
         </div>
+
+        <!-- ────── Images Tab ────── -->
+        <div class="tab-pane fade @(activeTab == 7 ? "show active" : "")">
+            <div class="mb-3">
+                <label for="imageStore">Image Storage:</label>
+                <InputSelect id="imageStore" @bind-Value="selectedImageStore" class="form-select">
+                    @foreach (ImageStores store in Enum.GetValues<ImageStores>())
+                    {
+                        <option value="@store">@store.ToString()</option>
+                    }
+                </InputSelect>
+                <small class="text-muted">None disables image uploads. Local is for development only: a deploy to Azure App Service can delete the folder. Use AzureBlob in production.</small>
+            </div>
+            @switch (selectedImageStore)
+            {
+                case ImageStores.AzureBlob:
+                    <div class="mb-3">
+                        <label for="blobConnection">Azure Storage Connection String:</label>
+                        <input id="blobConnection" @bind="azureBlobConnectionString" class="form-control" type="password" placeholder="DefaultEndpointsProtocol=https;AccountName=...;AccountKey=..."/>
+                    </div>
+                    <div class="mb-3">
+                        <label for="blobContainer">Container Name:</label>
+                        <input id="blobContainer" @bind="azureBlobContainer" class="form-control" placeholder="blog-images"/>
+                        <small class="text-muted">Created automatically as a private container if it doesn't exist. Lowercase letters, numbers and hyphens only.</small>
+                    </div>
+                    break;
+                case ImageStores.Local:
+                    <div class="mb-3">
+                        <label for="imageLocalPath">Local Folder:</label>
+                        <input id="imageLocalPath" @bind="imageLocalPath" class="form-control" placeholder="Leave blank for App_Data/images"/>
+                    </div>
+                    break;
+                default:
+                    break;
+            }
+            <div class="row">
+                <div class="col-md-3 mb-3">
+                    <label for="imageMaxWidth">Resize Width (px):</label>
+                    <input id="imageMaxWidth" type="number" min="200" max="4000" @bind="imageMaxWidth" class="form-control"/>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label for="imageThumbWidth">Thumbnail Width (px):</label>
+                    <input id="imageThumbWidth" type="number" min="50" max="1000" @bind="imageThumbWidth" class="form-control"/>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label for="imageQuality">Quality (1-100):</label>
+                    <input id="imageQuality" type="number" min="1" max="100" @bind="imageQuality" class="form-control"/>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label for="imageMaxKb">Max Upload Size (KB):</label>
+                    <input id="imageMaxKb" type="number" min="100" max="51200" @bind="imageMaxUploadKb" class="form-control"/>
+                </div>
+            </div>
+            <small class="text-muted">Images are resized in the browser to the resize width before upload. Animated GIFs are uploaded unresized, so the size limit mainly applies to them.</small>
+        </div>
     </div> <!-- end .tab-content -->
 
     <!-- ==================== SAVE BUTTON ==================== -->

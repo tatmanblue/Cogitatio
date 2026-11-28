@@ -74,7 +74,30 @@ public enum BlogSettings
     [Description("Characters (other than letters and digits) that are permitted in tag names, e.g. #.")]
     TagAllowedSpecialChars,
     [Description("The public base URL of the site (e.g. https://blog.example.com), used for links in emails, sitemap and RSS")]
-    SiteUrl
+    SiteUrl,
+    [Description("Where uploaded post images are stored: None, Local or AzureBlob")]
+    ImageStore,
+    [Description("Azure Storage connection string for the image blob container")]
+    AzureBlobConnectionString,
+    [Description("Azure Blob container name for post images")]
+    AzureBlobContainer,
+    [Description("Folder for post images when using the Local image store (development only)")]
+    ImageLocalPath,
+    [Description("Maximum size in bytes of an uploaded image, after browser resizing")]
+    ImageMaxUploadBytes,
+    [Description("Width in pixels that uploaded images are resized to in the browser")]
+    ImageMaxWidth,
+    [Description("Width in pixels of image thumbnails")]
+    ImageThumbWidth,
+    [Description("WebP/JPEG quality (1-100) used when resizing images")]
+    ImageQuality
+}
+
+public enum ImageStores
+{
+    None = 0,                           // uploads disabled
+    Local = 1,                          // folder on the server (development only)
+    AzureBlob = 2                       // private Azure Blob container
 }
 
 public enum UserAccountStates

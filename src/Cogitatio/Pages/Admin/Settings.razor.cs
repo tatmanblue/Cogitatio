@@ -64,6 +64,17 @@ public partial class Settings : ComponentBase
     private string azureResourceId = string.Empty;
     private string siteUrl = string.Empty;
 
+    // -------------------------------------------------------------------------
+    // image settings
+    private ImageStores selectedImageStore = ImageStores.None;
+    private string azureBlobConnectionString = string.Empty;
+    private string azureBlobContainer = string.Empty;
+    private string imageLocalPath = string.Empty;
+    private int imageMaxWidth = ImageService.DefaultMaxWidth;
+    private int imageThumbWidth = ImageService.DefaultThumbWidth;
+    private int imageQuality = ImageService.DefaultQuality;
+    private int imageMaxUploadKb = ImageService.DefaultMaxUploadBytes / 1024;
+
     
     // -------------------------------------------------------------------------
     // only needed for 2FA setup
@@ -85,7 +96,7 @@ public partial class Settings : ComponentBase
     // -------------------------------------------------------------------------
     // screen configuration 
     private int activeTab = 0;
-    private readonly string[] tabTitles = { "Security", "Site Info", "Introduction", "About", "Comments", "Users", "Mail" };
+    private readonly string[] tabTitles = { "Security", "Site Info", "Introduction", "About", "Comments", "Users", "Mail", "Images" };
         
     private Dictionary<string, object> editorConfig = new Dictionary<string, object>{
         { "menubar", true },
@@ -206,6 +217,31 @@ public partial class Settings : ComponentBase
                 case BlogSettings.SiteUrl:
                     siteUrl = setting.Value;
                     break;
+                case BlogSettings.ImageStore:
+                    if (System.Enum.TryParse<ImageStores>(setting.Value, out ImageStores imageStore))
+                        selectedImageStore = imageStore;
+                    break;
+                case BlogSettings.AzureBlobConnectionString:
+                    azureBlobConnectionString = setting.Value;
+                    break;
+                case BlogSettings.AzureBlobContainer:
+                    azureBlobContainer = setting.Value;
+                    break;
+                case BlogSettings.ImageLocalPath:
+                    imageLocalPath = setting.Value;
+                    break;
+                case BlogSettings.ImageMaxWidth:
+                    if (int.TryParse(setting.Value, out int maxWidth)) imageMaxWidth = maxWidth;
+                    break;
+                case BlogSettings.ImageThumbWidth:
+                    if (int.TryParse(setting.Value, out int thumbWidth)) imageThumbWidth = thumbWidth;
+                    break;
+                case BlogSettings.ImageQuality:
+                    if (int.TryParse(setting.Value, out int quality)) imageQuality = quality;
+                    break;
+                case BlogSettings.ImageMaxUploadBytes:
+                    if (int.TryParse(setting.Value, out int maxBytes)) imageMaxUploadKb = maxBytes / 1024;
+                    break;
             }
         }
         
@@ -305,6 +341,15 @@ public partial class Settings : ComponentBase
 
         database.SaveSetting(BlogSettings.TagAllowMultiWord, tagAllowMultiWord.ToString());
         database.SaveSetting(BlogSettings.TagAllowedSpecialChars, tagAllowedSpecialChars);
+
+        database.SaveSetting(BlogSettings.ImageStore, selectedImageStore.ToString());
+        database.SaveSetting(BlogSettings.AzureBlobConnectionString, azureBlobConnectionString.Trim());
+        database.SaveSetting(BlogSettings.AzureBlobContainer, azureBlobContainer.Trim().ToLowerInvariant());
+        database.SaveSetting(BlogSettings.ImageLocalPath, imageLocalPath.Trim());
+        database.SaveSetting(BlogSettings.ImageMaxWidth, Math.Clamp(imageMaxWidth, 200, 4000).ToString());
+        database.SaveSetting(BlogSettings.ImageThumbWidth, Math.Clamp(imageThumbWidth, 50, 1000).ToString());
+        database.SaveSetting(BlogSettings.ImageQuality, Math.Clamp(imageQuality, 1, 100).ToString());
+        database.SaveSetting(BlogSettings.ImageMaxUploadBytes, (Math.Clamp(imageMaxUploadKb, 100, 51200) * 1024).ToString());
 
         navigationManager.NavigateTo("/a/Admin");
     }

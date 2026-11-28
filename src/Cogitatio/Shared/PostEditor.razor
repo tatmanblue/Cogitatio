@@ -1,5 +1,67 @@
+@using Cogitatio.Logic
 <TinyMCE.Blazor.Editor
     Conf="@editorConfig"
+    JsConfSrc="@jsConfSrc"
     ApiKey="@apiKey"
     Value="@Value"
     ValueChanged="@OnValueChanged"/>
+@if (!uploadsEnabled)
+{
+    <small class="text-muted">Image uploads are off. Insert images by URL, or set up image storage in Admin &gt; Settings &gt; Images.</small>
+}
+
+@if (showImageDialog)
+{
+    <div class="modal d-block" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="imageDialogTitle"
+         @onkeydown="@(async (KeyboardEventArgs e) => { if (e.Key == "Escape") await CancelImageDialog(); })">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <form class="modal-content" @onsubmit="@UploadPendingImage">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="imageDialogTitle">Upload image</h5>
+                    <button type="button" class="btn-close" aria-label="Close" disabled="@uploading" @onclick="@CancelImageDialog"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="imageFile" class="form-label">Image</label>
+                        <input id="imageFile" type="file" class="form-control" accept="image/jpeg,image/png,image/gif,image/webp"
+                               @ref="fileInput" @onchange="@OnFileChosen" disabled="@uploading" />
+                        <small class="form-text text-muted">JPEG, PNG, GIF or WebP. Images are resized before upload.</small>
+                    </div>
+                    @if (pendingImage != null)
+                    {
+                        <div class="mb-3 text-center">
+                            <img src="@pendingImage.PreviewUrl" alt="" class="img-thumbnail" style="max-height: 200px;" />
+                            <div><small class="text-muted">@pendingImage.Name (@FormatSize(pendingImage.SizeBytes))</small></div>
+                        </div>
+                    }
+                    <div class="mb-3">
+                        <label for="imageDescription" class="form-label">Description <small class="text-muted">(required)</small></label>
+                        <input id="imageDescription" class="form-control" maxlength="@ImageService.MaxAltTextLength"
+                               placeholder="What the image shows, for readers who can't see it"
+                               @bind="altText" @bind:event="oninput" disabled="@uploading" />
+                        <small class="form-text text-muted">Used as the image's alt text.</small>
+                    </div>
+                    @if (!string.IsNullOrEmpty(dialogError))
+                    {
+                        <div class="alert alert-danger mb-0">@dialogError</div>
+                    }
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" disabled="@uploading" @onclick="@CancelImageDialog">Cancel</button>
+                    <button type="submit" class="btn btn-primary" disabled="@(!CanUpload)">
+                        @if (uploading)
+                        {
+                            <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                            <span>Uploading…</span>
+                        }
+                        else
+                        {
+                            <span>Upload</span>
+                        }
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="modal-backdrop show"></div>
+}

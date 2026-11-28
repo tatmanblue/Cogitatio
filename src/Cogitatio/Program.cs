@@ -198,6 +198,62 @@ builder.Services.AddSingleton<INotificationQueue, NotificationQueue>();
 // Note: links in emails use the SiteUrl setting (Admin > Settings > Mail). The CogitatioSiteUrl
 // environment value (e.g. CogitatioSiteUrl=https://blog.example.com) is used only as a fallback.
 builder.Services.AddHostedService<NotificationBackgroundService>();
+// Image metadata (Blog_Images) — lives in the main blog database
+builder.Services.AddScoped<IImageDatabase>(p =>
+{
+    IConfiguration configuration = p.GetRequiredService<IConfiguration>();
+    string connectionString = configuration["CogitatioSiteDB"] ?? string.Empty;
+    int tenantId = Convert.ToInt32(configuration["CogitatioTenantId"] ?? "0");
+    string dbType = configuration["CogitatioDBType"] ?? "MSSQL";
+    ILogger<IImageDatabase> logger = p.GetRequiredService<ILogger<IImageDatabase>>();
+
+    IImageDatabase imageDb = dbType switch
+    {
+        "MSSQL" => new SqlServerImages(logger, connectionString, tenantId),
+        "POSTGRES" => new PostgresqlImages(logger, connectionString, tenantId),
+        _ => throw new NotSupportedException($"Database type {dbType} is not supported.")
+    };
+    return imageDb;
+});
+// Image store — chosen by the ImageStore setting (Admin > Settings > Images)
+builder.Services.AddScoped<IImageStore>(p =>
+{
+    IDatabase db = p.GetRequiredService<IDatabase>();
+    ILogger<IImageStore> logger = p.GetRequiredService<ILogger<IImageStore>>();
+
+    ImageStores storeType = ImageStores.None;
+    if (System.Enum.TryParse<ImageStores>(db.GetSetting(BlogSettings.ImageStore), out ImageStores parsed))
+        storeType = parsed;
+
+    switch (storeType)
+    {
+        case ImageStores.AzureBlob:
+        {
+            string connection = db.GetSetting(BlogSettings.AzureBlobConnectionString);
+            string container = db.GetSetting(BlogSettings.AzureBlobContainer);
+            if (string.IsNullOrWhiteSpace(connection) || string.IsNullOrWhiteSpace(container))
+            {
+                logger.LogWarning("ImageStore is AzureBlob but the connection string or container is not set; uploads disabled.");
+                return new DisabledImageStore();
+            }
+            return new AzureBlobImageStore(logger, connection, container.Trim().ToLowerInvariant());
+        }
+        case ImageStores.Local:
+        {
+            string path = db.GetSetting(BlogSettings.ImageLocalPath);
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                IWebHostEnvironment env = p.GetRequiredService<IWebHostEnvironment>();
+                path = Path.Combine(env.ContentRootPath, "App_Data", "images");
+            }
+            return new LocalImageStore(logger, path);
+        }
+        default:
+            return new DisabledImageStore();
+    }
+});
+// Validates and saves uploaded images (used by the post editor)
+builder.Services.AddScoped<ImageService>();
 // so that comments load quicker, we have a resolver that helps match user db entries with comment authors
 builder.Services.AddScoped<UserCommentsResolver>();
 
